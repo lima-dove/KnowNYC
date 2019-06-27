@@ -4,6 +4,7 @@ import {connect} from 'react-redux'
 import {Redirect, Route, Switch, withRouter} from 'react-router-dom'
 import {HomePage, Login, Signup, UserHome, Users} from './components'
 import {me} from './store'
+import ExampleComplaints from './components/ExampleComplaints'
 
 /**
  * COMPONENT
@@ -24,6 +25,7 @@ class Routes extends Component {
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route path="/info" component={Login} />
+        <Route path="/exampleComplaints" component={ExampleComplaints} />
         {isLoggedIn && (
           <Switch>
             {/* Routes placed here are only available after logging in */}
