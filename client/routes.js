@@ -1,8 +1,8 @@
+import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {withRouter, Route, Switch} from 'react-router-dom'
-import PropTypes from 'prop-types'
-import {Login, Signup, UserHome, Users} from './components'
+import {Redirect, Route, Switch, withRouter} from 'react-router-dom'
+import {HomePage, Login, Signup, UserHome, Users} from './components'
 import {me} from './store'
 import ExampleComplaints from './components/ExampleComplaints'
 
@@ -20,9 +20,11 @@ class Routes extends Component {
     return (
       <Switch>
         {/* Routes placed here are available to all visitors */}
+        <Route path="/home" component={HomePage} />
         <Route path="/users" component={Users} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
+        <Route path="/info" component={Login} />
         <Route path="/exampleComplaints" component={ExampleComplaints} />
         {isLoggedIn && (
           <Switch>
@@ -30,6 +32,7 @@ class Routes extends Component {
             <Route path="/home" component={UserHome} />
           </Switch>
         )}
+        <Route path="/" render={() => <Redirect to="/home" />} />
         {/* Displays our Login component as a fallback */}
         <Route component={Login} />
       </Switch>
