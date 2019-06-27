@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {withRouter, Route, Switch} from 'react-router-dom'
+import {withRouter, Route, Switch, Redirect} from 'react-router-dom'
 import {
   Login,
   Signup,
