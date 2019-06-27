@@ -3,6 +3,7 @@ import axios from 'axios'
 import Typography from '@material-ui/core/Typography'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
+import LineGraph from './LineGraph'
 
 class ExampleComplaints extends React.Component {
   constructor(props) {
@@ -53,6 +54,7 @@ class ExampleComplaints extends React.Component {
     )
   }
   render() {
+    const data = this.state.lineGraphData
     return (
       <div>
         <Typography variant="h2" align="center">
@@ -67,6 +69,7 @@ class ExampleComplaints extends React.Component {
             </ListItem>
           )
         })}
+        <LineGraph data={data} />
       </div>
     )
   }
