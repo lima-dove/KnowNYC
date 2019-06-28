@@ -3,8 +3,9 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Redirect, Route, Switch, withRouter} from 'react-router-dom'
 import {HomePage, Login, Signup, UserHome, Users} from './components'
-import {me} from './store'
 import ExampleComplaints from './components/ExampleComplaints'
+import GraphTest from './components/GraphTest'
+import {me} from './store'
 
 /**
  * COMPONENT
@@ -26,6 +27,7 @@ class Routes extends Component {
         <Route path="/signup" component={Signup} />
         <Route path="/info" component={Login} />
         <Route path="/exampleComplaints" component={ExampleComplaints} />
+        <Route path="/graph" component={GraphTest} />
         {isLoggedIn && (
           <Switch>
             {/* Routes placed here are only available after logging in */}
