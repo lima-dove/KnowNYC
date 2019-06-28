@@ -1,54 +1,104 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, {Fragment} from 'react'
 import {connect} from 'react-redux'
-import {Link} from 'react-router-dom'
+import history from '../history'
+import {Link as RouterLink} from 'react-router-dom'
 import {logout} from '../store'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import IconButton from '@material-ui/core/IconButton'
+import Typography from '@material-ui/core/Typography'
+import InputBase from '@material-ui/core/InputBase'
+import {fade, makeStyles} from '@material-ui/core/styles'
+import MenuIcon from '@material-ui/icons/Menu'
+import SearchIcon from '@material-ui/icons/Search'
+import {MemoryRouter as Router} from 'react-router'
+import Link from '@material-ui/core/Link'
 import Button from '@material-ui/core/Button'
+import SvgIcon from '@material-ui/core/SvgIcon'
 
-const styles = {
-  buttons: {
-    margin: 10
+const style = {
+  button: {
+    fontSize: '20px'
   }
 }
-const Navbar = ({handleClick, isLoggedIn}) => (
-  <div id="nav">
-    <h1>KNOW-NYC</h1>
-    <nav>
-      {isLoggedIn ? (
-        <div>
-          {/* The navbar will show these links after you log in */}
-          <Link to="/home">Home</Link>
-          <a href="#" onClick={handleClick}>
-            Logout
-          </a>
-        </div>
-      ) : (
-        <div>
-          {/* The navbar will show these links before you log in */}
-          <Button
-            variant="outlined"
-            color="primary"
-            component={Link}
-            to="/login"
-            style={styles.buttons}
+
+const Navbar = ({handleClick, isLoggedIn}) => {
+  return (
+    <div>
+      <AppBar position="static">
+        <Toolbar style={{height: '80px'}}>
+          <IconButton
+            onClick={() => history.push('/home')}
+            aria-label="Open drawer"
           >
-            Login
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            component={Link}
-            to="/signup"
-            style={styles.buttons}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="40"
+              height="40"
+              viewBox="0 0 24 24"
+            >
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+            </svg>
+          </IconButton>
+          <Typography
+            variant="h3"
+            style={{
+              margin: 'auto',
+              paddingLeft: '125px',
+              fontFamily: 'Arial Black'
+            }}
           >
-            Sign Up
-          </Button>
-        </div>
-      )}
-    </nav>
-    {/* <hr /> */}
-  </div>
-)
+            KNOWNYC
+          </Typography>
+          {isLoggedIn ? (
+            <Fragment>
+              <Button
+                style={style.button}
+                size="large"
+                to="/home"
+                component={RouterLink}
+              >
+                Home
+              </Button>
+              <Button
+                style={style.button}
+                to="home"
+                size="large"
+                onClick={handleClick}
+                component={RouterLink}
+              >
+                Logout
+              </Button>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <Button
+                style={style.button}
+                to="/login"
+                size="large"
+                component={RouterLink}
+                color="inherit"
+              >
+                Login
+              </Button>
+              <Button
+                style={style.button}
+                to="/signup"
+                size="large"
+                component={RouterLink}
+                color="inherit"
+              >
+                Sign Up
+              </Button>
+            </Fragment>
+          )}
+        </Toolbar>
+      </AppBar>
+      <hr />
+    </div>
+  )
+}
 
 /**
  * CONTAINER
