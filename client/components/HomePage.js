@@ -25,9 +25,6 @@ export default class HomePage extends Component {
     )
     this.setState({
       complaints: data
-      // address: data[0].incident_address,
-      // long: data[0].location.coordinates[0],
-      // lat: data[0].location.coordinates[1]
     })
   }
 
