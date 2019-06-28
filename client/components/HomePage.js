@@ -1,6 +1,6 @@
+import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {Marker} from 'react-map-gl'
-import axios from 'axios'
 
 const token =
   'pk.eyJ1IjoibnNjaGVmZXIiLCJhIjoiY2p2Mml0azl1MjVtejQ0bzBmajZhOHViZCJ9.iPyB8tGgsYgboP_fKLQGnw'
@@ -36,7 +36,6 @@ export default class HomePage extends Component {
 
   render() {
     const {complaints, viewport} = this.state
-    console.log('COMPLAINTS====', complaints[0])
     const locationComplaints = complaints.filter(
       complaint => complaint.location
     )
