@@ -6,5 +6,5 @@
 export {Login, Signup} from './AuthForm'
 export {default as Users} from './Firebase'
 export {default as HomePage} from './HomePage'
-export {default as Navbar} from './Navbar'
+export {default as Navbar} from './navbar'
 export {default as UserHome} from './UserHome'
