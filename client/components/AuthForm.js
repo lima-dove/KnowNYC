@@ -56,7 +56,7 @@ const AuthForm = props => {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="hi" variant="h5">
+        <Typography component="h1" variant="h5">
           Sign in
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit} name={name}>
