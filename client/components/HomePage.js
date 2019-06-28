@@ -1,3 +1,4 @@
+import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {Marker} from 'react-map-gl'
 import axios from 'axios'
@@ -16,7 +17,8 @@ export default class HomePage extends Component {
         zoom: 14,
         bearing: 0,
         pitch: 0
-      }
+      },
+      complaints: []
     }
   }
   async componentDidMount() {
@@ -28,6 +30,15 @@ export default class HomePage extends Component {
       // address: data[0].incident_address,
       // long: data[0].location.coordinates[0],
       // lat: data[0].location.coordinates[1]
+    })
+  }
+
+  async componentDidMount() {
+    const {data} = await axios.get(
+      'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=162-01%2099%20STREET'
+    )
+    this.setState({
+      complaints: data
     })
   }
 
