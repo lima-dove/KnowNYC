@@ -9,9 +9,6 @@ const blue = '#52b6ca'
 
 class LineGraph extends Component {
   state = {
-    highs: null, // svg path command for all the high temps
-    lows: null, // svg path command for low temps,
-    // d3 helpers
     xScale: d3.scaleTime().range([margin.left, width - margin.right]),
     yScale: d3.scaleLinear().range([height - margin.bottom, margin.top]),
     lineGenerator: d3.line()
@@ -20,25 +17,26 @@ class LineGraph extends Component {
   xAxis = d3
     .axisBottom()
     .scale(this.state.xScale)
-    .tickFormat(d3.timeFormat('%b'))
+    .tickFormat('Year')
   yAxis = d3
     .axisLeft()
     .scale(this.state.yScale)
-    .tickFormat(d => `${d}℉`)
+    .tickFormat('Frequency')
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (!nextProps.data) return null // data hasn't been loaded yet so do nothing
     const {data} = nextProps
+    console.log(data)
     const {xScale, yScale, lineGenerator} = prevState
 
     // data has changed, so recalculate scale domains
-    const timeDomain = d3.extent(data, d => d.date)
-    const tempMax = d3.max(data, d => d.high)
+    const timeDomain = d3.extent(data, d => d[0])
+    const tempMax = d3.max(data, d => d[1])
     xScale.domain(timeDomain)
     yScale.domain([0, tempMax])
 
     // calculate line for lows
-    lineGenerator.x(d => xScale(d.date))
+    lineGenerator.x(d => xScale(d.created_date))
     lineGenerator.y(d => yScale(d.low))
     const lows = lineGenerator(data)
     // and then highs
@@ -54,7 +52,6 @@ class LineGraph extends Component {
   }
 
   render() {
-    console.log('this.props', this.props)
     return (
       <svg width={width} height={height}>
         <path d={this.state.highs} fill="none" stroke={red} strokeWidth="2" />

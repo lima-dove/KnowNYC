@@ -19,7 +19,7 @@ class ExampleComplaints extends React.Component {
   }
   async componentDidMount() {
     const {data} = await axios.get(
-      'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=162-01%2099%20STREET'
+      'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$limit=100'
     )
     this.setState({
       complaints: data,
@@ -45,7 +45,11 @@ class ExampleComplaints extends React.Component {
         lineGraphData[year] = 1
       }
     })
-    this.setState({barChartData: barChartData, lineGraphData: lineGraphData})
+    let keys = Object.keys(lineGraphData)
+    let lineGraphProps = keys.map(key => {
+      return [key, lineGraphData[key]]
+    })
+    this.setState({barChartData: barChartData, lineGraphData: lineGraphProps})
     console.log(
       'BAR CHART DATA:',
       this.state.barChartData,
@@ -57,7 +61,7 @@ class ExampleComplaints extends React.Component {
     const data = this.state.lineGraphData
     return (
       <div>
-        <Typography variant="h2" align="center">
+        <Typography variant="h1" align="center" color="inherit">
           Address: {this.state.address}
           <br />
           Long/Lat: [{this.state.long}, {this.state.lat}]
