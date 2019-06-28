@@ -21,7 +21,7 @@ export default class HomePage extends Component {
   handleClick = () => {
     const {history} = this.props
 
-    history.push('/info')
+    history.push('/exampleComplaints')
   }
 
   render() {
@@ -31,7 +31,7 @@ export default class HomePage extends Component {
         <MapGL
           {...viewport}
           width="100vw"
-          height="100vh"
+          height="88vh"
           mapStyle="mapbox://styles/mapbox/streets-v9"
           onViewportChange={v => this.setState({viewport: v})}
           preventStyleDiffing={false}
