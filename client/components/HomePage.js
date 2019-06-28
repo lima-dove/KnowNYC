@@ -9,20 +9,19 @@ export default class HomePage extends Component {
   constructor() {
     super()
     this.state = {
+      complaints: [],
       viewport: {
         latitude: 40.705,
         longitude: -74.009,
         zoom: 14,
         bearing: 0,
         pitch: 0
-      },
-      complaints: []
+      }
     }
   }
-
   async componentDidMount() {
     const {data} = await axios.get(
-      'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=162-01%2099%20STREET'
+      'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_zip=10004'
     )
     this.setState({
       complaints: data
@@ -36,7 +35,11 @@ export default class HomePage extends Component {
   }
 
   render() {
-    const {viewport} = this.state
+    const {complaints, viewport} = this.state
+    const locationComplaints = complaints.filter(
+      complaint => complaint.location
+    )
+
     return (
       <div>
         <MapGL
@@ -48,22 +51,24 @@ export default class HomePage extends Component {
           preventStyleDiffing={false}
           mapboxApiAccessToken={token}
         >
-          {this.state.complaints.map(complaint => {
-            return (
-              <Marker
-                key={complaint.unique_key}
-                latitude={complaint.location.coordinates[1]}
-                longitude={complaint.location.coordinates[0]}
-                offsetLeft={-20}
-                offsetTop={-10}
-              >
-                <img
-                  src="http://i.imgur.com/WbMOfMl.png"
-                  onClick={this.handleClick}
-                />
-              </Marker>
-            )
-          })}
+          {locationComplaints
+            ? locationComplaints.map(complaint => {
+                return (
+                  <Marker
+                    key={complaint.unique_key}
+                    latitude={complaint.location.coordinates[1]}
+                    longitude={complaint.location.coordinates[0]}
+                    offsetLeft={-20}
+                    offsetTop={-10}
+                  >
+                    <img
+                      src="http://i.imgur.com/WbMOfMl.png"
+                      onClick={this.handleClick}
+                    />
+                  </Marker>
+                )
+              })
+            : null}
         </MapGL>
       </div>
     )
