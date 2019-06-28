@@ -3,9 +3,15 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {logout} from '../store'
+import Button from '@material-ui/core/Button'
 
+const styles = {
+  buttons: {
+    margin: 10
+  }
+}
 const Navbar = ({handleClick, isLoggedIn}) => (
-  <div>
+  <div id="nav">
     <h1>KNOW-NYC</h1>
     <nav>
       {isLoggedIn ? (
@@ -19,12 +25,28 @@ const Navbar = ({handleClick, isLoggedIn}) => (
       ) : (
         <div>
           {/* The navbar will show these links before you log in */}
-          <Link to="/login">Login</Link>
-          <Link to="/signup">Sign Up</Link>
+          <Button
+            variant="outlined"
+            color="primary"
+            component={Link}
+            to="/login"
+            style={styles.buttons}
+          >
+            Login
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            component={Link}
+            to="/signup"
+            style={styles.buttons}
+          >
+            Sign Up
+          </Button>
         </div>
       )}
     </nav>
-    <hr />
+    {/* <hr /> */}
   </div>
 )
 
