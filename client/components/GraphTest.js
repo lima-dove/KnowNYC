@@ -11,17 +11,33 @@ export default class GraphTest extends Component {
 
   componentDidMount() {
     fetch(
-      'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=162-01%2099%20STREET'
+      'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=2303%20LAFAYETTE%20AVENUE'
     )
-      .then(response => response.json())
+      .then(response => response.json()) // this returns an array of objects
       .then(response => {
         response.forEach(complaint => {
-          complaint.created_date = new Date(complaint.created_date)
+          complaint.created_date = new Date(complaint.created_date) // format the date for d3 to read
         })
 
-        this.setState({
-          complaints: response
+        let complaintObj = {}
+        response.forEach(el => {
+          if (complaintObj[el.complaint_type] >= 1) {
+            complaintObj[el.complaint_type] = ++complaintObj[el.complaint_type]
+          } else {
+            complaintObj[el.complaint_type] = 1
+          }
         })
+
+        let barData = []
+
+        // eslint-disable-next-line guard-for-in
+        for (let key in complaintObj) {
+          barData.push({type: key, quantity: complaintObj[key]})
+        }
+        console.log({complaintObj})
+        console.log({barData})
+
+        this.setState({complaints: barData})
       })
   }
 
@@ -33,3 +49,7 @@ export default class GraphTest extends Component {
     )
   }
 }
+
+// want an array (set) of unique complaint types (ex: if barData.includes(el[complaint_type]) then increment el[complaint_type])
+// if (barData.some(el => el.type === complaint.complaint_type)) {
+// }

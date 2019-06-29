@@ -29,18 +29,18 @@ export default class BarGraphTest extends Component {
     const {data} = nextProps
     const {xScale, yScale, colorScale} = prevState
 
-    const complaintDomain = data.map(complaint => complaint.complaint_type)
-    const freqDomain = [0, 1]
+    const quantityMax = d3.max(data, d => d.quantity)
+    const complaintDomain = data.map(complaint => complaint.type)
     xScale.domain(complaintDomain)
     xScale.padding(0.6)
-    yScale.domain(freqDomain)
+    yScale.domain([0, quantityMax])
 
     const bars = data.map(d => {
       return {
-        x: xScale(d.complaint_type),
-        y: yScale(1),
+        x: xScale(d.type),
+        y: yScale(d.quantity),
         width: 50,
-        height: height - margin.bottom - yScale(1),
+        height: height - margin.bottom - yScale(d.quantity),
         fill: 'green'
       }
     })
