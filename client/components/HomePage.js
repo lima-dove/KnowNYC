@@ -31,7 +31,7 @@ export default class HomePage extends Component {
   handleClick = () => {
     const {history} = this.props
 
-    history.push('/exampleComplaints')
+    history.push('/infoPage')
   }
 
   render() {

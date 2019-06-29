@@ -5,7 +5,7 @@
  */
 export {default as Login} from './Login'
 export {default as Users} from './Firebase'
-export {default as ExampleComplaints} from './ExampleComplaints'
+export {default as InfoPage} from './InfoPage'
 export {default as HomePage} from './HomePage'
 export {default as Navbar} from './navbar'
 export {default as UserHome} from './UserHome'
