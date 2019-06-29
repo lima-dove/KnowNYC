@@ -24,7 +24,7 @@ export default class BarGraphTest extends Component {
     this.yAxis = d3.axisLeft().scale(this.state.yScale)
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
+  static getDerivedStateFromProps = (nextProps, prevState) => {
     if (!nextProps.data) return null
     const {data} = nextProps
     const {xScale, yScale, colorScale} = prevState
@@ -45,10 +45,11 @@ export default class BarGraphTest extends Component {
       }
     })
 
-    return {bars}
+    return {bars, quantityMax}
   }
 
   componentDidUpdate() {
+    this.yAxis.ticks(this.state.quantityMax).tickFormat(d3.format('.0f')) // this specifies that the number of ticks should be equal to the max data value, the format is specifying no decimal points
     d3.select(this.refs.xAxis).call(this.xAxis)
     d3.select(this.refs.yAxis).call(this.yAxis)
   }

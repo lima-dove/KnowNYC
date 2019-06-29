@@ -34,8 +34,6 @@ export default class GraphTest extends Component {
         for (let key in complaintObj) {
           barData.push({type: key, quantity: complaintObj[key]})
         }
-        console.log({complaintObj})
-        console.log({barData})
 
         this.setState({complaints: barData})
       })
