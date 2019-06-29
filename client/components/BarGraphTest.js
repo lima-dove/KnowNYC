@@ -41,7 +41,7 @@ export default class BarGraphTest extends Component {
         y: yScale(d.quantity),
         width: 50,
         height: height - margin.bottom - yScale(d.quantity),
-        fill: 'green'
+        fill: "url('#myGradient')"
       }
     })
 
@@ -59,14 +59,22 @@ export default class BarGraphTest extends Component {
     return (
       <svg width={width} height={height}>
         {this.state.bars.map((d, i) => (
-          <rect
-            key={i}
-            x={d.x}
-            y={d.y}
-            width={d.width}
-            height={d.height}
-            fill={d.fill}
-          />
+          <svg key={i}>
+            <defs>
+              <linearGradient id="myGradient" gradientTransform="rotate(90)">
+                <stop offset="5%" stopColor="red" />
+                <stop offset="50%" stopColor="gold" />
+                <stop offset="95%" stopColor="green" />
+              </linearGradient>
+            </defs>
+            <rect
+              x={d.x}
+              y={d.y}
+              width={d.width}
+              height={d.height}
+              fill={d.fill}
+            />
+          </svg>
         ))}
         <g>
           <g
