@@ -45,19 +45,32 @@ const useStyles = makeStyles(theme => ({
 /**
  * COMPONENT
  */
-const AuthForm = props => {
+const Login = props => {
   const {name, displayName, handleSubmit, error} = props
   const classes = useStyles()
 
   return (
     <Container maxWidth="xs">
       <CssBaseline />
-      <div className={classes.paper}>
+      <div style={{marginTop: '10px'}} className={classes.paper}>
+        <Typography component="div">
+          <Box
+            textAlign="center"
+            fontWeight={500}
+            fontStyle="oblique"
+            lineHeight={5}
+          >
+            {error &&
+              error.response && (
+                <Typography variant="p"> {error.response.data} </Typography>
+              )}
+          </Box>
+        </Typography>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          {displayName}
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit} name={name}>
           <TextField
@@ -94,28 +107,24 @@ const AuthForm = props => {
             variant="contained"
             color="primary"
           >
-            Sign in
+            {displayName}
           </Button>
           <Grid container>
-            <Grid item>
+            <Grid item xs={4}>
               <Link component="" variant="body2">
                 Forgot password?
               </Link>
             </Grid>
-            <Grid item>
+            <Grid item xs={4}>
               <Link component={RouterLink} to="/signUp" variant="body2">
                 Don't have an account?{`\n`}Sign up
               </Link>
             </Grid>
             <Grid item />
-            <Grid item>
+            <Grid item xs={4}>
               <Link href="/auth/google">{displayName} with Google</Link>
             </Grid>
           </Grid>
-          {error &&
-            error.response && (
-              <Typography variant="p"> {error.response.data} </Typography>
-            )}
         </form>
       </div>
     </Container>
@@ -137,13 +146,13 @@ const mapLogin = state => {
   }
 }
 
-const mapSignup = state => {
-  return {
-    name: 'signup',
-    displayName: 'Sign Up',
-    error: state.user.error
-  }
-}
+// const mapSignup = state => {
+//   return {
+//     name: 'signup',
+//     displayName: 'Sign Up',
+//     error: state.user.error
+//   }
+// }
 
 const mapDispatch = dispatch => {
   return {
@@ -157,13 +166,12 @@ const mapDispatch = dispatch => {
   }
 }
 
-export const Login = connect(mapLogin, mapDispatch)(AuthForm)
-export const Signup = connect(mapSignup, mapDispatch)(AuthForm)
+export default connect(mapLogin, mapDispatch)(Login)
 
 /**
  * PROP TYPES
  */
-AuthForm.propTypes = {
+Login.propTypes = {
   name: PropTypes.string.isRequired,
   displayName: PropTypes.string.isRequired,
   handleSubmit: PropTypes.func.isRequired,
