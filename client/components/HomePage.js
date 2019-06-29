@@ -28,10 +28,19 @@ export default class HomePage extends Component {
     })
   }
 
-  handleClick = () => {
+  handleClick = complaint => {
     const {history} = this.props
 
-    history.push('/exampleComplaints')
+    let clickedAddress
+    if (complaint.incident_address) {
+      clickedAddress = complaint.incident_address.replace(/ /g, '-')
+    } else {
+      clickedAddress = ''
+    }
+
+    //pushes the complaint data as state to history object
+    //can now the be accessed using history.state.state
+    history.push(`/exampleComplaints/${clickedAddress}`, complaint)
   }
 
   render() {
@@ -63,7 +72,7 @@ export default class HomePage extends Component {
                   >
                     <img
                       src="http://i.imgur.com/WbMOfMl.png"
-                      onClick={this.handleClick}
+                      onClick={() => this.handleClick(complaint)}
                     />
                   </Marker>
                 )
