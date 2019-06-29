@@ -43,18 +43,18 @@ export default class HomePage extends Component {
     })
   }
 
-  handleSeeMoreClick = () => {
+  handleSeeMoreClick = complaint => {
     //Redirect to Info Page Logic
-    // const {history} = this.props
-    // let clickedAddress
-    // if (complaint.incident_address) {
-    //   clickedAddress = complaint.incident_address.replace(/ /g, '-')
-    // } else {
-    //   clickedAddress = ''
-    // }
+    const {history} = this.props
+    let clickedAddress
+    if (complaint.incident_address) {
+      clickedAddress = complaint.incident_address.replace(/ /g, '-')
+    } else {
+      clickedAddress = ''
+    }
     //pushes the complaint data as state to history object
     //can now the be accessed using history.state.state
-    // history.push(`/exampleComplaints/${clickedAddress}`, complaint)
+    history.push(`/exampleComplaints/${clickedAddress}`, complaint)
   }
 
   render() {
@@ -105,6 +105,12 @@ export default class HomePage extends Component {
                 <h1>Complaints for {selectedAddress.incident_address}</h1>
                 <h3>Complaint Type: {selectedAddress.complaint_type}</h3>
                 <p>Description: {selectedAddress.descriptor}</p>
+                <button
+                  type="button"
+                  onClick={() => this.handleSeeMoreClick(selectedAddress)}
+                >
+                  See More...
+                </button>
               </div>
             </Popup>
           ) : null}
