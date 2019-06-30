@@ -40,6 +40,7 @@ export default class GraphTest extends Component {
   }
 
   render() {
+    console.log(this.state.complaints)
     return (
       <div>
         <BarGraphTest data={this.state.complaints} />

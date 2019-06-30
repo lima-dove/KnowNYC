@@ -12,6 +12,7 @@ export default class HomePage extends Component {
     this.state = {
       complaints: [],
       selectedAddress: null,
+      data: null,
       viewport: {
         latitude: 40.705,
         longitude: -74.009,
@@ -30,10 +31,16 @@ export default class HomePage extends Component {
     })
   }
 
-  handleMarkerClick = complaint => {
+  handleMarkerClick = async complaint => {
+    let address = complaint.incident_address
+    const {data} = await axios.get(
+      `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=${address}&incident_zip=10004`
+    )
+    console.log({data})
     //Popup Logic
     this.setState({
-      selectedAddress: complaint
+      selectedAddress: complaint,
+      data
     })
   }
 
@@ -58,7 +65,7 @@ export default class HomePage extends Component {
   }
 
   render() {
-    const {complaints, viewport, selectedAddress} = this.state
+    const {complaints, viewport, selectedAddress, data} = this.state
     const locationComplaints = complaints.filter(
       complaint => complaint.location
     )
@@ -98,10 +105,10 @@ export default class HomePage extends Component {
             <Popup
               latitude={selectedAddress.location.coordinates[1]}
               longitude={selectedAddress.location.coordinates[0]}
-              onClose={() => this.setState({selectedAddress: null})}
+              onClose={() => this.setState({selectedAddress: null, data: null})}
             >
               <div>
-                <BarGraph data={[selectedAddress]} />
+                <BarGraph rawData={data} />
                 <h1>Complaints for {selectedAddress.incident_address}</h1>
                 <h3>Complaint Type: {selectedAddress.complaint_type}</h3>
                 <p>Description: {selectedAddress.descriptor}</p>
