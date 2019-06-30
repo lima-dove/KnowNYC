@@ -19,12 +19,24 @@ import {fade, withStyles} from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import PropTypes from 'prop-types'
+import MenuIcon from '@material-ui/icons/Menu'
 import SearchIcon from '@material-ui/icons/Search'
 import InputBase from '@material-ui/core/InputBase'
+import IconButton from '@material-ui/core/IconButton'
+import PhoneIcon from '@material-ui/icons/Phone'
+import FavoriteIcon from '@material-ui/icons/Favorite'
+import PersonPinIcon from '@material-ui/icons/PersonPin'
 
 const styles = theme => ({
   root: {
     flexGrow: 1
+  },
+  title: {
+    flexGrow: 1,
+    display: 'none',
+    [theme.breakpoints.up('sm')]: {
+      display: 'block'
+    }
   },
   search: {
     position: 'relative',
@@ -33,15 +45,21 @@ const styles = theme => ({
     '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.25)
     },
-    searchIcon: {
-      width: theme.spacing(7),
-      height: '100%',
-      position: 'absolute',
-      pointerEvents: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(1),
+      width: 'auto'
     }
+  },
+  searchIcon: {
+    width: theme.spacing(7),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   inputRoot: {
     color: 'inherit'
@@ -49,13 +67,15 @@ const styles = theme => ({
   inputInput: {
     padding: theme.spacing(1, 1, 1, 7),
     transition: theme.transitions.create('width'),
-    width: '100%',
+    width: '300px',
     [theme.breakpoints.up('sm')]: {
-      width: 120,
       '&:focus': {
-        width: 200
+        width: 300
       }
     }
+  },
+  tabs: {
+    flexGrow: 1
   }
 })
 
@@ -68,8 +88,10 @@ class InfoPage extends React.Component {
       long: '',
       lat: '',
       lineGraphData: {},
-      barChartData: {}
+      barChartData: {},
+      tabValue: 0
     }
+    this.handleTabChange = this.handleTabChange.bind(this)
   }
   async componentDidMount() {
     const {data} = await axios.get(
@@ -111,35 +133,39 @@ class InfoPage extends React.Component {
       this.state.lineGraphData
     )
   }
+  handleTabChange(event, newValue) {
+    this.setState({tabValue: newValue})
+  }
   render() {
     const {classes} = this.props
 
     return (
-      <div>
-        <div className={classes.root}>
-          <AppBar position="static" color="default">
-            <Toolbar>
-              <Typography variant="h6" color="inherit">
-                Data for given address
-              </Typography>
-              <div className={classes.search}>
-                <div className={classes.searchIcon}>
-                  <SearchIcon />
-                </div>
-                <InputBase
-                  placeholder="Search…"
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput
-                  }}
-                  inputProps={{'aria-label': 'Search'}}
-                />
-              </div>
-            </Toolbar>
-          </AppBar>
-        </div>
+      <div style={{backgroundColor: 'lightgrey'}}>
         <br />
         <Container>
+          <div className={classes.root}>
+            <AppBar position="static">
+              <Toolbar>
+                <Typography className={classes.title} variant="h6" noWrap>
+                  Graph data for...
+                </Typography>
+                <div className={classes.search}>
+                  <div className={classes.searchIcon}>
+                    <SearchIcon />
+                  </div>
+                  <InputBase
+                    placeholder="Search for new address"
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput
+                    }}
+                    inputProps={{'aria-label': 'Search'}}
+                  />
+                </div>
+              </Toolbar>
+            </AppBar>
+          </div>
+          <br />
           <Grid container spacing={3}>
             <Grid item xs={6}>
               <Card>
@@ -167,16 +193,16 @@ class InfoPage extends React.Component {
             </Grid>
           </Grid>
           <br />
-          <Paper>
+          <Paper className={classes.root}>
             <Tabs
-              value={0}
-              onChange={() => console.log('hi')}
+              value={this.state.tabValue}
+              onChange={this.handleTabChange}
               indicatorColor="primary"
               textColor="primary"
               centered
             >
               <Tab label="All Complaints" />
-              <Tab label="Verified 311 Complaints" />
+              <Tab label="311 Complaints" />
               <Tab label="User Complaints" />
             </Tabs>
           </Paper>

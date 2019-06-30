@@ -20,7 +20,8 @@ import Box from '@material-ui/core/Box'
 
 const style = {
   button: {
-    fontSize: '20px'
+    fontSize: '20px',
+    color: 'white'
   }
 }
 
@@ -30,6 +31,7 @@ const Navbar = ({handleClick, isLoggedIn}) => {
       <AppBar position="static">
         <Toolbar style={{height: '80px'}}>
           <IconButton
+            style={{backgroundColor: 'white'}}
             onClick={() => history.push('/home')}
             aria-label="Open drawer"
           >
