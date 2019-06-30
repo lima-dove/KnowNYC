@@ -19,7 +19,7 @@ export default class BarGraphTest extends Component {
       xScale: d3
         .scaleBand()
         .range([margin.left, width - margin.right])
-        .padding(0.6),
+        .padding(0.5),
       yScale: d3.scaleLinear().range([height - margin.bottom, margin.top]),
       colorScale: d3.scaleLinear()
     }
@@ -33,7 +33,7 @@ export default class BarGraphTest extends Component {
     const {rawData} = nextProps
     const {xScale, yScale, colorScale} = prevState
 
-    // Receive data from map pop-up click:
+    // Receive data from map pop-up click and calculate frequency/quantity of each complaint type:
     let complaintObj = {}
     rawData.forEach(el => {
       if (complaintObj[el.complaint_type] >= 1) {
@@ -50,7 +50,7 @@ export default class BarGraphTest extends Component {
       data.push({type: key, quantity: complaintObj[key]})
     }
 
-    // Set graph variables using data
+    // Set axes domain variables using data
     const quantityMax = d3.max(data, d => d.quantity)
     const complaintDomain = data.map(complaint => complaint.type)
     xScale.domain(complaintDomain)
@@ -62,7 +62,7 @@ export default class BarGraphTest extends Component {
       return {
         x: xScale(d.type),
         y: yScale(d.quantity),
-        width: length > 3 ? width / (2 * length) : 50,
+        width: xScale.bandwidth(), //length > 3 ? width / (2 * length) : 50
         height: height - margin.bottom - yScale(d.quantity),
         fill: "url('#myGradient')"
       }
