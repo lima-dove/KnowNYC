@@ -14,6 +14,7 @@ export default class BarGraphTest extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      data: null,
       bars: [],
       xScale: d3.scaleBand().range([margin.left, width - margin.right]),
       yScale: d3.scaleLinear().range([height - margin.bottom, margin.top]),
@@ -25,9 +26,27 @@ export default class BarGraphTest extends Component {
   }
 
   static getDerivedStateFromProps = (nextProps, prevState) => {
-    if (!nextProps.data) return null
-    const {data} = nextProps
+    if (!nextProps.rawData) return null
+    const {rawData} = nextProps
     const {xScale, yScale, colorScale} = prevState
+
+    // Receive data from map pop-up click:
+    console.log({rawData})
+    let complaintObj = {}
+    rawData.forEach(el => {
+      if (complaintObj[el.complaint_type] >= 1) {
+        complaintObj[el.complaint_type] = ++complaintObj[el.complaint_type]
+      } else {
+        complaintObj[el.complaint_type] = 1
+      }
+    })
+
+    let data = []
+
+    // eslint-disable-next-line guard-for-in
+    for (let key in complaintObj) {
+      data.push({type: key, quantity: complaintObj[key]})
+    }
 
     const quantityMax = d3.max(data, d => d.quantity)
     const complaintDomain = data.map(complaint => complaint.type)
@@ -45,7 +64,7 @@ export default class BarGraphTest extends Component {
       }
     })
 
-    return {bars, quantityMax}
+    return {bars, quantityMax, data}
   }
 
   componentDidUpdate() {

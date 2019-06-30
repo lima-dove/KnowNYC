@@ -36,7 +36,6 @@ export default class HomePage extends Component {
     const {data} = await axios.get(
       `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=${address}&incident_zip=10004`
     )
-    console.log({data})
     //Popup Logic
     this.setState({
       selectedAddress: complaint,
@@ -66,6 +65,7 @@ export default class HomePage extends Component {
 
   render() {
     const {complaints, viewport, selectedAddress, data} = this.state
+    console.log({data})
     const locationComplaints = complaints.filter(
       complaint => complaint.location
     )
