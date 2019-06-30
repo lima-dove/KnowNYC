@@ -48,6 +48,9 @@ export default class BarGraphTest extends Component {
       data.push({type: key, quantity: complaintObj[key]})
     }
 
+    console.log({data})
+
+    // Set graph variables using data
     const quantityMax = d3.max(data, d => d.quantity)
     const complaintDomain = data.map(complaint => complaint.type)
     xScale.domain(complaintDomain)
