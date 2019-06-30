@@ -4,6 +4,7 @@ import Typography from '@material-ui/core/Typography'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import LineGraph from './LineGraph'
+import SwipeableViews from 'react-swipeable-views'
 import Grid from '@material-ui/core/Grid'
 import Container from '@material-ui/core/Container'
 import Tabs from '@material-ui/core/Tabs'
@@ -15,7 +16,7 @@ import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import Button from '@material-ui/core/Button'
-import {fade, withStyles} from '@material-ui/core/styles'
+import {fade, withStyles, useTheme} from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import PropTypes from 'prop-types'
@@ -26,6 +27,19 @@ import IconButton from '@material-ui/core/IconButton'
 import PhoneIcon from '@material-ui/icons/Phone'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import PersonPinIcon from '@material-ui/icons/PersonPin'
+
+function TabContainer({children, dir}) {
+  return (
+    <Typography component="div" dir={dir} style={{padding: 8 * 3}}>
+      {children}
+    </Typography>
+  )
+}
+
+TabContainer.propTypes = {
+  children: PropTypes.node.isRequired,
+  dir: PropTypes.string.isRequired
+}
 
 const styles = theme => ({
   root: {
@@ -92,6 +106,7 @@ class InfoPage extends React.Component {
       tabValue: 0
     }
     this.handleTabChange = this.handleTabChange.bind(this)
+    this.handleChangeIndex = this.handleChangeIndex.bind(this)
   }
   async componentDidMount() {
     const {data} = await axios.get(
@@ -136,8 +151,12 @@ class InfoPage extends React.Component {
   handleTabChange(event, newValue) {
     this.setState({tabValue: newValue})
   }
+  handleChangeIndex(index) {
+    this.setState({tabValue: index})
+  }
   render() {
     const {classes} = this.props
+    // const theme = useTheme()
 
     return (
       <div style={{backgroundColor: 'lightgrey'}}>
@@ -170,6 +189,9 @@ class InfoPage extends React.Component {
             <Grid item xs={6}>
               <Card>
                 <CardContent>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    Complaint Frequency
+                  </Typography>
                   <LineGraph />
                 </CardContent>
                 <CardActions>
@@ -182,6 +204,9 @@ class InfoPage extends React.Component {
             <Grid item xs={6}>
               <Card>
                 <CardContent>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    Complaints over time
+                  </Typography>
                   <LineGraph />
                 </CardContent>
                 <CardActions>
@@ -206,6 +231,15 @@ class InfoPage extends React.Component {
               <Tab label="User Complaints" />
             </Tabs>
           </Paper>
+          <SwipeableViews
+            axis={classes.direction === 'rtl' ? 'x-reverse' : 'x'}
+            index={this.state.tabValue}
+            onChangeIndex={this.handleChangeIndex}
+          >
+            <TabContainer dir={classes.direction}>Item One</TabContainer>
+            <TabContainer dir={classes.direction}>Item Two</TabContainer>
+            <TabContainer dir={classes.direction}>Item Three</TabContainer>
+          </SwipeableViews>
         </Container>
         <br />
       </div>
