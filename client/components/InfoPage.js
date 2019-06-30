@@ -99,57 +99,39 @@ class InfoPage extends React.Component {
     this.state = {
       complaints: [],
       address: '',
-      long: '',
-      lat: '',
-      lineGraphData: {},
-      barChartData: {},
-      tabValue: 0
+      tabValue: 0,
+      inputAddress: ''
     }
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
+    this.handleKeyDown = this.handleKeyDown.bind(this)
+    this.handleChange = this.handleChange.bind(this)
   }
   async componentDidMount() {
     const {data} = await axios.get(
       'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$limit=100'
     )
-    this.setState({
-      complaints: data,
-      address: data[0].incident_address,
-      long: data[0].location.coordinates[0],
-      lat: data[0].location.coordinates[1]
-    })
-    let lineGraphData = {}
-    let barChartData = {}
-    this.state.complaints.forEach(complaint => {
-      const complaintType = complaint.complaint_type
-      if (barChartData[complaintType]) {
-        barChartData[complaintType]++
-      } else {
-        barChartData[complaintType] = 1
-      }
-    })
-    this.state.complaints.forEach(complaint => {
-      const year = Number(complaint.created_date.slice(0, 4))
-      if (lineGraphData[year]) {
-        lineGraphData[year]++
-      } else {
-        lineGraphData[year] = 1
-      }
-    })
-    let keys = Object.keys(lineGraphData)
-    let lineGraphProps = keys.map(key => {
-      return [key, lineGraphData[key]]
-    })
-    this.setState({barChartData: barChartData, lineGraphData: lineGraphProps})
-    console.log(
-      'BAR CHART DATA:',
-      this.state.barChartData,
-      'LINE GRAPH DATA:',
-      this.state.lineGraphData
-    )
   }
   handleTabChange(event, newValue) {
     this.setState({tabValue: newValue})
+  }
+  async handleKeyDown(event) {
+    if (event.key === 'Enter') {
+      try {
+        const {data} = await axios.get(
+          `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=${
+            this.state.inputAddress
+          }`
+        )
+        this.setState({complaints: data})
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  }
+  async handleChange(event) {
+    await this.setState({inputAddress: event.target.value})
+    console.log(this.state)
   }
   handleChangeIndex(index) {
     this.setState({tabValue: index})
@@ -173,6 +155,8 @@ class InfoPage extends React.Component {
                     <SearchIcon />
                   </div>
                   <InputBase
+                    onKeyDown={this.handleKeyDown}
+                    onChange={this.handleChange}
                     placeholder="Search for new address"
                     classes={{
                       root: classes.inputRoot,
