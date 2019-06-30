@@ -27,6 +27,11 @@ import IconButton from '@material-ui/core/IconButton'
 import PhoneIcon from '@material-ui/icons/Phone'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import PersonPinIcon from '@material-ui/icons/PersonPin'
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableHead from '@material-ui/core/TableHead'
+import TableRow from '@material-ui/core/TableRow'
 
 function TabContainer({children, dir}) {
   return (
@@ -90,6 +95,14 @@ const styles = theme => ({
   },
   tabs: {
     flexGrow: 1
+  },
+  paperTable: {
+    width: '100%',
+    marginTop: theme.spacing(3),
+    overflowX: 'auto'
+  },
+  tableTable: {
+    minWidth: 650
   }
 })
 
@@ -109,8 +122,10 @@ class InfoPage extends React.Component {
   }
   async componentDidMount() {
     const {data} = await axios.get(
-      'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$limit=100'
+      'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=219%20EAST%20196TH%20STREET'
     )
+    this.setState({complaints: data})
+    console.log(this.state.complaints)
   }
   handleTabChange(event, newValue) {
     this.setState({tabValue: newValue})
@@ -163,6 +178,7 @@ class InfoPage extends React.Component {
                       input: classes.inputInput
                     }}
                     inputProps={{'aria-label': 'Search'}}
+                    list="colors"
                   />
                 </div>
               </Toolbar>
@@ -214,16 +230,63 @@ class InfoPage extends React.Component {
               <Tab label="311 Complaints" />
               <Tab label="User Complaints" />
             </Tabs>
+
+            <SwipeableViews
+              axis={classes.direction === 'rtl' ? 'x-reverse' : 'x'}
+              index={this.state.tabValue}
+              onChangeIndex={this.handleChangeIndex}
+            >
+              <TabContainer dir={classes.direction}>
+                <Paper className={classes.paperTable}>
+                  <Table className={classes.tableTable}>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">Address</TableCell>
+                        <TableCell align="center">Complaint Type</TableCell>
+                        <TableCell align="center">Description</TableCell>
+                        <TableCell align="center">Resolution</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {this.state.complaints.map(complaint => {
+                        return (
+                          // <Paper
+                          //   key={complaint.unique_key}
+                          //   className={classes.paperTable}
+                          // >
+                          //   <Table className={classes.tableTable}>
+                          //     <TableHead>
+                          //       <TableRow>
+                          //         <TableCell>Address</TableCell>
+                          //         <TableCell align="right">Complaint Type</TableCell>
+                          //         <TableCell align="right">Description</TableCell>
+                          //         <TableCell align="right">Resolution</TableCell>
+                          //       </TableRow>
+                          //     </TableHead>
+                          <TableRow key={complaint.unique_key}>
+                            <TableCell component="th" scope="row">
+                              {complaint.incident_address}
+                            </TableCell>
+                            <TableCell align="center">
+                              {complaint.complaint_type}
+                            </TableCell>
+                            <TableCell align="center">
+                              {complaint.descriptor}
+                            </TableCell>
+                            <TableCell align="center">
+                              {complaint.resolution_description}
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })}
+                    </TableBody>
+                  </Table>
+                </Paper>
+              </TabContainer>
+              <TabContainer dir={classes.direction}>Item Two</TabContainer>
+              <TabContainer dir={classes.direction}>Item Three</TabContainer>
+            </SwipeableViews>
           </Paper>
-          <SwipeableViews
-            axis={classes.direction === 'rtl' ? 'x-reverse' : 'x'}
-            index={this.state.tabValue}
-            onChangeIndex={this.handleChangeIndex}
-          >
-            <TabContainer dir={classes.direction}>Item One</TabContainer>
-            <TabContainer dir={classes.direction}>Item Two</TabContainer>
-            <TabContainer dir={classes.direction}>Item Three</TabContainer>
-          </SwipeableViews>
         </Container>
         <br />
       </div>
