@@ -1,3 +1,4 @@
+/* eslint-disable no-return-assign */
 import chroma from 'chroma-js'
 import * as d3 from 'd3'
 import React, {Component} from 'react'
@@ -57,7 +58,7 @@ export default class BarGraphTest extends Component {
     yScale.domain([0, quantityMax])
 
     // Set bar size values
-    let length = data.length
+    // let length = data.length
     const bars = data.map(d => {
       return {
         x: xScale(d.type),
@@ -85,25 +86,41 @@ export default class BarGraphTest extends Component {
   }
 
   render() {
-    const {xScale} = this.props
+    const {yScale} = this.state
 
     return (
       <svg width={width} height={height}>
         {this.state.bars.map((d, i) => (
           <svg key={i}>
             <defs>
-              <linearGradient id="myGradient" gradientTransform="rotate(90)">
+              <linearGradient id="myGradient1" gradientTransform="rotate(90)">
                 <stop offset="5%" stopColor="red" />
                 <stop offset="50%" stopColor="gold" />
                 <stop offset="95%" stopColor="green" />
               </linearGradient>
+
+              <linearGradient id="myGradient2" gradientTransform="rotate(90)">
+                <stop offset="5%" stopColor="gold" />
+                <stop offset="95%" stopColor="green" />
+              </linearGradient>
+
+              <linearGradient id="myGradient3" gradientTransform="rotate(90)">
+                <stop offset="95%" stopColor="green" />
+              </linearGradient>
             </defs>
+
             <rect
               x={d.x}
               y={d.y}
               width={d.width}
               height={d.height}
-              fill={d.fill}
+              fill={
+                yScale.invert(d.y) > 10
+                  ? "url('#myGradient1')"
+                  : 5 < yScale.invert(d.y) && yScale.invert(d.y) <= 10
+                    ? "url('#myGradient2')"
+                    : "url('#myGradient3')"
+              }
             />
           </svg>
         ))}
@@ -111,7 +128,6 @@ export default class BarGraphTest extends Component {
           <g
             ref="xAxis"
             transform={`translate(0, ${height - margin.bottom})`}
-            // style={{textAnchor: 'end'}}
           />
           <g ref="yAxis" transform={`translate(${margin.left}, 0)`} />
         </g>
