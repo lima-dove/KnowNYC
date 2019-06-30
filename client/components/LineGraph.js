@@ -26,7 +26,6 @@ class LineGraph extends Component {
   static getDerivedStateFromProps(nextProps, prevState) {
     if (!nextProps.data) return null // data hasn't been loaded yet so do nothing
     const {data} = nextProps
-    console.log(data)
     const {xScale, yScale, lineGenerator} = prevState
 
     // data has changed, so recalculate scale domains

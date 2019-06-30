@@ -65,7 +65,6 @@ export default class HomePage extends Component {
 
   render() {
     const {complaints, viewport, selectedAddress, data} = this.state
-    console.log({data})
     const locationComplaints = complaints.filter(
       complaint => complaint.location
     )

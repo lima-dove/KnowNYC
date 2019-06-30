@@ -15,6 +15,10 @@ nav a {
   display: inline-block;
   margin: 1em;
 }
+
+svg > text {
+  transform: rotate(-65);
+}
 /*
 form div {
   margin: 1em;

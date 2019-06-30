@@ -3,8 +3,8 @@ import * as d3 from 'd3'
 import React, {Component} from 'react'
 
 const width = 650
-const height = 400
-const margin = {top: 20, right: 5, bottom: 20, left: 35}
+const height = 500
+const margin = {top: 20, right: 5, bottom: 170, left: 50}
 const red = '#eb6a5b'
 const green = '#b6e86f'
 const blue = '#52b6ca'
@@ -31,7 +31,6 @@ export default class BarGraphTest extends Component {
     const {xScale, yScale, colorScale} = prevState
 
     // Receive data from map pop-up click:
-    console.log({rawData})
     let complaintObj = {}
     rawData.forEach(el => {
       if (complaintObj[el.complaint_type] >= 1) {
@@ -48,8 +47,6 @@ export default class BarGraphTest extends Component {
       data.push({type: key, quantity: complaintObj[key]})
     }
 
-    console.log({data})
-
     // Set graph variables using data
     const quantityMax = d3.max(data, d => d.quantity)
     const complaintDomain = data.map(complaint => complaint.type)
@@ -57,11 +54,13 @@ export default class BarGraphTest extends Component {
     xScale.padding(0.6)
     yScale.domain([0, quantityMax])
 
+    // Set bar size values
+    let length = data.length
     const bars = data.map(d => {
       return {
         x: xScale(d.type),
         y: yScale(d.quantity),
-        width: 50,
+        width: width / (2 * length),
         height: height - margin.bottom - yScale(d.quantity),
         fill: "url('#myGradient')"
       }
@@ -72,7 +71,14 @@ export default class BarGraphTest extends Component {
 
   componentDidUpdate() {
     this.yAxis.ticks(this.state.quantityMax).tickFormat(d3.format('.0f')) // this specifies that the number of ticks should be equal to the max data value, the format is specifying no decimal points
-    d3.select(this.refs.xAxis).call(this.xAxis)
+    d3
+      .select(this.refs.xAxis) // rather than this.xAxis.call().selectAll()... etc, use the d3.select() method with this.refs (can use React.createRef() if needed) to apply changes to elements within an svg group
+      .call(this.xAxis)
+      .selectAll('text')
+      .style('text-anchor', 'end')
+      .attr('dx', '-.8em')
+      .attr('dy', '.15em')
+      .attr('transform', 'rotate(-65)')
     d3.select(this.refs.yAxis).call(this.yAxis)
   }
 
@@ -103,6 +109,7 @@ export default class BarGraphTest extends Component {
           <g
             ref="xAxis"
             transform={`translate(0, ${height - margin.bottom})`}
+            // style={{textAnchor: 'end'}}
           />
           <g ref="yAxis" transform={`translate(${margin.left}, 0)`} />
         </g>
