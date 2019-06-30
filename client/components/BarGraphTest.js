@@ -16,7 +16,10 @@ export default class BarGraphTest extends Component {
     this.state = {
       data: null,
       bars: [],
-      xScale: d3.scaleBand().range([margin.left, width - margin.right]),
+      xScale: d3
+        .scaleBand()
+        .range([margin.left, width - margin.right])
+        .padding(0.6),
       yScale: d3.scaleLinear().range([height - margin.bottom, margin.top]),
       colorScale: d3.scaleLinear()
     }
@@ -51,7 +54,6 @@ export default class BarGraphTest extends Component {
     const quantityMax = d3.max(data, d => d.quantity)
     const complaintDomain = data.map(complaint => complaint.type)
     xScale.domain(complaintDomain)
-    xScale.padding(0.6)
     yScale.domain([0, quantityMax])
 
     // Set bar size values
@@ -60,7 +62,7 @@ export default class BarGraphTest extends Component {
       return {
         x: xScale(d.type),
         y: yScale(d.quantity),
-        width: width / (2 * length),
+        width: length > 3 ? width / (2 * length) : 50,
         height: height - margin.bottom - yScale(d.quantity),
         fill: "url('#myGradient')"
       }
