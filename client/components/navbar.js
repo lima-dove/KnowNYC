@@ -47,12 +47,30 @@ const Navbar = ({handleClick, isLoggedIn}) => {
           <Typography
             variant="h3"
             style={{
-              paddingLeft: '50px',
-              fontFamily: 'Arial Black'
+              margin: 'auto',
+              marginRight: '1px',
+              paddingLeft: '125px',
+              paddingRight: '1px',
+              fontFamily: 'Arial Black',
+              textShadow:
+                '3px 3px 0px rgba(0,0,0,0.1), 7px 7px 0px rgba(0,0,0,0.05)'
             }}
           >
-            KNOWNYC
+            KNOW
           </Typography>
+          <Typography
+            variant="h3"
+            style={{
+              margin: 'auto',
+              marginLeft: '1px',
+              font: "400 48px/1.5 'Pacifico', Helvetica, sans-serif",
+              textShadow:
+                '3px 3px 0px rgba(0,0,0,0.1), 7px 7px 0px rgba(0,0,0,0.05)'
+            }}
+          >
+            NYC
+          </Typography>
+
           {isLoggedIn ? (
             <div style={{marginLeft: 'auto'}}>
               <Button
