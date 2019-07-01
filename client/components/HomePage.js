@@ -19,20 +19,59 @@ export default class HomePage extends Component {
         zoom: 14,
         bearing: 0,
         pitch: 0
-      }
+      },
+      neighborhoodPolyData: null,
+      neighborhoodComplaints: null
     }
   }
   async componentDidMount() {
+    /* 1. Query GIS information for latitude and longitudes of each neighborhood = an object is returned
+    2. Get neighborhood name from object.features[]
+    3. Get neighborhood log/lat from object.geometry
+    4. Query API within componentDidMount for Manhattan data only
+    5. Gather array of objects to state.complants
+    */
+
     const {data} = await axios.get(
       'https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/nynta/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
     )
     let neighborhoodObj = {}
 
     data.features.forEach(el => {
-      el.geometry.neighborhoodObj[el.attributes.NTAName] = 'string of lat/lons'
+      const arrStrings = el.geometry.rings[0].map(hood => hood.join(' '))
+      const polygonString = arrStrings.join(', ')
+      if (neighborhoodObj[el.attributes.BoroName]) {
+        neighborhoodObj[el.attributes.BoroName][
+          el.attributes.NTAName
+        ] = polygonString
+      } else {
+        neighborhoodObj[el.attributes.BoroName] = {
+          [el.attributes.NTAName]: polygonString
+        }
+      }
     })
+
+    console.log(neighborhoodObj)
+
+    const neighborhoodComplaints = {}
+    neighborhoodComplaints.Manhattan = {}
+
+    // eslint-disable-next-line guard-for-in
+    for (let neighborhood in neighborhoodObj.Manhattan) {
+      let manhattanData = await axios.get(
+        `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_polygon(location, 'MULTIPOLYGON (((${
+          neighborhoodObj.Manhattan[neighborhood]
+        })))')`
+      )
+      console.log({neighborhood})
+      console.log({manhattanData})
+      neighborhoodComplaints.Manhattan[neighborhood] = manhattanData.data
+    }
+
     this.setState({
-      complaints: data
+      // complaints: data,
+      neighborhoodPolyData: neighborhoodObj,
+      neighborhoodComplaints
     })
   }
 
@@ -73,6 +112,7 @@ export default class HomePage extends Component {
     const locationComplaints = complaints.filter(
       complaint => complaint.location
     )
+    console.log('hood complaints', this.state.neighborhoodComplaints)
 
     return (
       <div>
