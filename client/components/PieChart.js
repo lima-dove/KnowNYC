@@ -2,7 +2,7 @@ import * as d3 from 'd3'
 import {arc, pie} from 'd3-shape'
 import React from 'react'
 
-const size = 300
+const size = 350
 const radius = size / 2
 const colors = d3.scaleOrdinal(d3.schemeAccent)
 
@@ -11,25 +11,34 @@ const dataArc = arc()
   .innerRadius(0)
 
 const labelArc = arc()
-  .outerRadius(radius - 40)
-  .innerRadius(radius - 40)
-
-// const colour = scaleOrdinal([
-//   '#98abc5',
-//   '#8a89a6',
-//   '#7b6888',
-//   '#6b486b',
-//   '#ff8c00'
-// ])
+  .outerRadius(radius - 70)
+  .innerRadius(radius - 70)
 
 const chart = pie()
   .sort(null)
   .value(d => d.quantity)
 
-const width = 300
-const height = 300
+const width = 350
+const height = 350
 
-const PieChart = ({data}) => {
+const PieChart = props => {
+  const rawData = props.rowData
+  let complaintObj = {}
+  rawData.forEach(el => {
+    if (complaintObj[el.complaint_type] >= 1) {
+      complaintObj[el.complaint_type] = ++complaintObj[el.complaint_type]
+    } else {
+      complaintObj[el.complaint_type] = 1
+    }
+  })
+
+  let data = []
+
+  // eslint-disable-next-line guard-for-in
+  for (let key in complaintObj) {
+    data.push({type: key, quantity: complaintObj[key]})
+  }
+
   return (
     <svg width={width} height={height} viewBox={`0 0 ${size} ${size}`}>
       <g transform={`translate(${radius}, ${radius})`}>
