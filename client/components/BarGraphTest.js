@@ -1,10 +1,11 @@
+/* eslint-disable no-return-assign */
 import chroma from 'chroma-js'
 import * as d3 from 'd3'
 import React, {Component} from 'react'
 
 const width = 650
-const height = 400
-const margin = {top: 20, right: 5, bottom: 20, left: 35}
+const height = 500
+const margin = {top: 20, right: 5, bottom: 170, left: 50}
 const red = '#eb6a5b'
 const green = '#b6e86f'
 const blue = '#52b6ca'
@@ -14,8 +15,12 @@ export default class BarGraphTest extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      data: null,
       bars: [],
-      xScale: d3.scaleBand().range([margin.left, width - margin.right]),
+      xScale: d3
+        .scaleBand()
+        .range([margin.left, width - margin.right])
+        .padding(0.5),
       yScale: d3.scaleLinear().range([height - margin.bottom, margin.top]),
       colorScale: d3.scaleLinear()
     }
@@ -24,49 +29,100 @@ export default class BarGraphTest extends Component {
     this.yAxis = d3.axisLeft().scale(this.state.yScale)
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (!nextProps.data) return null
-    const {data} = nextProps
+  static getDerivedStateFromProps = (nextProps, prevState) => {
+    if (!nextProps.rawData) return null
+    const {rawData} = nextProps
     const {xScale, yScale, colorScale} = prevState
 
+    // Receive data from map pop-up click and calculate frequency/quantity of each complaint type:
+    let complaintObj = {}
+    rawData.forEach(el => {
+      if (complaintObj[el.complaint_type] >= 1) {
+        complaintObj[el.complaint_type] = ++complaintObj[el.complaint_type]
+      } else {
+        complaintObj[el.complaint_type] = 1
+      }
+    })
+
+    let data = []
+
+    // eslint-disable-next-line guard-for-in
+    for (let key in complaintObj) {
+      data.push({type: key, quantity: complaintObj[key]})
+    }
+
+    // Set axes domain variables using data
     const quantityMax = d3.max(data, d => d.quantity)
     const complaintDomain = data.map(complaint => complaint.type)
     xScale.domain(complaintDomain)
-    xScale.padding(0.6)
     yScale.domain([0, quantityMax])
 
+    // Set bar size values
+    // let length = data.length
     const bars = data.map(d => {
       return {
         x: xScale(d.type),
         y: yScale(d.quantity),
-        width: 50,
+        width: xScale.bandwidth(), //length > 3 ? width / (2 * length) : 50
         height: height - margin.bottom - yScale(d.quantity),
-        fill: 'green'
+        fill: "url('#myGradient')"
       }
     })
 
-    return {bars}
+    return {bars, quantityMax, data}
   }
 
   componentDidUpdate() {
-    d3.select(this.refs.xAxis).call(this.xAxis)
+    this.yAxis.ticks(this.state.quantityMax).tickFormat(d3.format('.0f')) // this specifies that the number of ticks should be equal to the max data value, the format is specifying no decimal points
+    d3
+      .select(this.refs.xAxis) // rather than this.xAxis.call().selectAll()... etc, use the d3.select() method with this.refs (can use React.createRef() if needed) to apply changes to elements within an svg group
+      .call(this.xAxis)
+      .selectAll('text')
+      .style('text-anchor', 'end')
+      .attr('dx', '-.8em')
+      .attr('dy', '.15em')
+      .attr('transform', 'rotate(-65)')
     d3.select(this.refs.yAxis).call(this.yAxis)
   }
 
   render() {
-    const {xScale} = this.props
+    const {yScale} = this.state
 
     return (
       <svg width={width} height={height}>
         {this.state.bars.map((d, i) => (
-          <rect
-            key={i}
-            x={d.x}
-            y={d.y}
-            width={d.width}
-            height={d.height}
-            fill={d.fill}
-          />
+          <svg key={i}>
+            <defs>
+              <linearGradient id="myGradient1" gradientTransform="rotate(90)">
+                <stop offset="5%" stopColor="red" />
+                <stop offset="50%" stopColor="gold" />
+                <stop offset="95%" stopColor="green" />
+              </linearGradient>
+
+              <linearGradient id="myGradient2" gradientTransform="rotate(90)">
+                <stop offset="5%" stopColor="gold" />
+                <stop offset="95%" stopColor="green" />
+              </linearGradient>
+
+              <linearGradient id="myGradient3" gradientTransform="rotate(90)">
+                <stop offset="95%" stopColor="green" />
+              </linearGradient>
+            </defs>
+
+            <rect
+              x={d.x}
+              y={d.y}
+              width={d.width}
+              height={d.height}
+              fill={
+                yScale.invert(d.y) > 10
+                  ? "url('#myGradient1')"
+                  : 5 < yScale.invert(d.y) && yScale.invert(d.y) <= 10
+                    ? "url('#myGradient2')"
+                    : "url('#myGradient3')"
+              }
+            />
+          </svg>
         ))}
         <g>
           <g
