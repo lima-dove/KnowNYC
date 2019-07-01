@@ -68,7 +68,6 @@ export default class HomePage extends Component {
     const locationComplaints = complaints.filter(
       complaint => complaint.location
     )
-    console.log('render')
 
     return (
       <div>
