@@ -72,6 +72,7 @@ export default class HomePage extends Component {
     return (
       <div>
         <MapGL
+          id="mapGl"
           {...viewport}
           width="100vw"
           height="88vh"
