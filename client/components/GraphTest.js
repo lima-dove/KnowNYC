@@ -42,10 +42,11 @@ export default class GraphTest extends Component {
   }
 
   render() {
+    console.log('DATA===', this.state.complaints)
     return (
       <div>
         <BarGraphTest rawData={this.state.complaints} />
-        <PieChart data={this.state.complaints} />
+        <PieChart rowData={this.state.complaints} />
       </div>
     )
   }
