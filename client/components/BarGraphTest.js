@@ -72,7 +72,7 @@ export default class BarGraphTest extends Component {
     return {bars, quantityMax, data}
   }
 
-  componentDidUpdate() {
+  axisFunc() {
     this.yAxis.ticks(this.state.quantityMax).tickFormat(d3.format('.0f')) // this specifies that the number of ticks should be equal to the max data value, the format is specifying no decimal points
     d3
       .select(this.refs.xAxis) // rather than this.xAxis.call().selectAll()... etc, use the d3.select() method with this.refs (can use React.createRef() if needed) to apply changes to elements within an svg group
@@ -83,6 +83,14 @@ export default class BarGraphTest extends Component {
       .attr('dy', '.15em')
       .attr('transform', 'rotate(-65)')
     d3.select(this.refs.yAxis).call(this.yAxis)
+  }
+
+  componentDidUpdate() {
+    this.axisFunc()
+  }
+
+  componentDidMount() {
+    this.axisFunc()
   }
 
   render() {
