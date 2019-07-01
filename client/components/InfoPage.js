@@ -16,7 +16,7 @@ import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import Button from '@material-ui/core/Button'
-import {fade, withStyles, useTheme} from '@material-ui/core/styles'
+import {fade, withStyles, withTheme} from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import PropTypes from 'prop-types'
@@ -39,11 +39,6 @@ function TabContainer({children, dir}) {
       {children}
     </Typography>
   )
-}
-
-TabContainer.propTypes = {
-  children: PropTypes.node.isRequired,
-  dir: PropTypes.string.isRequired
 }
 
 const styles = theme => ({
@@ -103,6 +98,9 @@ const styles = theme => ({
   },
   tableTable: {
     minWidth: 650
+  },
+  tabDirection: {
+    direction: theme.direction
   }
 })
 
@@ -146,14 +144,12 @@ class InfoPage extends React.Component {
   }
   async handleChange(event) {
     await this.setState({inputAddress: event.target.value})
-    console.log(this.state)
   }
   handleChangeIndex(index) {
     this.setState({tabValue: index})
   }
   render() {
-    const {classes} = this.props
-    // const theme = useTheme()
+    const {classes, theme} = this.props
 
     return (
       <div style={{backgroundColor: 'lightgrey'}}>
@@ -232,11 +228,13 @@ class InfoPage extends React.Component {
             </Tabs>
 
             <SwipeableViews
-              axis={classes.direction === 'rtl' ? 'x-reverse' : 'x'}
+              axis={
+                classes.tabDirection.direction === 'rtl' ? 'x-reverse' : 'x'
+              }
               index={this.state.tabValue}
               onChangeIndex={this.handleChangeIndex}
             >
-              <TabContainer dir={classes.direction}>
+              <TabContainer dir={classes.tabDirection.direction}>
                 <Paper className={classes.paperTable}>
                   <Table className={classes.tableTable}>
                     <TableHead>
@@ -283,8 +281,12 @@ class InfoPage extends React.Component {
                   </Table>
                 </Paper>
               </TabContainer>
-              <TabContainer dir={classes.direction}>Item Two</TabContainer>
-              <TabContainer dir={classes.direction}>Item Three</TabContainer>
+              <TabContainer dir={classes.tabDirection.direction}>
+                Item Two
+              </TabContainer>
+              <TabContainer dir={classes.tabDirection.direction}>
+                Item Three
+              </TabContainer>
             </SwipeableViews>
           </Paper>
         </Container>

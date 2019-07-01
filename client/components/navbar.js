@@ -31,7 +31,6 @@ const Navbar = ({handleClick, isLoggedIn}) => {
       <AppBar position="static">
         <Toolbar style={{height: '80px'}}>
           <IconButton
-            style={{backgroundColor: 'white'}}
             onClick={() => history.push('/home')}
             aria-label="Open drawer"
           >

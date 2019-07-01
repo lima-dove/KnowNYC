@@ -52,7 +52,7 @@ const Signup = props => {
   return (
     <Container maxWidth="xs">
       <CssBaseline />
-      <div style={{marginTop: '10px'}} className={classes.paper}>
+      <div className={classes.paper}>
         <Typography component="div">
           <Box
             textAlign="center"
@@ -137,13 +137,13 @@ const Signup = props => {
             {displayName}
           </Button>
           <Grid container>
-            <Grid item textAlign="center" xs={6}>
+            <Grid item xs={6}>
               <Link component={RouterLink} to="/login" variant="body2">
                 Already have an account? Sign in
               </Link>
             </Grid>
             <Grid item />
-            <Grid item textAlign="center" xs={6}>
+            <Grid item xs={6}>
               <Link href="/auth/google">{displayName} with Google</Link>
             </Grid>
           </Grid>

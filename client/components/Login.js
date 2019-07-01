@@ -52,7 +52,7 @@ const Login = props => {
   return (
     <Container maxWidth="xs">
       <CssBaseline />
-      <div style={{marginTop: '10px'}} className={classes.paper}>
+      <div className={classes.paper}>
         <Typography component="div">
           <Box
             textAlign="center"
