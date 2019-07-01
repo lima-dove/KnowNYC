@@ -16,16 +16,18 @@ import {MemoryRouter as Router} from 'react-router'
 import Link from '@material-ui/core/Link'
 import Button from '@material-ui/core/Button'
 import SvgIcon from '@material-ui/core/SvgIcon'
+import Box from '@material-ui/core/Box'
 
 const style = {
   button: {
-    fontSize: '20px'
+    fontSize: '20px',
+    color: 'white'
   }
 }
 
 const Navbar = ({handleClick, isLoggedIn}) => {
   return (
-    <div>
+    <Box boxShadow={2}>
       <AppBar position="static">
         <Toolbar style={{height: '80px'}}>
           <IconButton
@@ -69,33 +71,32 @@ const Navbar = ({handleClick, isLoggedIn}) => {
           </Typography>
 
           {isLoggedIn ? (
-            <Fragment>
+            <div style={{marginLeft: 'auto'}}>
               <Button
                 style={style.button}
                 size="large"
                 to="/home"
                 component={RouterLink}
               >
-                Home
+                Make a complaint
               </Button>
               <Button
                 style={style.button}
-                to="home"
+                to="logout"
                 size="large"
                 onClick={handleClick}
                 component={RouterLink}
               >
                 Logout
               </Button>
-            </Fragment>
+            </div>
           ) : (
-            <Fragment>
+            <div style={{marginLeft: 'auto'}}>
               <Button
                 style={style.button}
                 to="/login"
                 size="large"
                 component={RouterLink}
-                color="inherit"
               >
                 Login
               </Button>
@@ -104,16 +105,14 @@ const Navbar = ({handleClick, isLoggedIn}) => {
                 to="/signup"
                 size="large"
                 component={RouterLink}
-                color="inherit"
               >
                 Sign Up
               </Button>
-            </Fragment>
+            </div>
           )}
         </Toolbar>
       </AppBar>
-      <hr />
-    </div>
+    </Box>
   )
 }
 
