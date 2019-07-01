@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import BarGraphTest from './BarGraphTest'
+import PieChart from './PieChart'
 
 export default class GraphTest extends Component {
   constructor() {
@@ -44,6 +45,7 @@ export default class GraphTest extends Component {
     return (
       <div>
         <BarGraphTest rawData={this.state.complaints} />
+        <PieChart data={this.state.complaints} />
       </div>
     )
   }
