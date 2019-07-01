@@ -14,7 +14,16 @@ label {
 nav a {
   display: inline-block;
   margin: 1em;
-} */
+}
+.arc text {
+  font: 10px sans-serif;
+  text-anchor: middle;
+}
+
+.arc path {
+  stroke: #fff;
+}
+
 /*
 form div {
   margin: 1em;
