@@ -1,7 +1,7 @@
 'use strict'
 /* global describe it */
 
-const seed = require('./seed')
+const seed = require('../script/seed')
 
 describe('seed script', () => {
   it('completes successfully', seed)

@@ -1,7 +1,6 @@
-import React from 'react'
 import * as d3 from 'd3'
-import {pie, arc} from 'd3-shape'
-import {scaleOrdinal} from 'd3-scale'
+import {arc, pie} from 'd3-shape'
+import React from 'react'
 
 const size = 300
 const radius = size / 2
