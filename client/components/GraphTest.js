@@ -20,23 +20,6 @@ export default class GraphTest extends Component {
           complaint.created_date = new Date(complaint.created_date) // format the date for d3 to read
         })
 
-        // THE BELOW CODE WAS MIGRATED INTO BARGRAPHTEST IN ORDER FOR THAT COMPONENT TO RECEIVE AND PROCESS RAW DATA FROM PROPS
-        // let complaintObj = {}
-        // response.forEach(el => {
-        //   if (complaintObj[el.complaint_type] >= 1) {
-        //     complaintObj[el.complaint_type] = ++complaintObj[el.complaint_type]
-        //   } else {
-        //     complaintObj[el.complaint_type] = 1
-        //   }
-        // })
-
-        // let barData = []
-
-        // // eslint-disable-next-line guard-for-in
-        // for (let key in complaintObj) {
-        //   barData.push({type: key, quantity: complaintObj[key]})
-        // }
-
         this.setState({complaints: response})
       })
   }

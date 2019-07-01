@@ -24,8 +24,13 @@ export default class HomePage extends Component {
   }
   async componentDidMount() {
     const {data} = await axios.get(
-      'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_zip=10004'
+      'https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/nynta/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
     )
+    let neighborhoodObj = {}
+
+    data.features.forEach(el => {
+      el.geometry.neighborhoodObj[el.attributes.NTAName] = 'string of lat/lons'
+    })
     this.setState({
       complaints: data
     })
@@ -125,3 +130,8 @@ export default class HomePage extends Component {
     )
   }
 }
+
+// Function maybe:
+/* Get neighborhood:
+
+*/
