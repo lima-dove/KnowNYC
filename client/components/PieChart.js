@@ -3,7 +3,7 @@ import * as d3 from 'd3'
 import {pie, arc} from 'd3-shape'
 import {scaleOrdinal} from 'd3-scale'
 
-const size = 400
+const size = 350
 const radius = size / 2
 const colors = d3.scaleOrdinal(d3.schemeAccent)
 
@@ -19,8 +19,8 @@ const chart = pie()
   .sort(null)
   .value(d => d.quantity)
 
-const width = 400
-const height = 400
+const width = 350
+const height = 350
 
 const PieChart = props => {
   const rawData = props.rowData
