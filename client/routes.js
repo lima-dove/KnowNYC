@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Redirect, Route, Switch, withRouter} from 'react-router-dom'
 import {HomePage, Login, Signup, UserHome, Users} from './components'
-import ExampleComplaints from './components/ExampleComplaints'
+import InfoPage from './components/InfoPage'
 import GraphTest from './components/GraphTest'
 import {me} from './store'
 
@@ -26,7 +26,7 @@ class Routes extends Component {
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route path="/info" component={Login} />
-        <Route path="/exampleComplaints" component={ExampleComplaints} />
+        <Route path="/infoPage" component={InfoPage} />
         <Route path="/graph" component={GraphTest} />
         {isLoggedIn && (
           <Switch>

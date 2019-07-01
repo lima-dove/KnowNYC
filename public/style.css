@@ -1,9 +1,9 @@
 body {
-  font-family: sans-serif;
+  /* font-family: sans-serif; */
   margin: 0;
 }
 
-a {
+/* a {
   text-decoration: none;
 }
 
@@ -29,3 +29,7 @@ form div {
   margin: 1em;
   display: inline-block;
 } */
+
+.MuiGrid-item {
+  text-align: center;
+}
