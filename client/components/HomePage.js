@@ -59,8 +59,6 @@ export default class HomePage extends Component {
       })
     })
 
-    console.log(neighborhoodObj)
-
     const neighborhoodComplaints = {}
     neighborhoodComplaints.Manhattan = {}
 
