@@ -66,16 +66,19 @@ export default class HomePage extends Component {
 
     // eslint-disable-next-line guard-for-in
     for (let neighborhood in neighborhoodObj.Manhattan) {
-      let manhattanData = await axios.get(
-        `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_polygon(location, 'MULTIPOLYGON (((${
-          neighborhoodObj.Manhattan[neighborhood]
-        })))')`
-      )
-      console.log({neighborhood})
-      console.log({manhattanData})
-      neighborhoodComplaints.Manhattan[neighborhood] = manhattanData.data
+      neighborhoodComplaints.Manhattan[neighborhood] = []
+      neighborhoodObj.Manhattan[neighborhood].forEach(async ring => {
+        let manhattanData = await axios.get(
+          `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_polygon(location, 'MULTIPOLYGON (((${ring})))')`
+        )
+        neighborhoodComplaints.Manhattan[
+          neighborhood
+        ] = neighborhoodComplaints.Manhattan[neighborhood].concat(
+          manhattanData.data
+        )
+      })
     }
-
+    console.log({neighborhoodComplaints})
     this.setState({
       // complaints: data,
       neighborhoodPolyData: neighborhoodObj,
@@ -120,7 +123,6 @@ export default class HomePage extends Component {
     const locationComplaints = complaints.filter(
       complaint => complaint.location
     )
-    console.log('hood complaints', this.state.neighborhoodComplaints)
 
     return (
       <div>
