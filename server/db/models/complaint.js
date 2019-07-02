@@ -8,9 +8,9 @@ const Complaint = db.define('complaint', {
   descriptor: Sequelize.STRING,
   resolution_description: Sequelize.TEXT,
   incident_address: Sequelize.STRING,
-  incident_zip: Sequelize.NUMBER,
-  latitude: Sequelize.NUMBER,
-  longitude: Sequelize.NUMBER
+  incident_zip: Sequelize.INTEGER,
+  latitude: Sequelize.FLOAT,
+  longitude: Sequelize.FLOAT
 })
 
 module.exports = Complaint
