@@ -76,7 +76,6 @@ export default class HomePage extends Component {
         )
       })
     }
-    console.log({neighborhoodComplaints})
     this.setState({
       // complaints: data,
       neighborhoodPolyData: neighborhoodObj,
