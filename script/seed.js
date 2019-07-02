@@ -9,6 +9,10 @@ const getComplaints = async (neighborhoodObj, neighborhoodComplaints) => {
   // eslint-disable-next-line guard-for-in
   for (let neighborhood in neighborhoodObj.Manhattan) {
     neighborhoodComplaints.Manhattan[neighborhood] = []
+    console.log(
+      `How many rings for that ${neighborhood}: `,
+      neighborhoodObj.Manhattan[neighborhood].length
+    )
     let complaintPromises = await Promise.all(
       neighborhoodObj.Manhattan[neighborhood].map(ring => {
         return axios.get(
@@ -16,11 +20,17 @@ const getComplaints = async (neighborhoodObj, neighborhoodComplaints) => {
         )
       })
     )
-    neighborhoodComplaints.Manhattan[neighborhood] = complaintPromises.flat()
+    // PROBLEM 1: HAD TO SPECIFY THE DATA WITHIN COMPLAINT PROMISES
+    // COMPLAINT PROMISES SHOULD BE AN ARRAY OF RINGS, WHICH ARE THEMSELVES ARRAYS OF COMPLAINTS
+    // SHOULD NEED TO FLATTEN
+    // POSSIBLE ISSUE: DIDN'T HAVE TO USE FLATTEN. WHERE'D THE RINGS GO? DO WE HAVE TO .forEach() ON LINE 13?
+    console.log('complaint Data: ', complaintPromises[0].data.length)
+    neighborhoodComplaints.Manhattan[neighborhood] = complaintPromises[0].data
   }
 }
 
 const populateComplaints = async (neighborhoodComplaints, hoodLookUp) => {
+  console.log(Object.keys(neighborhoodComplaints))
   for (let borough in neighborhoodComplaints) {
     for (let neighborhood in neighborhoodComplaints[borough]) {
       await Promise.all(
@@ -55,50 +65,62 @@ async function seed() {
       */
 
   //creates borough/neighborhood/polygon string object
-  const {data} = await axios.get(
-    'https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/nynta/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
-  )
-  const neighborhoodObj = {}
+  try {
+    const {data} = await axios.get(
+      'https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/nynta/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
+    )
+    const neighborhoodObj = {}
 
-  data.features.forEach(el => {
-    el.geometry.rings.forEach(ring => {
-      const arrStrings = ring.map(hood => hood.join(' '))
-      const polygonString = arrStrings.join(', ')
-      if (!neighborhoodObj[el.attributes.BoroName]) {
-        neighborhoodObj[el.attributes.BoroName] = {
-          [el.attributes.NTAName]: [polygonString]
+    data.features.forEach(el => {
+      el.geometry.rings.forEach(ring => {
+        const arrStrings = ring.map(hood => hood.join(' '))
+        const polygonString = arrStrings.join(', ')
+        if (!neighborhoodObj[el.attributes.BoroName]) {
+          neighborhoodObj[el.attributes.BoroName] = {
+            [el.attributes.NTAName]: [polygonString]
+          }
+        } else if (
+          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName]
+        ) {
+          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName].push(
+            polygonString
+          )
+        } else {
+          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName] = [
+            polygonString
+          ]
         }
-      } else if (
-        neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName]
-      ) {
-        neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName].push(
-          polygonString
-        )
-      } else {
-        neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName] = [
-          polygonString
-        ]
-      }
-    })
-  })
-
-  const hoodLookUp = {}
-  //uses above object to populate borough and neighborhood tables
-  for (let borough in neighborhoodObj) {
-    if (neighborhoodObj.hasOwnProperty(borough)) {
-      const createdBorough = await Borough.create({
-        name: borough
       })
-      for (let neighborhood in neighborhoodObj[borough]) {
-        if (neighborhoodObj[borough].hasOwnProperty(neighborhood)) {
-          const createdNeighborhood = await Neighborhood.create({
-            name: neighborhood,
-            boroughId: createdBorough.id
-          })
-          hoodLookUp[createdNeighborhood.name] = createdNeighborhood.id
+    })
+
+    const hoodLookUp = {}
+    //uses above object to populate borough and neighborhood tables
+    for (let borough in neighborhoodObj) {
+      if (neighborhoodObj.hasOwnProperty(borough)) {
+        const createdBorough = await Borough.create({
+          name: borough
+        })
+        for (let neighborhood in neighborhoodObj[borough]) {
+          if (neighborhoodObj[borough].hasOwnProperty(neighborhood)) {
+            const createdNeighborhood = await Neighborhood.create({
+              name: neighborhood,
+              boroughId: createdBorough.id
+            })
+            hoodLookUp[createdNeighborhood.name] = createdNeighborhood.id
+          }
         }
       }
     }
+
+    const neighborhoodComplaints = {}
+    neighborhoodComplaints.Manhattan = {}
+
+    // PROBLEM 2: populateComplaints WAS RUNNING FIRST BECAUSE OF ASYNC ITEMS IN getComplaints, SO SET IT TO AWAIT
+    await getComplaints(neighborhoodObj, neighborhoodComplaints)
+
+    await populateComplaints(neighborhoodComplaints, hoodLookUp)
+  } catch (err) {
+    console.err(err)
   }
 
   // //creates complaint by neighborhood object
@@ -122,13 +144,6 @@ async function seed() {
   //     })
   //   }
   // }
-
-  const neighborhoodComplaints = {}
-  neighborhoodComplaints.Manhattan = {}
-
-  getComplaints(neighborhoodObj, neighborhoodComplaints)
-
-  populateComplaints(neighborhoodComplaints, hoodLookUp)
 
   console.log(`seeded successfully`)
 }
