@@ -42,10 +42,9 @@ class HomePage extends Component {
     const southLat = boundary._sw.lat
     const westLng = boundary._sw.lng
     const eastLng = boundary._ne.lng
-    const {data} = await axios.get(
-      `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_box(location, ${northLat}, ${westLng}, ${southLat}, ${eastLng})`
+    await axios.get(
+      `/api/map/searchByArea/${northLat},${southLat},${westLng},${eastLng}`
     )
-    this.setState({complaints: data})
   }
 
   handleMarkerClick = async complaint => {
@@ -159,4 +158,6 @@ class HomePage extends Component {
   }
 }
 
-export default withStyles(styles)(HomePage)
+const newHomePage = withStyles(styles)(HomePage)
+
+export default newHomePage

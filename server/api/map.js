@@ -1,5 +1,7 @@
 const router = require('express').Router()
 module.exports = router
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
 
 router.get('/getAll', async (req, res, next) => {
   try {
@@ -40,10 +42,25 @@ router.get('/getAll', async (req, res, next) => {
   }
 })
 
-router.get('/searchByArea', (req, res, next) => {
-  try {
-    const {northLat, southLat, westLng, eastLng} = req.body
-  } catch (err) {
-    next(err)
+router.get(
+  '/searchByArea/:northLat,:southLat,:westLng,:eastLng',
+  async (req, res, next) => {
+    console.log('req.params', req.params)
+    try {
+      const {northLat, southLat, westLng, eastLng} = req.params
+      const boundedComplaints = await Complaint.findAll({
+        where: {
+          latitude: {
+            [Op.gt]: [southLat, westLng]
+          },
+          longitude: {
+            [Op.lt]: [northLat, eastLng]
+          }
+        }
+      })
+      res.send(boundedComplaints)
+    } catch (err) {
+      next(err)
+    }
   }
-})
+)
