@@ -38,17 +38,25 @@ export default class HomePage extends Component {
     let neighborhoodObj = {}
 
     data.features.forEach(el => {
-      const arrStrings = el.geometry.rings[0].map(hood => hood.join(' '))
-      const polygonString = arrStrings.join(', ')
-      if (neighborhoodObj[el.attributes.BoroName]) {
-        neighborhoodObj[el.attributes.BoroName][
-          el.attributes.NTAName
-        ] = polygonString
-      } else {
-        neighborhoodObj[el.attributes.BoroName] = {
-          [el.attributes.NTAName]: polygonString
+      el.geometry.rings.forEach(ring => {
+        const arrStrings = ring.map(hood => hood.join(' '))
+        const polygonString = arrStrings.join(', ')
+        if (!neighborhoodObj[el.attributes.BoroName]) {
+          neighborhoodObj[el.attributes.BoroName] = {
+            [el.attributes.NTAName]: [polygonString]
+          }
+        } else if (
+          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName]
+        ) {
+          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName].push(
+            polygonString
+          )
+        } else {
+          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName] = [
+            polygonString
+          ]
         }
-      }
+      })
     })
 
     console.log(neighborhoodObj)
