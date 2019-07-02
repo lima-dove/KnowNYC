@@ -2,11 +2,19 @@ import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import BarGraph from './BarGraphTest'
+import Button from '@material-ui/core/Button'
+import {withStyles} from '@material-ui/core/styles'
+
+const styles = theme => ({
+  button: {
+    margin: theme.spacing(1)
+  }
+})
 
 const token =
   'pk.eyJ1IjoibnNjaGVmZXIiLCJhIjoiY2p2Mml0azl1MjVtejQ0bzBmajZhOHViZCJ9.iPyB8tGgsYgboP_fKLQGnw'
 
-export default class HomePage extends Component {
+class HomePage extends Component {
   constructor() {
     super()
     this.state = {
@@ -21,31 +29,23 @@ export default class HomePage extends Component {
         pitch: 0
       }
     }
+    this.handleSearchClick = this.handleSearchClick.bind(this)
+    this.handleMapClick = this.handleMapClick.bind(this)
+    this.handleMarkerClick = this.handleMarkerClick.bind(this)
+    this.handleSeeMoreClick = this.handleSeeMoreClick.bind(this)
     this.mapRef = React.createRef()
   }
-  async componentDidMount() {
-    const {data} = await axios.get(
-      'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_zip=10004'
-    )
-    this.setState({
-      complaints: data
-    })
-  }
 
-  async componentDidUpdate(prevProps, prevState) {
-    if (prevState.viewport.zoom >= 16) {
-      let boundary = this.mapRef.getMap().getBounds()
-      console.log('BOUNDARY====', boundary)
-      console.log('NE=====', boundary._ne)
-      const northLat = boundary._ne.lat
-      const southLat = boundary._sw.lat
-      const westLng = boundary._sw.lng
-      const eastLng = boundary._ne.lng
-      const {data} = await axios.get(
-        `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_box(location, ${northLat}, ${westLng}, ${southLat}, ${eastLng})`
-      )
-      this.setState({complaints: data})
-    }
+  async handleSearchClick() {
+    let boundary = this.mapRef.getMap().getBounds()
+    const northLat = boundary._ne.lat
+    const southLat = boundary._sw.lat
+    const westLng = boundary._sw.lng
+    const eastLng = boundary._ne.lng
+    const {data} = await axios.get(
+      `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_box(location, ${northLat}, ${westLng}, ${southLat}, ${eastLng})`
+    )
+    this.setState({complaints: data})
   }
 
   handleMarkerClick = async complaint => {
@@ -81,6 +81,7 @@ export default class HomePage extends Component {
   }
 
   render() {
+    const {classes} = this.props
     const {complaints, viewport, selectedAddress, data} = this.state
     const locationComplaints = complaints.filter(
       complaint => complaint.location
@@ -100,6 +101,19 @@ export default class HomePage extends Component {
           mapboxApiAccessToken={token}
           onClick={this.handleMapClick}
         >
+          {this.state.viewport.zoom > 15.5 ? (
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+              <Button
+                onClick={this.handleSearchClick}
+                variant="contained"
+                className={classes.button}
+              >
+                Search this area
+              </Button>
+            </div>
+          ) : (
+            ''
+          )}
           {locationComplaints
             ? locationComplaints.map(complaint => {
                 return (
@@ -144,3 +158,5 @@ export default class HomePage extends Component {
     )
   }
 }
+
+export default withStyles(styles)(HomePage)
