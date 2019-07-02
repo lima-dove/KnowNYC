@@ -1,8 +1,9 @@
 import * as d3 from 'd3'
 import {arc, pie} from 'd3-shape'
 import React from 'react'
+import {scaleOrdinal} from 'd3-scale'
 
-const size = 350
+const size = 300
 const radius = size / 2
 const colors = d3.scaleOrdinal(d3.schemeAccent)
 
@@ -11,15 +12,15 @@ const dataArc = arc()
   .innerRadius(0)
 
 const labelArc = arc()
-  .outerRadius(radius - 70)
-  .innerRadius(radius - 70)
+  .outerRadius(radius - 40)
+  .innerRadius(radius - 40)
 
 const chart = pie()
   .sort(null)
   .value(d => d.quantity)
 
-const width = 350
-const height = 350
+const width = 300
+const height = 300
 
 const PieChart = props => {
   const rawData = props.rowData

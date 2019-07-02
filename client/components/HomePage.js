@@ -21,6 +21,7 @@ export default class HomePage extends Component {
         pitch: 0
       }
     }
+    this.mapRef = React.createRef()
   }
   async componentDidMount() {
     const {data} = await axios.get(
@@ -29,6 +30,22 @@ export default class HomePage extends Component {
     this.setState({
       complaints: data
     })
+  }
+
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevState.viewport.zoom >= 16) {
+      let boundary = this.mapRef.getMap().getBounds()
+      console.log('BOUNDARY====', boundary)
+      console.log('NE=====', boundary._ne)
+      const northLat = boundary._ne.lat
+      const southLat = boundary._sw.lat
+      const westLng = boundary._sw.lng
+      const eastLng = boundary._ne.lng
+      const {data} = await axios.get(
+        `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_box(location, ${northLat}, ${westLng}, ${southLat}, ${eastLng})`
+      )
+      this.setState({complaints: data})
+    }
   }
 
   handleMarkerClick = async complaint => {
@@ -79,6 +96,7 @@ export default class HomePage extends Component {
           mapStyle="mapbox://styles/mapbox/streets-v9"
           onViewportChange={v => this.setState({viewport: v})}
           preventStyleDiffing={false}
+          ref={map => (this.mapRef = map)}
           mapboxApiAccessToken={token}
           onClick={this.handleMapClick}
         >
