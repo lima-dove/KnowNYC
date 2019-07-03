@@ -103,9 +103,10 @@ class HomePage extends Component {
     const southLat = boundary._sw.lat
     const westLng = boundary._sw.lng
     const eastLng = boundary._ne.lng
-    await axios.get(
+    const {data} = await axios.get(
       `/api/map/searchByArea/${northLat},${southLat},${westLng},${eastLng}`
     )
+    this.setState({complaints: data})
   }
 
   handleMarkerClick = async complaint => {
@@ -146,6 +147,7 @@ class HomePage extends Component {
     const locationComplaints = complaints.filter(
       complaint => complaint.location
     )
+    console.log(locationComplaints)
 
     return (
       <div>

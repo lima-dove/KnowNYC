@@ -1,11 +1,12 @@
 const router = require('express').Router()
-module.exports = router
+const {Complaint, Neighborhood} = require('../db/models/index')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
+module.exports = router
 
 router.get('/getAll', async (req, res, next) => {
   try {
-    const complaintsByHood = await Hood.findAll({
+    const complaintsByHood = await Neighborhood.findAll({
       include: [
         {
           model: Complaint,
@@ -18,9 +19,9 @@ router.get('/getAll', async (req, res, next) => {
       let object = {}
       for (let i = 0; i < hood.complaints.length; i++) {
         if (object[hood.complaints[i].complaint_type]) {
-          object[hood.complaints[i].type]++
+          object[hood.complaints[i].complaint_type]++
         } else if (!object[hood.complaints[i].complaint_type]) {
-          object[hood.complaints[i].type] = 1
+          object[hood.complaints[i].complaint_type] = 1
         }
         total++
       }
@@ -33,7 +34,7 @@ router.get('/getAll', async (req, res, next) => {
       let sortedArray = newArray.sort((a, b) => {
         return b[1] - a[1]
       })
-      return {...complaintObject, complaints: sortedArray}
+      return {...complaintObject, complaints: sortedArray.slice(0, 5)}
     })
 
     res.send(newResult)
@@ -45,16 +46,17 @@ router.get('/getAll', async (req, res, next) => {
 router.get(
   '/searchByArea/:northLat,:southLat,:westLng,:eastLng',
   async (req, res, next) => {
-    console.log('req.params', req.params)
     try {
       const {northLat, southLat, westLng, eastLng} = req.params
       const boundedComplaints = await Complaint.findAll({
         where: {
           latitude: {
-            [Op.gt]: [southLat, westLng]
+            [Op.gt]: [Number(southLat)],
+            [Op.lt]: [Number(northLat)]
           },
           longitude: {
-            [Op.lt]: [northLat, eastLng]
+            [Op.lt]: [Number(eastLng)],
+            [Op.gt]: [Number(westLng)]
           }
         }
       })
