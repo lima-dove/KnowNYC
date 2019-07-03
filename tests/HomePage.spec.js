@@ -16,17 +16,17 @@ describe('HomePage', () => {
   })
 
   it('contains a map component', () => {
-    expect(homePage.find(MapGL)).to.have.lengthOf(1)
+    expect(homePage.dive().find(MapGL)).to.have.lengthOf(1)
   })
 
   it('renders a view at the current initial viewport', () => {
-    const map = homePage.find(MapGL)
+    const map = homePage.dive().find(MapGL)
     expect(map.get(0).props.latitude).to.equal(40.705)
     expect(map.get(0).props.longitude).to.equal(-74.009)
   })
 
   it('gets 1000 complaints from the NYC API', () => {
-    expect(homePage.state().complaints).to.have.lengthOf(0)
+    expect(homePage.dive().state().complaints).to.have.lengthOf(0)
   })
 
   xit('renders a marker for each complaint', () => {
