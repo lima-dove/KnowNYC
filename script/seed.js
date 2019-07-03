@@ -9,27 +9,16 @@ const getComplaints = async (neighborhoodObj, neighborhoodComplaints) => {
   // eslint-disable-next-line guard-for-in
   for (let neighborhood in neighborhoodObj.Manhattan) {
     neighborhoodComplaints.Manhattan[neighborhood] = []
-    // console.log(
-    //   `How many rings for that ${neighborhood}: `,
-    //   neighborhoodObj.Manhattan[neighborhood].length
-    // )
-    // Will return multiple data sets if there are multiple rings
-    // Have to gather all those complaints data sets into one.
-    // They are each stored in an object as object.data
+
     let complaintPromises = await Promise.all(
       neighborhoodObj.Manhattan[neighborhood].map(ring => {
         return axios.get(
-          `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_polygon(location,'MULTIPOLYGON(((${ring})))')&$$app_token=x6u5W0HJAQOT5KfvMPo8KBBvT`
+          `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_polygon(location,'MULTIPOLYGON(((${ring})))')%20AND%20created_date%20%3E%272017-01-01%27&$$app_token=x6u5W0HJAQOT5KfvMPo8KBBvT&$limit=21000000`
         )
       })
     )
-    // PROBLEM 1: HAD TO SPECIFY THE DATA WITHIN COMPLAINT PROMISES
-    // COMPLAINT PROMISES SHOULD BE AN ARRAY OF RINGS, WHICH ARE THEMSELVES ARRAYS OF COMPLAINTS
-    // SHOULD NEED TO FLATTEN, BUT CAN'T WITH THE FORMAT THE PROMISES ARE RETURNED
-    // WE HAVE TO .forEach() TO GATHER EACH RINGS' DATA
-    // console.log({complaintPromises})
+
     complaintPromises.forEach(promise => {
-      // console.log(' data length', promise.data.length)
       neighborhoodComplaints.Manhattan[
         neighborhood
       ] = neighborhoodComplaints.Manhattan[neighborhood].concat(promise.data)
@@ -71,14 +60,6 @@ async function seed() {
   await db.sync({force: true})
   console.log('db synced!')
 
-  /* 1. Query GIS information for latitude and longitudes of each neighborhood = an object is returned
-      2. Get neighborhood name from object.features[]
-      3. Get neighborhood log/lat from object.geometry
-      4. Query API within componentDidMount for Manhattan data only
-      5. Gather array of objects to state.complants
-      */
-
-  //creates borough/neighborhood/polygon string object
   try {
     const {data} = await axios.get(
       'https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/nynta/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
@@ -108,7 +89,6 @@ async function seed() {
     })
 
     const hoodLookUp = {}
-    //uses above object to populate borough and neighborhood tables
     for (let borough in neighborhoodObj) {
       if (neighborhoodObj.hasOwnProperty(borough)) {
         const createdBorough = await Borough.create({
@@ -129,43 +109,15 @@ async function seed() {
     const neighborhoodComplaints = {}
     neighborhoodComplaints.Manhattan = {}
 
-    // PROBLEM 2: populateComplaints WAS RUNNING FIRST BECAUSE OF ASYNC ITEMS IN getComplaints, SO SET IT TO AWAIT
     await getComplaints(neighborhoodObj, neighborhoodComplaints)
-
-    // PROBLEM 3: populateComplaints WAS PUTTING THROUGH REQUESTS AFTER db.close() WAS CALLED
     await populateComplaints(neighborhoodComplaints, hoodLookUp)
   } catch (err) {
     console.error(err)
   }
 
-  // //creates complaint by neighborhood object
-  // const neighborhoodComplaints = {}
-
-  // // eslint-disable-next-line guard-for-in
-  // for (let borough in neighborhoodObj) {
-  //   neighborhoodComplaints[borough] = {};
-  //   // eslint-disable-next-line guard-for-in
-  //   for (let neighborhood in neighborhoodObj[borough]) {
-  //     neighborhoodComplaints[borough][neighborhood] = []
-  //     neighborhoodObj[borough][neighborhood].forEach(async ring => {
-  //       let boroughData = await axios.get(
-  //         `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_polygon(location,'MULTIPOLYGON(((${ring})))')&$$app_token=x6u5W0HJAQOT5KfvMPo8KBBvT`
-  //       )
-  //       neighborhoodComplaints[borough][
-  //         neighborhood
-  //       ] = neighborhoodComplaints[borough][neighborhood].concat(
-  //         boroughData.data
-  //       )
-  //     })
-  //   }
-  // }
-
   console.log(`seeded successfully`)
 }
 
-// We've separated the `seed` function from the `runSeed` function.
-// This way we can isolate the error handling and exit trapping.
-// The `seed` function is concerned only with modifying the database.
 async function runSeed() {
   console.log('seeding...')
   try {
@@ -180,9 +132,6 @@ async function runSeed() {
   }
 }
 
-// Execute the `seed` function, IF we ran this module directly (`node seed`).
-// `Async` functions always return a promise, so we can use `catch` to handle
-// any errors that might occur inside of `seed`.
 if (module === require.main) {
   runSeed()
 }
