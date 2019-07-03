@@ -14,7 +14,7 @@ router.get('/getAll', async (req, res, next) => {
         }
       ]
     })
-    const result = complaintsByHood.map(hood => {
+    const result = complaintsByHood.map((hood, idx) => {
       let total = 0
       let object = {}
       for (let i = 0; i < hood.complaints.length; i++) {
@@ -25,7 +25,7 @@ router.get('/getAll', async (req, res, next) => {
         }
         total++
       }
-      let newObj = {name: hood.name, complaints: object, total}
+      let newObj = {id: idx + 1, name: hood.name, complaints: object, total}
       return newObj
     })
 
@@ -60,7 +60,28 @@ router.get(
           }
         }
       })
-      res.send(boundedComplaints)
+
+      let obj = {}
+      for (let i = 0; i < boundedComplaints.length; i++) {
+        if (!obj[boundedComplaints[i].incident_address]) {
+          obj[boundedComplaints[i].incident_address] = [boundedComplaints[i]]
+        } else {
+          obj[boundedComplaints[i].incident_address].push(boundedComplaints[i])
+        }
+      }
+
+      let addressArray = Object.entries(obj)
+      const groupedByAddress = addressArray.map((el, idx) => {
+        let newObj = {}
+        newObj.id = idx + 1
+        newObj.address = el[0]
+        newObj.complaints = el[1]
+        newObj.latitude = el[1][0].latitude
+        newObj.longitude = el[1][0].longitude
+        return newObj
+      })
+
+      res.send(groupedByAddress)
     } catch (err) {
       next(err)
     }

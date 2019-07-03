@@ -89,7 +89,6 @@ class HomePage extends Component {
         )
       })
     }
-    console.log({neighborhoodComplaints})
     this.setState({
       // complaints: data,
       neighborhoodPolyData: neighborhoodObj,
@@ -144,10 +143,6 @@ class HomePage extends Component {
   render() {
     const {classes} = this.props
     const {complaints, viewport, selectedAddress, data} = this.state
-    const locationComplaints = complaints.filter(
-      complaint => complaint.location
-    )
-    console.log(locationComplaints)
 
     return (
       <div>
@@ -163,7 +158,7 @@ class HomePage extends Component {
           mapboxApiAccessToken={token}
           onClick={this.handleMapClick}
         >
-          {this.state.viewport.zoom > 15.5 ? (
+          {this.state.viewport.zoom > 14.5 ? (
             <div style={{display: 'flex', justifyContent: 'center'}}>
               <Button
                 onClick={this.handleSearchClick}
@@ -176,13 +171,13 @@ class HomePage extends Component {
           ) : (
             ''
           )}
-          {locationComplaints
-            ? locationComplaints.map(complaint => {
+          {complaints
+            ? complaints.map(complaint => {
                 return (
                   <Marker
-                    key={complaint.unique_key}
-                    latitude={complaint.location.coordinates[1]}
-                    longitude={complaint.location.coordinates[0]}
+                    key={complaint.id}
+                    latitude={complaint.latitude}
+                    longitude={complaint.longitude}
                     offsetLeft={-20}
                     offsetTop={-10}
                   >
