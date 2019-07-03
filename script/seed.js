@@ -9,10 +9,13 @@ const getComplaints = async (neighborhoodObj, neighborhoodComplaints) => {
   // eslint-disable-next-line guard-for-in
   for (let neighborhood in neighborhoodObj.Manhattan) {
     neighborhoodComplaints.Manhattan[neighborhood] = []
-    console.log(
-      `How many rings for that ${neighborhood}: `,
-      neighborhoodObj.Manhattan[neighborhood].length
-    )
+    // console.log(
+    //   `How many rings for that ${neighborhood}: `,
+    //   neighborhoodObj.Manhattan[neighborhood].length
+    // )
+    // Will return multiple data sets if there are multiple rings
+    // Have to gather all those complaints data sets into one.
+    // They are each stored in an object as object.data
     let complaintPromises = await Promise.all(
       neighborhoodObj.Manhattan[neighborhood].map(ring => {
         return axios.get(
@@ -22,15 +25,26 @@ const getComplaints = async (neighborhoodObj, neighborhoodComplaints) => {
     )
     // PROBLEM 1: HAD TO SPECIFY THE DATA WITHIN COMPLAINT PROMISES
     // COMPLAINT PROMISES SHOULD BE AN ARRAY OF RINGS, WHICH ARE THEMSELVES ARRAYS OF COMPLAINTS
-    // SHOULD NEED TO FLATTEN
-    // POSSIBLE ISSUE: DIDN'T HAVE TO USE FLATTEN. WHERE'D THE RINGS GO? DO WE HAVE TO .forEach() ON LINE 13?
-    console.log('complaint Data: ', complaintPromises[0].data.length)
-    neighborhoodComplaints.Manhattan[neighborhood] = complaintPromises[0].data
+    // SHOULD NEED TO FLATTEN, BUT CAN'T WITH THE FORMAT THE PROMISES ARE RETURNED
+    // WE HAVE TO .forEach() TO GATHER EACH RINGS' DATA
+    // console.log({complaintPromises})
+    complaintPromises.forEach(promise => {
+      // console.log(' data length', promise.data.length)
+      neighborhoodComplaints.Manhattan[
+        neighborhood
+      ] = neighborhoodComplaints.Manhattan[neighborhood].concat(promise.data)
+    })
+  }
+  for (let neighborhood in neighborhoodComplaints.Manhattan) {
+    console.log(
+      `Number of ${neighborhood} complaints`,
+      neighborhoodComplaints.Manhattan[neighborhood].length
+    )
   }
 }
 
 const populateComplaints = async (neighborhoodComplaints, hoodLookUp) => {
-  console.log(Object.keys(neighborhoodComplaints))
+  // console.log(Object.keys(neighborhoodComplaints))
   for (let borough in neighborhoodComplaints) {
     for (let neighborhood in neighborhoodComplaints[borough]) {
       await Promise.all(
@@ -118,9 +132,10 @@ async function seed() {
     // PROBLEM 2: populateComplaints WAS RUNNING FIRST BECAUSE OF ASYNC ITEMS IN getComplaints, SO SET IT TO AWAIT
     await getComplaints(neighborhoodObj, neighborhoodComplaints)
 
+    // PROBLEM 3: populateComplaints WAS PUTTING THROUGH REQUESTS AFTER db.close() WAS CALLED
     await populateComplaints(neighborhoodComplaints, hoodLookUp)
   } catch (err) {
-    console.err(err)
+    console.error(err)
   }
 
   // //creates complaint by neighborhood object
