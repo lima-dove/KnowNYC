@@ -1,9 +1,9 @@
+import Button from '@material-ui/core/Button'
+import {withStyles} from '@material-ui/core/styles'
 import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import BarGraph from './BarGraphTest'
-import Button from '@material-ui/core/Button'
-import {withStyles} from '@material-ui/core/styles'
 
 const styles = theme => ({
   button: {
@@ -36,65 +36,6 @@ class HomePage extends Component {
     this.handleMarkerClick = this.handleMarkerClick.bind(this)
     this.handleSeeMoreClick = this.handleSeeMoreClick.bind(this)
     this.mapRef = React.createRef()
-  }
-  async componentDidMount() {
-    /* 1. Query GIS information for latitude and longitudes of each neighborhood = an object is returned
-    2. Get neighborhood name from object.features[]
-    3. Get neighborhood log/lat from object.geometry
-    4. Query API within componentDidMount for Manhattan data only
-    5. Gather array of objects to state.complants
-    */
-
-    const {data} = await axios.get(
-      'https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/nynta/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
-    )
-    let neighborhoodObj = {}
-
-    data.features.forEach(el => {
-      el.geometry.rings.forEach(ring => {
-        const arrStrings = ring.map(hood => hood.join(' '))
-        const polygonString = arrStrings.join(', ')
-        if (!neighborhoodObj[el.attributes.BoroName]) {
-          neighborhoodObj[el.attributes.BoroName] = {
-            [el.attributes.NTAName]: [polygonString]
-          }
-        } else if (
-          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName]
-        ) {
-          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName].push(
-            polygonString
-          )
-        } else {
-          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName] = [
-            polygonString
-          ]
-        }
-      })
-    })
-
-    const neighborhoodComplaints = {}
-    neighborhoodComplaints.Manhattan = {}
-
-    // eslint-disable-next-line guard-for-in
-    for (let neighborhood in neighborhoodObj.Manhattan) {
-      neighborhoodComplaints.Manhattan[neighborhood] = []
-      neighborhoodObj.Manhattan[neighborhood].forEach(async ring => {
-        let manhattanData = await axios.get(
-          `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_polygon(location, 'MULTIPOLYGON (((${ring})))')`
-        )
-        neighborhoodComplaints.Manhattan[
-          neighborhood
-        ] = neighborhoodComplaints.Manhattan[neighborhood].concat(
-          manhattanData.data
-        )
-      })
-    }
-    console.log({neighborhoodComplaints})
-    this.setState({
-      // complaints: data,
-      neighborhoodPolyData: neighborhoodObj,
-      neighborhoodComplaints
-    })
   }
 
   async handleSearchClick() {
@@ -147,7 +88,6 @@ class HomePage extends Component {
     const locationComplaints = complaints.filter(
       complaint => complaint.location
     )
-    console.log(locationComplaints)
 
     return (
       <div>
