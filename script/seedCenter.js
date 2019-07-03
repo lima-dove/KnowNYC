@@ -45,7 +45,6 @@ async function seed() {
         }
       })
     })
-    console.log(neighborhoodObj.Manhattan['Battery Park City-Lower Manhattan'])
 
     // eslint-disable-next-line guard-for-in
     for (let borough in neighborhoodObj) {
@@ -55,8 +54,8 @@ async function seed() {
         const hoodTotal = hoodCoords.reduce(
           (acc, el) => {
             const coordArr = el.split(' ')
-            acc[0] += coordArr[0]
-            acc[1] += coordArr[1]
+            acc[0] += Number(coordArr[0])
+            acc[1] += Number(coordArr[1])
             return acc
           },
           [0, 0]
