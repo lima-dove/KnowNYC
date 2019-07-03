@@ -158,6 +158,4 @@ class HomePage extends Component {
   }
 }
 
-const newHomePage = withStyles(styles)(HomePage)
-
-export default newHomePage
+export default withStyles(styles)(HomePage)
