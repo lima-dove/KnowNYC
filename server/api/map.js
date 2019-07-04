@@ -1,5 +1,9 @@
 const router = require('express').Router()
-const {Complaint, Neighborhood} = require('../db/models/index')
+const {
+  Complaint,
+  Neighborhood,
+  NeighborhoodAggregate
+} = require('../db/models/index')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 module.exports = router
@@ -8,50 +12,32 @@ router.get(
   '/getAll/:northLat,:southLat,:westLng,:eastLng',
   async (req, res, next) => {
     try {
-      const {northLat, southLat, westLng, eastLng} = req.params
-      // const complaintsByHood = await Neighborhood.findAll({
-      //   where: {
-      //     boroughId: 3
-      //     // center_latitude: {
-      //     //   [Op.gt]: [Number(southLat)],
-      //     //   [Op.lt]: [Number(northLat)]
-      //     // },
-      //     // center_longitude: {
-      //     //   [Op.lt]: [Number(eastLng)],
-      //     //   [Op.gt]: [Number(westLng)]
-      //     // }
-      //   },
-      //   include: [
-      //     {
-      //       model: Complaint,
-      //       as: 'complaints'
-      //     }
-      //   ]
-      // })
-      // const result = complaintsByHood.map((hood, idx) => {
-      //   let total = 0
-      //   let object = {}
-      //   for (let i = 0; i < hood.complaints.length; i++) {
-      //     if (object[hood.complaints[i].complaint_type]) {
-      //       object[hood.complaints[i].complaint_type]++
-      //     } else if (!object[hood.complaints[i].complaint_type]) {
-      //       object[hood.complaints[i].complaint_type] = 1
-      //     }
-      //     total++
-      //   }
-      //   let newObj = {
-      //     id: idx + 1,
-      //     name: hood.name,
-      //     latitude: hood.center_latitude,
-      //     longitude: hood.center_longitude,
-      //     complaints: object,
-      //     total
-      //   }
-      //   return newObj
-      // })
+      const manhattanHoods = await Neighborhood.findAll({
+        where: {boroughId: 3},
+        include: NeighborhoodAggregate
+      })
 
-      const newResult = result.map((complaintObject, i) => {
+      let result = manhattanHoods.map(hood => {
+        hood = hood.dataValues
+        let complaints = {}
+        hood.neighborhood_aggregates.forEach(aggregate => {
+          aggregate = aggregate.dataValues
+          complaints[aggregate.complaint] = aggregate.frequency
+        })
+        let newObj = {
+          id: hood.id,
+          name: hood.name,
+          latitude: hood.center_latitude,
+          longitude: hood.center_longitude,
+          complaints,
+          total: hood.total_complaints
+        }
+        return newObj
+      })
+
+      const newResult = result.map(complaintObject => {
         let newArray = Object.entries(complaintObject.complaints)
+        console.log({newArray})
         let sortedArray = newArray.sort((a, b) => {
           return b[1] - a[1]
         })
