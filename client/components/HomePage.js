@@ -22,9 +22,9 @@ class HomePage extends Component {
       selectedAddress: null,
       data: null,
       viewport: {
-        latitude: 40.705,
-        longitude: -74.009,
-        zoom: 14,
+        latitude: 40.7484,
+        longitude: -73.9857,
+        zoom: 12,
         bearing: 0,
         pitch: 0
       },
@@ -37,6 +37,16 @@ class HomePage extends Component {
     this.handleSeeMoreClick = this.handleSeeMoreClick.bind(this)
     this.mapRef = React.createRef()
   }
+
+  async componentDidMount() {
+
+    const {data} = await axios.get(`/api/map/getall`)
+    
+    this.setState({
+      complaints: data
+    })
+  }
+
 
   async handleSearchClick() {
     let boundary = this.mapRef.getMap().getBounds()
@@ -85,9 +95,6 @@ class HomePage extends Component {
   render() {
     const {classes} = this.props
     const {complaints, viewport, selectedAddress, data} = this.state
-    const locationComplaints = complaints.filter(
-      complaint => complaint.location
-    )
 
     return (
       <div>
@@ -116,13 +123,13 @@ class HomePage extends Component {
           ) : (
             ''
           )}
-          {locationComplaints
-            ? locationComplaints.map(complaint => {
+          {complaints
+            ? complaints.map(complaint => {
                 return (
                   <Marker
-                    key={complaint.unique_key}
-                    latitude={complaint.location.coordinates[1]}
-                    longitude={complaint.location.coordinates[0]}
+                    key={complaint.id}
+                    latitude={complaint.latitude}
+                    longitude={complaint.longitude}
                     offsetLeft={-20}
                     offsetTop={-10}
                   >

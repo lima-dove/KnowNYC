@@ -21,8 +21,8 @@ describe('HomePage', () => {
 
   it('renders a view at the current initial viewport', () => {
     const map = homePage.dive().find(MapGL)
-    expect(map.get(0).props.latitude).to.equal(40.705)
-    expect(map.get(0).props.longitude).to.equal(-74.009)
+    expect(map.get(0).props.latitude).to.equal(40.7484)
+    expect(map.get(0).props.longitude).to.equal(-73.9857)
   })
 
   it('gets 1000 complaints from the NYC API', () => {
