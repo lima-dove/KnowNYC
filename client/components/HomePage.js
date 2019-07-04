@@ -18,7 +18,8 @@ class HomePage extends Component {
   constructor() {
     super()
     this.state = {
-      complaints: [],
+      complaints: null,
+      neighborhoodComplaints: null,
       selectedAddress: null,
       data: null,
       viewport: {
@@ -27,9 +28,7 @@ class HomePage extends Component {
         zoom: 12,
         bearing: 0,
         pitch: 0
-      },
-      neighborhoodPolyData: null,
-      neighborhoodComplaints: null
+      }
     }
     this.handleSearchClick = this.handleSearchClick.bind(this)
     this.handleMapClick = this.handleMapClick.bind(this)
@@ -39,14 +38,12 @@ class HomePage extends Component {
   }
 
   async componentDidMount() {
-
     const {data} = await axios.get(`/api/map/getall`)
-    
+
     this.setState({
-      complaints: data
+      neighborhoodComplaints: data
     })
   }
-
 
   async handleSearchClick() {
     let boundary = this.mapRef.getMap().getBounds()
@@ -92,9 +89,19 @@ class HomePage extends Component {
     history.push(`/exampleComplaints/${clickedAddress}`, complaint)
   }
 
+  handleViewportChange = viewport => {
+    this.setState({viewport: viewport})
+  }
+
   render() {
     const {classes} = this.props
-    const {complaints, viewport, selectedAddress, data} = this.state
+    const {
+      complaints,
+      viewport,
+      selectedAddress,
+      data,
+      neighborhoodComplaints
+    } = this.state
 
     return (
       <div>
@@ -104,44 +111,64 @@ class HomePage extends Component {
           width="100vw"
           height="88vh"
           mapStyle="mapbox://styles/mapbox/streets-v9"
-          onViewportChange={v => this.setState({viewport: v})}
+          onViewportChange={v => this.handleViewportChange(v)}
           preventStyleDiffing={false}
           ref={map => (this.mapRef = map)}
           mapboxApiAccessToken={token}
           onClick={this.handleMapClick}
         >
           {this.state.viewport.zoom > 15.5 ? (
-            <div style={{display: 'flex', justifyContent: 'center'}}>
-              <Button
-                onClick={this.handleSearchClick}
-                variant="contained"
-                className={classes.button}
-              >
-                Search this area
-              </Button>
+            <div>
+              <div style={{display: 'flex', justifyContent: 'center'}}>
+                <Button
+                  onClick={this.handleSearchClick}
+                  variant="contained"
+                  className={classes.button}
+                >
+                  Search this area
+                </Button>
+              </div>
+              {complaints
+                ? complaints.map(complaint => {
+                    return (
+                      <Marker
+                        key={complaint.id}
+                        latitude={complaint.latitude}
+                        longitude={complaint.longitude}
+                        offsetLeft={-20}
+                        offsetTop={-10}
+                      >
+                        <img
+                          src="http://i.imgur.com/WbMOfMl.png"
+                          onClick={() => this.handleMarkerClick(complaint)}
+                        />
+                      </Marker>
+                    )
+                  })
+                : null}
             </div>
           ) : (
-            ''
+            <div>
+              {neighborhoodComplaints
+                ? neighborhoodComplaints.map(complaint => {
+                    return (
+                      <Marker
+                        key={complaint.id}
+                        latitude={complaint.latitude}
+                        longitude={complaint.longitude}
+                        offsetLeft={-20}
+                        offsetTop={-10}
+                      >
+                        <img
+                          src="http://i.imgur.com/WbMOfMl.png"
+                          onClick={() => this.handleMarkerClick(complaint)}
+                        />
+                      </Marker>
+                    )
+                  })
+                : null}
+            </div>
           )}
-          {complaints
-            ? complaints.map(complaint => {
-                return (
-                  <Marker
-                    key={complaint.id}
-                    latitude={complaint.latitude}
-                    longitude={complaint.longitude}
-                    offsetLeft={-20}
-                    offsetTop={-10}
-                  >
-                    <img
-                      src="http://i.imgur.com/WbMOfMl.png"
-                      onClick={() => this.handleMarkerClick(complaint)}
-                    />
-                  </Marker>
-                )
-              })
-            : null}
-
           {selectedAddress ? (
             <Popup
               latitude={selectedAddress.location.coordinates[1]}
