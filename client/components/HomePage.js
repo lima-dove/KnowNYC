@@ -199,6 +199,7 @@ class HomePage extends Component {
             <Popup
               latitude={selectedAddress.location.coordinates[1]}
               longitude={selectedAddress.location.coordinates[0]}
+              overflow="scroll"
               onClose={() => this.setState({selectedAddress: null, data: null})}
             >
               <div>
