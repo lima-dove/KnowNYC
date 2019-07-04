@@ -21,7 +21,6 @@ class HomePage extends Component {
       complaints: null,
       neighborhoodComplaints: null,
       selectedAddress: null,
-      data: null,
       viewport: {
         latitude: 40.7484,
         longitude: -73.9857,
@@ -57,17 +56,7 @@ class HomePage extends Component {
     this.setState({complaints: data})
   }
 
-  handleMarkerClick = async complaint => {
-    let address = complaint.incident_address
-    const {data} = await axios.get(
-      `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=${address}&incident_zip=10004`
-    )
-    //Popup Logic
-    this.setState({
-      selectedAddress: complaint,
-      data
-    })
-  }
+  handleMarkerClick = async complaint => {}
 
   handleMapClick = () => {
     this.setState({
