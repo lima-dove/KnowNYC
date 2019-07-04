@@ -18,7 +18,7 @@ class HomePage extends Component {
   constructor() {
     super()
     this.state = {
-      complaints: null,
+      complaints: [],
       neighborhoodComplaints: null,
       selectedAddress: null,
       viewport: {
@@ -80,7 +80,7 @@ class HomePage extends Component {
 
   handleViewChange = viewport => {
     if (viewport.zoom < 15.5) {
-      this.setState({viewport: viewport, complaints: null})
+      this.setState({viewport: viewport, complaints: []})
     } else {
       this.setState({viewport: viewport})
     }
