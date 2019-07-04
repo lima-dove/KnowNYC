@@ -89,8 +89,12 @@ class HomePage extends Component {
     history.push(`/exampleComplaints/${clickedAddress}`, complaint)
   }
 
-  handleViewportChange = viewport => {
-    this.setState({viewport: viewport})
+  handleViewChange = viewport => {
+    if (viewport.zoom < 15.5) {
+      this.setState({viewport: viewport, complaints: null})
+    } else {
+      this.setState({viewport: viewport})
+    }
   }
 
   render() {
@@ -111,7 +115,7 @@ class HomePage extends Component {
           width="100vw"
           height="88vh"
           mapStyle="mapbox://styles/mapbox/streets-v9"
-          onViewportChange={v => this.handleViewportChange(v)}
+          onViewportChange={v => this.handleViewChange(v)}
           preventStyleDiffing={false}
           ref={map => (this.mapRef = map)}
           mapboxApiAccessToken={token}
