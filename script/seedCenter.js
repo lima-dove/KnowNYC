@@ -1,5 +1,9 @@
 const db = require('../server/db')
-const {Neighborhood} = require('../server/db/models')
+const {
+  Neighborhood,
+  Complaint,
+  NeighborhoodAggregate
+} = require('../server/db/models')
 const axios = require('axios')
 
 const findMaxArray = nestedArray => {
@@ -12,6 +16,56 @@ const findMaxArray = nestedArray => {
     }
   })
   return maxArray
+}
+
+const createAggregates = async () => {
+  try {
+    const complaintsByHood = await Neighborhood.findAll({
+      where: {
+        boroughId: 3
+      },
+      include: [
+        {
+          model: Complaint,
+          as: 'complaints'
+        }
+      ]
+    })
+
+    let total = 0
+    let object = {}
+    complaintsByHood.forEach(async hood => {
+      total = hood.complaints.length
+      for (let i = 0; i < total; i++) {
+        if (object[hood.complaints[i].complaint_type]) {
+          object[hood.complaints[i].complaint_type].frequency++
+        } else if (!object[hood.complaints[i].complaint_type]) {
+          object[hood.complaints[i].complaint_type] = {
+            frequency: 1,
+            neighborhoodId: hood.id
+          }
+        }
+      }
+
+      await Neighborhood.update(
+        {total_complaints: total},
+        {
+          where: {id: hood.id}
+        }
+      )
+    })
+
+    // eslint-disable-next-line guard-for-in
+    for (let complaint in object) {
+      await NeighborhoodAggregate.create({
+        neighborhoodId: object[complaint].neighborhoodId,
+        complaint,
+        frequency: object[complaint].frequency
+      })
+    }
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 async function seed() {
@@ -78,6 +132,8 @@ async function seed() {
         )
       }
     }
+
+    await createAggregates()
 
     console.log(`seeded successfully`)
   } catch (error) {

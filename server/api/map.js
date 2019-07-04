@@ -1,46 +1,39 @@
 const router = require('express').Router()
-const {Complaint, Neighborhood} = require('../db/models/index')
+const {
+  Complaint,
+  Neighborhood,
+  NeighborhoodAggregate
+} = require('../db/models/index')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 module.exports = router
 
 router.get('/getAll', async (req, res, next) => {
   try {
-    const complaintsByHood = await Neighborhood.findAll({
-      where: {
-        boroughId: 3
-      },
-      include: [
-        {
-          model: Complaint,
-          as: 'complaints',
-          attributes: ['complaint_type']
-        }
-      ]
+    const manhattanHoods = await Neighborhood.findAll({
+      where: {boroughId: 3},
+      include: NeighborhoodAggregate
     })
-    const result = complaintsByHood.map((hood, idx) => {
-      let total = 0
-      let object = {}
-      for (let i = 0; i < hood.complaints.length; i++) {
-        if (object[hood.complaints[i].complaint_type]) {
-          object[hood.complaints[i].complaint_type]++
-        } else if (!object[hood.complaints[i].complaint_type]) {
-          object[hood.complaints[i].complaint_type] = 1
-        }
-        total++
-      }
+
+    let result = manhattanHoods.map(hood => {
+      hood = hood.dataValues
+      let complaints = {}
+      hood.neighborhood_aggregates.forEach(aggregate => {
+        aggregate = aggregate.dataValues
+        complaints[aggregate.complaint] = aggregate.frequency
+      })
       let newObj = {
-        id: idx + 1,
+        id: hood.id,
         name: hood.name,
         latitude: hood.center_latitude,
         longitude: hood.center_longitude,
-        complaints: object,
-        total
+        complaints,
+        total: hood.total_complaints
       }
       return newObj
     })
 
-    const newResult = result.map((complaintObject, i) => {
+    const newResult = result.map(complaintObject => {
       let newArray = Object.entries(complaintObject.complaints)
       let sortedArray = newArray.sort((a, b) => {
         return b[1] - a[1]
