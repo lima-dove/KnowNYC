@@ -34,46 +34,54 @@ export default class BarGraphTest extends Component {
     const {rawData} = nextProps
     const {xScale, yScale, colorScale} = prevState
 
-    // Receive data from map pop-up click and calculate frequency/quantity of each complaint type:
-    let complaintObj = {}
-    rawData.forEach(el => {
-      if (complaintObj[el.complaint_type] >= 1) {
-        complaintObj[el.complaint_type] = ++complaintObj[el.complaint_type]
-      } else {
-        complaintObj[el.complaint_type] = 1
-      }
-    })
+    // Receive data from map pop-up click and calculate frequency/frequency of each complaint type:
+    // if (SPECIFY CONDITIONAL) {
+    //   let complaintObj = {}
+    //   rawData.forEach(el => {
+    //     if (complaintObj[el.complaint_type] >= 1) {
+    //       complaintObj[el.complaint_type] = ++complaintObj[el.complaint_type]
+    //     } else {
+    //       complaintObj[el.complaint_type] = 1
+    //     }
+    //   })
 
-    let data = []
+    //   let data = []
 
-    // eslint-disable-next-line guard-for-in
-    for (let key in complaintObj) {
-      data.push({type: key, quantity: complaintObj[key]})
-    }
+    //   // eslint-disable-next-line guard-for-in
+    //   for (let key in complaintObj) {
+    //     data.push({type: key, frequency: complaintObj[key]})
+    //   }
+    // }
+    // SPECIFICALLY FOR AGGREGATE DATA
+    let data = rawData
 
     // Set axes domain variables using data
-    const quantityMax = d3.max(data, d => d.quantity)
+    console.log({rawData})
+    const frequencyMax = d3.max(data, d => d.frequency)
     const complaintDomain = data.map(complaint => complaint.type)
     xScale.domain(complaintDomain)
-    yScale.domain([0, quantityMax])
+    yScale.domain([0, frequencyMax])
 
     // Set bar size values
     // let length = data.length
     const bars = data.map(d => {
+      console.log('frequency', d.frequency)
       return {
         x: xScale(d.type),
-        y: yScale(d.quantity),
+        y: yScale(d.frequency),
         width: xScale.bandwidth(), //length > 3 ? width / (2 * length) : 50
-        height: height - margin.bottom - yScale(d.quantity),
+        height: height - margin.bottom - yScale(d.frequency),
         fill: "url('#myGradient')"
       }
     })
 
-    return {bars, quantityMax, data}
+    return {bars, frequencyMax, data}
   }
 
   axisFunc() {
-    this.yAxis.ticks(this.state.quantityMax).tickFormat(d3.format('.0f')) // this specifies that the number of ticks should be equal to the max data value, the format is specifying no decimal points
+    this.yAxis
+      .ticks(this.state.frequencyMax > 25 ? 10 : this.state.frequencyMax)
+      .tickFormat(d3.format('.0f')) // this specifies that the number of ticks should be equal to the max data value, the format is specifying no decimal points
     d3
       .select(this.refs.xAxis) // rather than this.xAxis.call().selectAll()... etc, use the d3.select() method with this.refs (can use React.createRef() if needed) to apply changes to elements within an svg group
       .call(this.xAxis)

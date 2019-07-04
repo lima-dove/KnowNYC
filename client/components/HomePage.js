@@ -39,14 +39,12 @@ class HomePage extends Component {
   }
 
   async componentDidMount() {
+    const {data} = await axios.get(`/api/map/getAll`)
 
-    const {data} = await axios.get(`/api/map/getall`)
-    
     this.setState({
       complaints: data
     })
   }
-
 
   async handleSearchClick() {
     let boundary = this.mapRef.getMap().getBounds()
@@ -60,14 +58,26 @@ class HomePage extends Component {
     this.setState({complaints: data})
   }
 
-  handleMarkerClick = async complaint => {
-    let address = complaint.incident_address
-    const {data} = await axios.get(
-      `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=${address}&incident_zip=10004`
-    )
-    //Popup Logic
+  handleMarkerClick = complaint => {
+    console.log('MARKER CLICKED')
+    console.log({complaint})
+    //Popup Logic requires selectedAddress
+    // THE BELOW IS SPECIFICALLY FOR AGGREGATES
+    let data = complaint.complaints.map(complaintAggregate => {
+      console.log({complaintAggregate})
+      let aggregateObj = {
+        type: complaintAggregate[0],
+        frequency: complaintAggregate[1]
+      }
+      return aggregateObj
+    })
+    console.log('handlemarkerclick object', data)
+
     this.setState({
-      selectedAddress: complaint,
+      selectedAddress: {
+        incident_address: complaint.name,
+        location: {coordinates: [complaint.latitude, complaint.longitude]}
+      },
       data
     })
   }
@@ -95,7 +105,7 @@ class HomePage extends Component {
   render() {
     const {classes} = this.props
     const {complaints, viewport, selectedAddress, data} = this.state
-
+    console.log({data})
     return (
       <div>
         <MapGL
@@ -144,8 +154,8 @@ class HomePage extends Component {
 
           {selectedAddress ? (
             <Popup
-              latitude={selectedAddress.location.coordinates[1]}
-              longitude={selectedAddress.location.coordinates[0]}
+              latitude={selectedAddress.location.coordinates[0]}
+              longitude={selectedAddress.location.coordinates[1]}
               onClose={() => this.setState({selectedAddress: null, data: null})}
             >
               <div>
@@ -161,7 +171,9 @@ class HomePage extends Component {
                 </button>
               </div>
             </Popup>
-          ) : null}
+          ) : (
+            console.log('NO SELECTED ADDRESS, OR IS NULL')
+          )}
         </MapGL>
       </div>
     )
