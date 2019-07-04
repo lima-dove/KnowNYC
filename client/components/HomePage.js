@@ -22,9 +22,9 @@ class HomePage extends Component {
       selectedAddress: null,
       data: null,
       viewport: {
-        latitude: 40.705,
-        longitude: -74.009,
-        zoom: 14,
+        latitude: 40.7484,
+        longitude: -73.9857,
+        zoom: 12,
         bearing: 0,
         pitch: 0
       },
@@ -44,55 +44,63 @@ class HomePage extends Component {
     4. Query API within componentDidMount for Manhattan data only
     5. Gather array of objects to state.complants
     */
+    let boundary = this.mapRef.getMap().getBounds()
+    const northLat = boundary._ne.lat
+    const southLat = boundary._sw.lat
+    const westLng = boundary._sw.lng
+    const eastLng = boundary._ne.lng
+    console.log('BOUNDARY', northLat, southLat, westLng, eastLng)
+
+    //get neighborhoods by center coord within the screen
 
     const {data} = await axios.get(
-      'https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/nynta/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
+      `/api/map/getall/${northLat},${southLat},${westLng},${eastLng}`
     )
-    let neighborhoodObj = {}
+    // let neighborhoodObj = {}
 
-    data.features.forEach(el => {
-      el.geometry.rings.forEach(ring => {
-        const arrStrings = ring.map(hood => hood.join(' '))
-        const polygonString = arrStrings.join(', ')
-        if (!neighborhoodObj[el.attributes.BoroName]) {
-          neighborhoodObj[el.attributes.BoroName] = {
-            [el.attributes.NTAName]: [polygonString]
-          }
-        } else if (
-          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName]
-        ) {
-          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName].push(
-            polygonString
-          )
-        } else {
-          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName] = [
-            polygonString
-          ]
-        }
-      })
-    })
+    // data.features.forEach(el => {
+    //   el.geometry.rings.forEach(ring => {
+    //     const arrStrings = ring.map(hood => hood.join(' '))
+    //     const polygonString = arrStrings.join(', ')
+    //     if (!neighborhoodObj[el.attributes.BoroName]) {
+    //       neighborhoodObj[el.attributes.BoroName] = {
+    //         [el.attributes.NTAName]: [polygonString]
+    //       }
+    //     } else if (
+    //       neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName]
+    //     ) {
+    //       neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName].push(
+    //         polygonString
+    //       )
+    //     } else {
+    //       neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName] = [
+    //         polygonString
+    //       ]
+    //     }
+    //   })
+    // })
 
-    const neighborhoodComplaints = {}
-    neighborhoodComplaints.Manhattan = {}
+    // const neighborhoodComplaints = {}
+    // neighborhoodComplaints.Manhattan = {}
 
-    // eslint-disable-next-line guard-for-in
-    for (let neighborhood in neighborhoodObj.Manhattan) {
-      neighborhoodComplaints.Manhattan[neighborhood] = []
-      neighborhoodObj.Manhattan[neighborhood].forEach(async ring => {
-        let manhattanData = await axios.get(
-          `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_polygon(location, 'MULTIPOLYGON (((${ring})))')`
-        )
-        neighborhoodComplaints.Manhattan[
-          neighborhood
-        ] = neighborhoodComplaints.Manhattan[neighborhood].concat(
-          manhattanData.data
-        )
-      })
-    }
+    // // eslint-disable-next-line guard-for-in
+    // for (let neighborhood in neighborhoodObj.Manhattan) {
+    //   neighborhoodComplaints.Manhattan[neighborhood] = []
+    //   neighborhoodObj.Manhattan[neighborhood].forEach(async ring => {
+    //     let manhattanData = await axios.get(
+    //       `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_polygon(location, 'MULTIPOLYGON (((${ring})))')`
+    //     )
+    //     neighborhoodComplaints.Manhattan[
+    //       neighborhood
+    //     ] = neighborhoodComplaints.Manhattan[neighborhood].concat(
+    //       manhattanData.data
+    //     )
+    //   })
+    // }
     this.setState({
-      // complaints: data,
-      neighborhoodPolyData: neighborhoodObj,
-      neighborhoodComplaints
+      complaints: data
+      // neighborhoodPolyData: neighborhoodObj,
+      // neighborhoodComplaints
     })
   }
 
