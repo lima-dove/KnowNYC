@@ -44,18 +44,10 @@ class HomePage extends Component {
     4. Query API within componentDidMount for Manhattan data only
     5. Gather array of objects to state.complants
     */
-    let boundary = this.mapRef.getMap().getBounds()
-    const northLat = boundary._ne.lat
-    const southLat = boundary._sw.lat
-    const westLng = boundary._sw.lng
-    const eastLng = boundary._ne.lng
-    console.log('BOUNDARY', northLat, southLat, westLng, eastLng)
 
     //get neighborhoods by center coord within the screen
 
-    const {data} = await axios.get(
-      `/api/map/getall/${northLat},${southLat},${westLng},${eastLng}`
-    )
+    const {data} = await axios.get(`/api/map/getall`)
     // let neighborhoodObj = {}
 
     // data.features.forEach(el => {

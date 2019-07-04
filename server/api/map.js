@@ -4,64 +4,54 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 module.exports = router
 
-router.get(
-  '/getAll/:northLat,:southLat,:westLng,:eastLng',
-  async (req, res, next) => {
-    try {
-      const {northLat, southLat, westLng, eastLng} = req.params
-      const complaintsByHood = await Neighborhood.findAll({
-        where: {
-          center_latitude: {
-            [Op.gt]: [Number(southLat)],
-            [Op.lt]: [Number(northLat)]
-          },
-          center_longitude: {
-            [Op.lt]: [Number(eastLng)],
-            [Op.gt]: [Number(westLng)]
-          }
-        },
-        include: [
-          {
-            model: Complaint,
-            as: 'complaints'
-          }
-        ]
-      })
-      const result = complaintsByHood.map((hood, idx) => {
-        let total = 0
-        let object = {}
-        for (let i = 0; i < hood.complaints.length; i++) {
-          if (object[hood.complaints[i].complaint_type]) {
-            object[hood.complaints[i].complaint_type]++
-          } else if (!object[hood.complaints[i].complaint_type]) {
-            object[hood.complaints[i].complaint_type] = 1
-          }
-          total++
+router.get('/getAll', async (req, res, next) => {
+  try {
+    const complaintsByHood = await Neighborhood.findAll({
+      where: {
+        boroughId: 3
+      },
+      include: [
+        {
+          model: Complaint,
+          as: 'complaints',
+          attributes: ['complaint_type']
         }
-        let newObj = {
-          id: idx + 1,
-          name: hood.name,
-          latitude: hood.center_latitude,
-          longitude: hood.center_longitude,
-          complaints: object,
-          total
+      ]
+    })
+    const result = complaintsByHood.map((hood, idx) => {
+      let total = 0
+      let object = {}
+      for (let i = 0; i < hood.complaints.length; i++) {
+        if (object[hood.complaints[i].complaint_type]) {
+          object[hood.complaints[i].complaint_type]++
+        } else if (!object[hood.complaints[i].complaint_type]) {
+          object[hood.complaints[i].complaint_type] = 1
         }
-        return newObj
-      })
+        total++
+      }
+      let newObj = {
+        id: idx + 1,
+        name: hood.name,
+        latitude: hood.center_latitude,
+        longitude: hood.center_longitude,
+        complaints: object,
+        total
+      }
+      return newObj
+    })
 
-      const newResult = result.map((complaintObject, i) => {
-        let newArray = Object.entries(complaintObject.complaints)
-        let sortedArray = newArray.sort((a, b) => {
-          return b[1] - a[1]
-        })
-        return {...complaintObject, complaints: sortedArray.slice(0, 5)}
+    const newResult = result.map((complaintObject, i) => {
+      let newArray = Object.entries(complaintObject.complaints)
+      let sortedArray = newArray.sort((a, b) => {
+        return b[1] - a[1]
       })
-      res.send(newResult)
-    } catch (err) {
-      next(err)
-    }
+      return {...complaintObject, complaints: sortedArray.slice(0, 5)}
+    })
+    res.send(newResult)
+  } catch (err) {
+    next(err)
   }
-)
+})
 
 router.get(
   '/searchByArea/:northLat,:southLat,:westLng,:eastLng',
