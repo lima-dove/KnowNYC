@@ -4,6 +4,7 @@ import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import BarGraph from './BarGraphTest'
+import {MapSearchBar} from './index'
 
 const styles = theme => ({
   button: {
@@ -27,7 +28,8 @@ class HomePage extends Component {
         zoom: 12,
         bearing: 0,
         pitch: 0
-      }
+      },
+      searchMessage: ''
     }
     this.handleSearchClick = this.handleSearchClick.bind(this)
     this.handleMapClick = this.handleMapClick.bind(this)
@@ -55,9 +57,6 @@ class HomePage extends Component {
     this.setState({complaints: data})
   }
 
-
-  
-
   handleMarkerClick = complaint => {
     console.log('MARKER CLICKED')
     console.log({complaint})
@@ -81,7 +80,6 @@ class HomePage extends Component {
       data
     })
   }
-
 
   handleMapClick = () => {
     this.setState({
@@ -111,6 +109,8 @@ class HomePage extends Component {
     }
   }
 
+  handleSearchSubmit = message => {}
+
   render() {
     const {classes} = this.props
 
@@ -121,6 +121,8 @@ class HomePage extends Component {
       data,
       neighborhoodComplaints
     } = this.state
+
+    console.log('Search Message: ', this.state.searchMessage)
 
     return (
       <div>
@@ -136,6 +138,7 @@ class HomePage extends Component {
           mapboxApiAccessToken={token}
           onClick={this.handleMapClick}
         >
+          {/* <MapSearchBar /> */}
           {this.state.viewport.zoom > 15.5 ? (
             <div>
               <div style={{display: 'flex', justifyContent: 'center'}}>
@@ -147,6 +150,7 @@ class HomePage extends Component {
                   Search this area
                 </Button>
               </div>
+              <MapSearchBar onSubmit={this.handleSearchSubmit} />
               {complaints
                 ? complaints.map(complaint => {
                     return (
@@ -168,6 +172,7 @@ class HomePage extends Component {
             </div>
           ) : (
             <div>
+              <MapSearchBar />
               {neighborhoodComplaints
                 ? neighborhoodComplaints.map(complaint => {
                     return (
