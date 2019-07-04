@@ -94,7 +94,7 @@ class HomePage extends Component {
 
   render() {
     const {classes} = this.props
-    const {complaints, viewport, selectedAddress, data} = this.stat
+    const {complaints, viewport, selectedAddress, data} = this.state
 
     return (
       <div>
