@@ -1,9 +1,9 @@
+import Button from '@material-ui/core/Button'
+import {withStyles} from '@material-ui/core/styles'
 import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import BarGraph from './BarGraphTest'
-import Button from '@material-ui/core/Button'
-import {withStyles} from '@material-ui/core/styles'
 
 const styles = theme => ({
   button: {
@@ -37,17 +37,10 @@ class HomePage extends Component {
     this.handleSeeMoreClick = this.handleSeeMoreClick.bind(this)
     this.mapRef = React.createRef()
   }
-  async componentDidMount() {
-    let boundary = this.mapRef.getMap().getBounds()
-    const northLat = boundary._ne.lat
-    const southLat = boundary._sw.lat
-    const westLng = boundary._sw.lng
-    const eastLng = boundary._ne.lng
-    console.log('BOUNDARY', northLat, southLat, westLng, eastLng)
 
-    //get neighborhoods by center coord within the screen
+  async componentDidMount() {
     const {data} = await axios.get(`/api/map/getAll`)
-    console.log({data})
+
     this.setState({
       complaints: data
     })

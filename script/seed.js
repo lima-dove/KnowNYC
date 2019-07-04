@@ -24,17 +24,10 @@ const getComplaints = async (neighborhoodObj, neighborhoodComplaints) => {
       ] = neighborhoodComplaints.Manhattan[neighborhood].concat(promise.data)
     })
   }
-
-  for (let neighborhood in neighborhoodComplaints.Manhattan) {
-    console.log(
-      `Number of ${neighborhood} complaints`,
-      neighborhoodComplaints.Manhattan[neighborhood].length
-    )
-  }
 }
 
 const populateComplaints = async (neighborhoodComplaints, hoodLookUp) => {
-  // console.log(Object.keys(neighborhoodComplaints))
+  console.log('BEGUN POPULATING COMPLAINTS!')
   for (let borough in neighborhoodComplaints) {
     for (let neighborhood in neighborhoodComplaints[borough]) {
       await Promise.all(
