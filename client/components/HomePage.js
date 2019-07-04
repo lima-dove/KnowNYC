@@ -1,9 +1,9 @@
+import Button from '@material-ui/core/Button'
+import {withStyles} from '@material-ui/core/styles'
 import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import BarGraph from './BarGraphTest'
-import Button from '@material-ui/core/Button'
-import {withStyles} from '@material-ui/core/styles'
 
 const styles = theme => ({
   button: {
@@ -19,17 +19,15 @@ class HomePage extends Component {
     super()
     this.state = {
       complaints: [],
+      neighborhoodComplaints: null,
       selectedAddress: null,
-      data: null,
       viewport: {
-        latitude: 40.705,
-        longitude: -74.009,
-        zoom: 14,
+        latitude: 40.7484,
+        longitude: -73.9857,
+        zoom: 12,
         bearing: 0,
         pitch: 0
-      },
-      neighborhoodPolyData: null,
-      neighborhoodComplaints: null
+      }
     }
     this.handleSearchClick = this.handleSearchClick.bind(this)
     this.handleMapClick = this.handleMapClick.bind(this)
@@ -37,63 +35,11 @@ class HomePage extends Component {
     this.handleSeeMoreClick = this.handleSeeMoreClick.bind(this)
     this.mapRef = React.createRef()
   }
+
   async componentDidMount() {
-    /* 1. Query GIS information for latitude and longitudes of each neighborhood = an object is returned
-    2. Get neighborhood name from object.features[]
-    3. Get neighborhood log/lat from object.geometry
-    4. Query API within componentDidMount for Manhattan data only
-    5. Gather array of objects to state.complants
-    */
-
-    const {data} = await axios.get(
-      'https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/nynta/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
-    )
-    let neighborhoodObj = {}
-
-    data.features.forEach(el => {
-      el.geometry.rings.forEach(ring => {
-        const arrStrings = ring.map(hood => hood.join(' '))
-        const polygonString = arrStrings.join(', ')
-        if (!neighborhoodObj[el.attributes.BoroName]) {
-          neighborhoodObj[el.attributes.BoroName] = {
-            [el.attributes.NTAName]: [polygonString]
-          }
-        } else if (
-          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName]
-        ) {
-          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName].push(
-            polygonString
-          )
-        } else {
-          neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName] = [
-            polygonString
-          ]
-        }
-      })
-    })
-
-    const neighborhoodComplaints = {}
-    neighborhoodComplaints.Manhattan = {}
-
-    // eslint-disable-next-line guard-for-in
-    for (let neighborhood in neighborhoodObj.Manhattan) {
-      neighborhoodComplaints.Manhattan[neighborhood] = []
-      neighborhoodObj.Manhattan[neighborhood].forEach(async ring => {
-        let manhattanData = await axios.get(
-          `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?$where=within_polygon(location, 'MULTIPOLYGON (((${ring})))')`
-        )
-        neighborhoodComplaints.Manhattan[
-          neighborhood
-        ] = neighborhoodComplaints.Manhattan[neighborhood].concat(
-          manhattanData.data
-        )
-      })
-    }
-    console.log({neighborhoodComplaints})
+    const {data} = await axios.get(`/api/map/getAll`)
     this.setState({
-      // complaints: data,
-      neighborhoodPolyData: neighborhoodObj,
-      neighborhoodComplaints
+      neighborhoodComplaints: data
     })
   }
 
@@ -109,14 +55,26 @@ class HomePage extends Component {
     this.setState({complaints: data})
   }
 
-  handleMarkerClick = async complaint => {
-    let address = complaint.incident_address
-    const {data} = await axios.get(
-      `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=${address}&incident_zip=10004`
-    )
-    //Popup Logic
+  handleMarkerClick = complaint => {
+    console.log('MARKER CLICKED')
+    console.log({complaint})
+    //Popup Logic requires selectedAddress
+    // THE BELOW IS SPECIFICALLY FOR AGGREGATES
+    let data = complaint.complaints.map(complaintAggregate => {
+      console.log({complaintAggregate})
+      let aggregateObj = {
+        type: complaintAggregate[0],
+        frequency: complaintAggregate[1]
+      }
+      return aggregateObj
+    })
+    console.log('handlemarkerclick object', data)
+
     this.setState({
-      selectedAddress: complaint,
+      selectedAddress: {
+        incident_address: complaint.name,
+        location: {coordinates: [complaint.latitude, complaint.longitude]}
+      },
       data
     })
   }
@@ -141,13 +99,24 @@ class HomePage extends Component {
     history.push(`/exampleComplaints/${clickedAddress}`, complaint)
   }
 
+  handleViewChange = viewport => {
+    if (viewport.zoom < 15.5) {
+      this.setState({viewport: viewport, complaints: []})
+    } else {
+      this.setState({viewport: viewport})
+    }
+  }
+
   render() {
     const {classes} = this.props
-    const {complaints, viewport, selectedAddress, data} = this.state
-    const locationComplaints = complaints.filter(
-      complaint => complaint.location
-    )
-    console.log(locationComplaints)
+
+    const {
+      complaints,
+      viewport,
+      selectedAddress,
+      data,
+      neighborhoodComplaints
+    } = this.state
 
     return (
       <div>
@@ -157,44 +126,64 @@ class HomePage extends Component {
           width="100vw"
           height="88vh"
           mapStyle="mapbox://styles/mapbox/streets-v9"
-          onViewportChange={v => this.setState({viewport: v})}
+          onViewportChange={v => this.handleViewChange(v)}
           preventStyleDiffing={false}
           ref={map => (this.mapRef = map)}
           mapboxApiAccessToken={token}
           onClick={this.handleMapClick}
         >
           {this.state.viewport.zoom > 15.5 ? (
-            <div style={{display: 'flex', justifyContent: 'center'}}>
-              <Button
-                onClick={this.handleSearchClick}
-                variant="contained"
-                className={classes.button}
-              >
-                Search this area
-              </Button>
+            <div>
+              <div style={{display: 'flex', justifyContent: 'center'}}>
+                <Button
+                  onClick={this.handleSearchClick}
+                  variant="contained"
+                  className={classes.button}
+                >
+                  Search this area
+                </Button>
+              </div>
+              {complaints
+                ? complaints.map(complaint => {
+                    return (
+                      <Marker
+                        key={complaint.id}
+                        latitude={complaint.latitude}
+                        longitude={complaint.longitude}
+                        offsetLeft={-20}
+                        offsetTop={-10}
+                      >
+                        <img
+                          src="http://i.imgur.com/WbMOfMl.png"
+                          onClick={() => this.handleMarkerClick(complaint)}
+                        />
+                      </Marker>
+                    )
+                  })
+                : null}
             </div>
           ) : (
-            ''
+            <div>
+              {neighborhoodComplaints
+                ? neighborhoodComplaints.map(complaint => {
+                    return (
+                      <Marker
+                        key={complaint.id}
+                        latitude={complaint.latitude}
+                        longitude={complaint.longitude}
+                        offsetLeft={-20}
+                        offsetTop={-10}
+                      >
+                        <img
+                          src="http://i.imgur.com/WbMOfMl.png"
+                          onClick={() => this.handleMarkerClick(complaint)}
+                        />
+                      </Marker>
+                    )
+                  })
+                : null}
+            </div>
           )}
-          {locationComplaints
-            ? locationComplaints.map(complaint => {
-                return (
-                  <Marker
-                    key={complaint.unique_key}
-                    latitude={complaint.location.coordinates[1]}
-                    longitude={complaint.location.coordinates[0]}
-                    offsetLeft={-20}
-                    offsetTop={-10}
-                  >
-                    <img
-                      src="http://i.imgur.com/WbMOfMl.png"
-                      onClick={() => this.handleMarkerClick(complaint)}
-                    />
-                  </Marker>
-                )
-              })
-            : null}
-
           {selectedAddress ? (
             <Popup
               latitude={selectedAddress.location.coordinates[1]}
@@ -215,7 +204,9 @@ class HomePage extends Component {
                 </button>
               </div>
             </Popup>
-          ) : null}
+          ) : (
+            console.log('NO SELECTED ADDRESS, OR IS NULL')
+          )}
         </MapGL>
       </div>
     )
