@@ -105,7 +105,8 @@ export default class BarGraphTest extends Component {
     const {yScale} = this.state
 
     return (
-      <svg width={width} height={height}>
+      //width={width} height={height}</linearGradient>
+      <svg className="svg-container" viewBox="0 0 500 500">
         {this.state.bars.map((d, i) => (
           <svg key={i}>
             <defs>

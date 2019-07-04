@@ -186,10 +186,15 @@ class HomePage extends Component {
           )}
           {selectedAddress ? (
             <Popup
-              latitude={selectedAddress.location.coordinates[1]}
-              longitude={selectedAddress.location.coordinates[0]}
-              overflow="scroll"
+              latitude={this.state.viewport.latitude}
+              longitude={this.state.viewport.longitude}
+              style={{maxWidth: '200px'}}
               onClose={() => this.setState({selectedAddress: null, data: null})}
+              // height="500px"
+              // width="500px"
+              // marginRight="calc(50vw-250px)"
+              // marginBottom="calc(50vw-250px)"
+              className="popup"
             >
               <div>
                 <BarGraph rawData={data} />

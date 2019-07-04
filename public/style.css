@@ -16,6 +16,37 @@ body {
   margin: 0;
 }
 
+.mapboxgl-popup-content {
+  height: 500px;
+  width: 500px;
+  position: fixed;
+  margin-right: calc(50vw-250px);
+  margin-bottom: calc(50vh-250px);
+  background-color: transparent;
+}
+
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip {
+  border-bottom-color: transparent !important;
+}
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip {
+  border-top-color: transparent !important;
+}
+.mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+  border-right-color: transparent !important;
+}
+.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+  border-left-color: transparent !important;
+}
+
+/* .mapboxgl-popup-content {
+  overflow-y: scroll !important;
+  overflow-x: scroll !important;
+} */
+
 /* a {
   text-decoration: none;
 }
