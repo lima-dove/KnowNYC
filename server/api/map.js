@@ -8,47 +8,43 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 module.exports = router
 
-router.get(
-  '/getAll/:northLat,:southLat,:westLng,:eastLng',
-  async (req, res, next) => {
-    try {
-      const manhattanHoods = await Neighborhood.findAll({
-        where: {boroughId: 3},
-        include: NeighborhoodAggregate
-      })
+router.get('/getAll', async (req, res, next) => {
+  try {
+    const manhattanHoods = await Neighborhood.findAll({
+      where: {boroughId: 3},
+      include: NeighborhoodAggregate
+    })
 
-      let result = manhattanHoods.map(hood => {
-        hood = hood.dataValues
-        let complaints = {}
-        hood.neighborhood_aggregates.forEach(aggregate => {
-          aggregate = aggregate.dataValues
-          complaints[aggregate.complaint] = aggregate.frequency
-        })
-        let newObj = {
-          id: hood.id,
-          name: hood.name,
-          latitude: hood.center_latitude,
-          longitude: hood.center_longitude,
-          complaints,
-          total: hood.total_complaints
-        }
-        return newObj
+    let result = manhattanHoods.map(hood => {
+      hood = hood.dataValues
+      let complaints = {}
+      hood.neighborhood_aggregates.forEach(aggregate => {
+        aggregate = aggregate.dataValues
+        complaints[aggregate.complaint] = aggregate.frequency
       })
+      let newObj = {
+        id: hood.id,
+        name: hood.name,
+        latitude: hood.center_latitude,
+        longitude: hood.center_longitude,
+        complaints,
+        total: hood.total_complaints
+      }
+      return newObj
+    })
 
-      const newResult = result.map(complaintObject => {
-        let newArray = Object.entries(complaintObject.complaints)
-        console.log({newArray})
-        let sortedArray = newArray.sort((a, b) => {
-          return b[1] - a[1]
-        })
-        return {...complaintObject, complaints: sortedArray.slice(0, 5)}
+    const newResult = result.map(complaintObject => {
+      let newArray = Object.entries(complaintObject.complaints)
+      let sortedArray = newArray.sort((a, b) => {
+        return b[1] - a[1]
       })
-      res.send(newResult)
-    } catch (err) {
-      next(err)
-    }
+      return {...complaintObject, complaints: sortedArray.slice(0, 5)}
+    })
+    res.send(newResult)
+  } catch (err) {
+    next(err)
   }
-)
+})
 
 router.get(
   '/searchByArea/:northLat,:southLat,:westLng,:eastLng',

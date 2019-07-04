@@ -24,6 +24,7 @@ const getComplaints = async (neighborhoodObj, neighborhoodComplaints) => {
       ] = neighborhoodComplaints.Manhattan[neighborhood].concat(promise.data)
     })
   }
+
   for (let neighborhood in neighborhoodComplaints.Manhattan) {
     console.log(
       `Number of ${neighborhood} complaints`,
