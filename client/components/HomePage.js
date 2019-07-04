@@ -158,7 +158,7 @@ class HomePage extends Component {
           mapboxApiAccessToken={token}
           onClick={this.handleMapClick}
         >
-          {this.state.viewport.zoom > 14.5 ? (
+          {this.state.viewport.zoom > 15.5 ? (
             <div style={{display: 'flex', justifyContent: 'center'}}>
               <Button
                 onClick={this.handleSearchClick}
