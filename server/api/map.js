@@ -9,45 +9,46 @@ router.get(
   async (req, res, next) => {
     try {
       const {northLat, southLat, westLng, eastLng} = req.params
-      const complaintsByHood = await Neighborhood.findAll({
-        where: {
-          center_latitude: {
-            [Op.gt]: [Number(southLat)],
-            [Op.lt]: [Number(northLat)]
-          },
-          center_longitude: {
-            [Op.lt]: [Number(eastLng)],
-            [Op.gt]: [Number(westLng)]
-          }
-        },
-        include: [
-          {
-            model: Complaint,
-            as: 'complaints'
-          }
-        ]
-      })
-      const result = complaintsByHood.map((hood, idx) => {
-        let total = 0
-        let object = {}
-        for (let i = 0; i < hood.complaints.length; i++) {
-          if (object[hood.complaints[i].complaint_type]) {
-            object[hood.complaints[i].complaint_type]++
-          } else if (!object[hood.complaints[i].complaint_type]) {
-            object[hood.complaints[i].complaint_type] = 1
-          }
-          total++
-        }
-        let newObj = {
-          id: idx + 1,
-          name: hood.name,
-          latitude: hood.center_latitude,
-          longitude: hood.center_longitude,
-          complaints: object,
-          total
-        }
-        return newObj
-      })
+      // const complaintsByHood = await Neighborhood.findAll({
+      //   where: {
+      //     boroughId: 3
+      //     // center_latitude: {
+      //     //   [Op.gt]: [Number(southLat)],
+      //     //   [Op.lt]: [Number(northLat)]
+      //     // },
+      //     // center_longitude: {
+      //     //   [Op.lt]: [Number(eastLng)],
+      //     //   [Op.gt]: [Number(westLng)]
+      //     // }
+      //   },
+      //   include: [
+      //     {
+      //       model: Complaint,
+      //       as: 'complaints'
+      //     }
+      //   ]
+      // })
+      // const result = complaintsByHood.map((hood, idx) => {
+      //   let total = 0
+      //   let object = {}
+      //   for (let i = 0; i < hood.complaints.length; i++) {
+      //     if (object[hood.complaints[i].complaint_type]) {
+      //       object[hood.complaints[i].complaint_type]++
+      //     } else if (!object[hood.complaints[i].complaint_type]) {
+      //       object[hood.complaints[i].complaint_type] = 1
+      //     }
+      //     total++
+      //   }
+      //   let newObj = {
+      //     id: idx + 1,
+      //     name: hood.name,
+      //     latitude: hood.center_latitude,
+      //     longitude: hood.center_longitude,
+      //     complaints: object,
+      //     total
+      //   }
+      //   return newObj
+      // })
 
       const newResult = result.map((complaintObject, i) => {
         let newArray = Object.entries(complaintObject.complaints)
