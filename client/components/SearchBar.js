@@ -21,8 +21,8 @@ const useStyles = {
 }
 
 export default class MapSearchBar extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       searchInput: ''
     }
@@ -30,22 +30,22 @@ export default class MapSearchBar extends Component {
 
   handleChange = event => {
     const input = event.target.value
-    console.log(input)
-
     this.setState({
       searchInput: input
     })
   }
 
-  handleSubmit = () => {
-    this.props.onSubmit(this.state.searchInput)
-
+  handleSubmit = e => {
+    e.stopPropagation()
+    const capitalAddress = this.state.searchInput.toUpperCase()
+    this.props.handleSearchSubmit(capitalAddress)
     this.setState({
       searchInput: ''
     })
   }
 
   render() {
+    console.log('STATE', this.state)
     const classes = useStyles
     return (
       <Paper style={classes.root}>
@@ -54,6 +54,8 @@ export default class MapSearchBar extends Component {
           placeholder="Search KnowNYC"
           inputProps={{'aria-label': 'Search KnowNYC'}}
           onChange={this.handleChange}
+          value={this.state.searchInput}
+          draggable={false}
         />
         <IconButton
           style={classes.iconButton}
