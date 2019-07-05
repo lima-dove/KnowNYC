@@ -90,3 +90,17 @@ router.get(
     }
   }
 )
+
+router.get('/getAddress/:address', async (req, res, next) => {
+  try {
+    const address = req.params.address
+    const complaints = await Complaint.findAll({
+      where: {
+        incident_address: address
+      }
+    })
+    res.send(complaints)
+  } catch (error) {
+    next(error)
+  }
+})
