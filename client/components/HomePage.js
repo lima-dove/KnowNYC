@@ -4,6 +4,7 @@ import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import SearchBar from './SearchBar'
+import BarGraph from './BarGraphTest'
 
 const styles = theme => ({
   button: {
@@ -64,12 +65,12 @@ class HomePage extends Component {
     //WRITE FUNCTION
   }
 
-  handleNeighborhoodMarkerClick = complaint => {
+  handleNeighborhoodMarkerClick = neighborhoodAggregate => {
     console.log('MARKER CLICKED')
-    console.log({complaint})
+    console.log({neighborhoodAggregate})
     //Popup Logic requires selectedAddress
     // THE BELOW IS SPECIFICALLY FOR AGGREGATES
-    let data = complaint.complaints.map(complaintAggregate => {
+    let data = neighborhoodAggregate.complaints.map(complaintAggregate => {
       console.log({complaintAggregate})
       let aggregateObj = {
         type: complaintAggregate[0],
@@ -81,8 +82,13 @@ class HomePage extends Component {
 
     this.setState({
       selectedAddress: {
-        incident_address: complaint.name,
-        location: {coordinates: [complaint.latitude, complaint.longitude]}
+        incident_address: neighborhoodAggregate.name,
+        location: {
+          coordinates: [
+            neighborhoodAggregate.latitude,
+            neighborhoodAggregate.longitude
+          ]
+        }
       },
       data
     })
@@ -154,8 +160,8 @@ class HomePage extends Component {
           <SearchBar handleSearchSubmit={this.handleSearchSubmit} />
           {selectedAddress ? (
             <Marker
-              latitude={selectedAddress[0].latitude}
-              longitude={selectedAddress[0].longitude}
+              latitude={this.state.viewport.latitude}
+              longitude={this.state.viewport.longitude}
               offsetLeft={-20}
               offsetTop={-10}
             >
@@ -190,8 +196,9 @@ class HomePage extends Component {
                           src="http://i.imgur.com/WbMOfMl.png"
                           onClick={() =>
                             this.handleAddressMarkerClick(complaint)
-                          } // THIS FUNCTION NEEDS TO BE WRITTEN
-                        />
+                          }
+                        />{' '}
+                        // THIS FUNCTION NEEDS TO BE WRITTEN
                       </Marker>
                     )
                   })
@@ -200,19 +207,19 @@ class HomePage extends Component {
           ) : (
             <div>
               {neighborhoodComplaints
-                ? neighborhoodComplaints.map(complaint => {
+                ? neighborhoodComplaints.map(neighborhood => {
                     return (
                       <Marker
-                        key={complaint.id}
-                        latitude={complaint.latitude}
-                        longitude={complaint.longitude}
+                        key={neighborhood.id}
+                        latitude={neighborhood.latitude}
+                        longitude={neighborhood.longitude}
                         offsetLeft={-20}
                         offsetTop={-10}
                       >
                         <img
                           src="http://i.imgur.com/WbMOfMl.png"
                           onClick={() =>
-                            this.handleNeighborhoodMarkerClick(complaint)
+                            this.handleNeighborhoodMarkerClick(neighborhood)
                           }
                         />
                       </Marker>
@@ -230,21 +237,20 @@ class HomePage extends Component {
               onClose={() => this.setState({selectedAddress: null})}
               className="popup"
             >
-              {/* <div>
+              <div>
                 <BarGraph rawData={data} />
                 <h1>
                   Total Complaints for {selectedAddress.incident_address}:
                 </h1>
-                {'STUFF'}
-                {/* <h3>Complaint Type: {selectedAddress.complaint_type}</h3>
-                <p>Description: {selectedAddress.descriptor}</p> */}
-              <button
-                type="button"
-                onClick={() => this.handleSeeMoreClick(selectedAddress)}
-              >
-                See More...
-              </button>
-              {/*</div>*/}
+                <h3>Complaint Type: {selectedAddress.complaint_type}</h3>
+                <p>Description: {selectedAddress.descriptor}</p>
+                <button
+                  type="button"
+                  onClick={() => this.handleSeeMoreClick(selectedAddress)}
+                >
+                  See More...
+                </button>
+              </div>
             </Popup>
           ) : null}
         </MapGL>
