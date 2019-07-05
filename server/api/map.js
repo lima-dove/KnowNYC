@@ -63,7 +63,7 @@ router.get(
           }
         }
       })
-
+      // Returns an array of objects, each object has 4 properties: 1) address property and 2) complaints property with 2D array: each subelement is comprised of [type, frequency], sorted by frequency 3) latitude property, 4) longtitude property
       let obj = {}
       for (let i = 0; i < boundedComplaints.length; i++) {
         if (!obj[boundedComplaints[i].incident_address]) {
