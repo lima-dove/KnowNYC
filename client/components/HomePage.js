@@ -82,9 +82,10 @@ class HomePage extends Component {
 
   handleMapClick = e => {
     e.preventDefault()
-    this.setState({
-      selectedAddress: null
-    })
+ // Add other logic to close popup
+//     this.setState({
+//       selectedAddress: null
+//     })
   }
 
   handleSeeMoreClick = complaint => {
