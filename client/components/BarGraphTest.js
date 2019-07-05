@@ -56,7 +56,6 @@ export default class BarGraphTest extends Component {
     let data = rawData
 
     // Set axes domain variables using data
-    console.log({rawData})
     const frequencyMax = d3.max(data, d => d.frequency)
     const complaintDomain = data.map(complaint => complaint.type)
     xScale.domain(complaintDomain)
@@ -65,7 +64,6 @@ export default class BarGraphTest extends Component {
     // Set bar size values
     // let length = data.length
     const bars = data.map(d => {
-      console.log('frequency', d.frequency)
       return {
         x: xScale(d.type),
         y: yScale(d.frequency),
@@ -105,7 +103,8 @@ export default class BarGraphTest extends Component {
     const {yScale} = this.state
 
     return (
-      <svg width={width} height={height}>
+      //width={width} height={height}</linearGradient>
+      <svg className="svg-container" viewBox="0 0 500 500">
         {this.state.bars.map((d, i) => (
           <svg key={i}>
             <defs>
