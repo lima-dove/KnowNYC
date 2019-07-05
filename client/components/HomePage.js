@@ -244,7 +244,7 @@ class HomePage extends Component {
                 >
                   See More...
                 </button>
-              </div> */}
+          {/*</div>*/}
             </Popup>
           ) : null}
         </MapGL>
