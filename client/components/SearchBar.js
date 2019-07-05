@@ -35,8 +35,8 @@ export default class MapSearchBar extends Component {
     })
   }
 
-  handleSubmit = e => {
-    e.stopPropagation()
+  handleSubmit = event => {
+    event.nativeEvent.stopImmediatePropagation()
     const capitalAddress = this.state.searchInput.toUpperCase()
     this.props.handleSearchSubmit(capitalAddress)
     this.setState({
@@ -48,14 +48,13 @@ export default class MapSearchBar extends Component {
     console.log('STATE', this.state)
     const classes = useStyles
     return (
-      <Paper style={classes.root}>
+      <Paper style={classes.root} fullWidth={true}>
         <InputBase
           style={classes.input}
           placeholder="Search KnowNYC"
           inputProps={{'aria-label': 'Search KnowNYC'}}
           onChange={this.handleChange}
           value={this.state.searchInput}
-          draggable={false}
         />
         <IconButton
           style={classes.iconButton}

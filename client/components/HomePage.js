@@ -3,7 +3,6 @@ import {withStyles} from '@material-ui/core/styles'
 import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {Marker, Popup} from 'react-map-gl'
-import BarGraph from './BarGraphTest'
 import SearchBar from './SearchBar'
 
 const styles = theme => ({
@@ -81,10 +80,11 @@ class HomePage extends Component {
     })
   }
 
-  handleMapClick = () => {
-    // this.setState({
-    //   selectedAddress: null
-    // })
+  handleMapClick = e => {
+    e.preventDefault()
+    this.setState({
+      selectedAddress: null
+    })
   }
 
   handleSeeMoreClick = complaint => {
