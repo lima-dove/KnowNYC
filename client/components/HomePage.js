@@ -107,6 +107,13 @@ class HomePage extends Component {
     }
   }
 
+  disableScroll = event => {
+    console.log('DISABLE SCROLL')
+    this.mapRef.getMap().scrollZoom.disable()
+  }
+
+  // On mouse leave event
+
   render() {
     const {classes} = this.props
 
@@ -189,12 +196,16 @@ class HomePage extends Component {
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
               style={{maxWidth: '200px'}}
-              onClose={() => this.setState({selectedAddress: null, data: null})}
-              // height="500px"
-              // width="500px"
+              onClose={() => {
+                this.mapRef.scrollZoom.disable()
+              }} // width="500px" // height="500px"
               // marginRight="calc(50vw-250px)"
               // marginBottom="calc(50vw-250px)"
               className="popup"
+              onopen={() => {
+                console.log('HEY')
+                this.mapRef.props.scrollZoom = false
+              }}
             >
               <div>
                 <BarGraph rawData={data} />
@@ -210,7 +221,7 @@ class HomePage extends Component {
               </div>
             </Popup>
           ) : (
-            console.log('NO SELECTED ADDRESS, OR IS NULL')
+            console.log(this.props)
           )}
         </MapGL>
       </div>
