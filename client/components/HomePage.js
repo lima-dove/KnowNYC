@@ -203,7 +203,7 @@ class HomePage extends Component {
                         offsetTop={-10}
                       >
                         <img
-                          src="https://cdn.pixabay.com/photo/2014/04/02/10/45/poi-304466_960_720.png"
+                          src={greenPointer}
                           onClick={() =>
                             this.handleAddressMarkerClick(complaint)
                           }
