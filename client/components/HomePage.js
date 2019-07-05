@@ -5,6 +5,9 @@ import React, {Component} from 'react'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import SearchBar from './SearchBar'
 import BarGraph from './BarGraphTest'
+import redPointer from '../../public/red-location-pointer.png'
+import greenPointer from '../../public/green-location-pointer.png'
+import {green} from '@material-ui/core/colors'
 
 const styles = theme => ({
   button: {
@@ -23,6 +26,7 @@ class HomePage extends Component {
       neighborhoodComplaints: null,
       selectedAddress: null,
       data: null,
+      selectedMarkerImage: null,
       viewport: {
         latitude: 40.7484,
         longitude: -73.9857,
@@ -65,11 +69,15 @@ class HomePage extends Component {
     //WRITE FUNCTION
   }
 
-  handleNeighborhoodMarkerClick = neighborhoodAggregate => {
-    console.log('MARKER CLICKED')
-    console.log({neighborhoodAggregate})
+  handleNeighborhoodMarkerClick = (event, neighborhoodAggregate) => {
     //Popup Logic requires selectedAddress
     // THE BELOW IS SPECIFICALLY FOR AGGREGATES
+    let marker
+    if (this.state.selectedMarkerImage) {
+      marker = this.state.selectedMarkerImage
+      marker.src = greenPointer
+    }
+    event.target.src = redPointer
     let data = neighborhoodAggregate.complaints.map(complaintAggregate => {
       console.log({complaintAggregate})
       let aggregateObj = {
@@ -90,7 +98,8 @@ class HomePage extends Component {
           ]
         }
       },
-      data
+      data,
+      selectedMarkerImage: event.target
     })
   }
 
@@ -166,7 +175,8 @@ class HomePage extends Component {
               offsetTop={-10}
             >
               <img
-                src="http://i.imgur.com/WbMOfMl.png"
+                src="https://cdn.pixabay.com/photo/2014/04/02/10/45/poi-304466_960_720.png"
+                style={imageStyle}
                 onClick={() => this.handleMarkerClick(complaint)}
               />
             </Marker>
@@ -193,7 +203,7 @@ class HomePage extends Component {
                         offsetTop={-10}
                       >
                         <img
-                          src="http://i.imgur.com/WbMOfMl.png"
+                          src="https://cdn.pixabay.com/photo/2014/04/02/10/45/poi-304466_960_720.png"
                           onClick={() =>
                             this.handleAddressMarkerClick(complaint)
                           }
@@ -217,9 +227,12 @@ class HomePage extends Component {
                         offsetTop={-10}
                       >
                         <img
-                          src="http://i.imgur.com/WbMOfMl.png"
-                          onClick={() =>
-                            this.handleNeighborhoodMarkerClick(neighborhood)
+                          src={greenPointer}
+                          onClick={event =>
+                            this.handleNeighborhoodMarkerClick(
+                              event,
+                              neighborhood
+                            )
                           }
                         />
                       </Marker>
@@ -234,7 +247,12 @@ class HomePage extends Component {
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
               style={{maxWidth: '200px'}}
-              onClose={() => this.setState({selectedAddress: null})}
+              onClose={() => {
+                this.setState({selectedAddress: null})
+                const marker = this.state.selectedMarkerImage
+                marker.src = greenPointer
+                this.setState({selectedMarkerImage: null})
+              }}
               className="popup"
             >
               <div>
