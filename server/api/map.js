@@ -64,7 +64,6 @@ router.get(
         },
         attributes: ['id', 'incident_address', 'latitude', 'longitude']
       })
-      console.log('complaints', boundedComplaints[0])
       // Returns an array of objects, each object has 4 properties: 1) address property and 2) complaints property with 2D array: each subelement is comprised of [type, frequency], sorted by frequency 3) latitude property, 4) longtitude property
       let obj = {}
       for (let i = 0; i < boundedComplaints.length; i++) {
@@ -109,16 +108,41 @@ router.get('/getAddress/:location', async (req, res, next) => {
       })
     } else {
       let coordinatesArr = location.slice(1).split(',')
-      console.log('COORD====', coordinatesArr)
       complaints = await Complaint.findAll({
         where: {
           latitude: Number(coordinatesArr[0]),
           longitude: Number(coordinatesArr[1])
         }
       })
-      console.log('complaints========', complaints)
     }
-    res.send(complaints)
+    let aggrObj = {}
+    for (let i = 0; i < complaints.length; i++) {
+      if (aggrObj[complaints[i].complaint_type]) {
+        aggrObj[complaints[i].complaint_type]++
+      } else if (!aggrObj[complaints[i].complaint_type]) {
+        aggrObj[complaints[i].complaint_type] = 1
+      }
+    }
+
+    // let aggrArr = Object.entries(aggrObj)
+    let aggrArr = []
+    for (let key in aggrObj) {
+      let dataObj = {}
+      dataObj.frequency = aggrObj[key]
+      dataObj.type = key
+      aggrArr.push(dataObj)
+    }
+
+    console.log('COMPLAINTS=======', complaints[0])
+    const addressObj = {
+      incident_address: complaints[0].incident_address,
+      latitude: complaints[0].latitude,
+      longitude: complaints[0].longitude,
+      aggregate_data: aggrArr,
+      complaints: complaints
+    }
+
+    res.send(addressObj)
   } catch (error) {
     next(error)
   }
