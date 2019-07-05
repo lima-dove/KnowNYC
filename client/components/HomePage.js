@@ -21,6 +21,7 @@ class HomePage extends Component {
       complaints: [],
       neighborhoodComplaints: null,
       selectedAddress: null,
+      data: null,
       viewport: {
         latitude: 40.7484,
         longitude: -73.9857,
@@ -31,7 +32,9 @@ class HomePage extends Component {
     }
     this.handleSearchClick = this.handleSearchClick.bind(this)
     this.handleMapClick = this.handleMapClick.bind(this)
-    this.handleMarkerClick = this.handleMarkerClick.bind(this)
+    this.handleNeighborhoodMarkerClick = this.handleNeighborhoodMarkerClick.bind(
+      this
+    )
     this.handleSeeMoreClick = this.handleSeeMoreClick.bind(this)
     this.mapRef = React.createRef()
   }
@@ -55,7 +58,12 @@ class HomePage extends Component {
     this.setState({complaints: data})
   }
 
-  handleMarkerClick = complaint => {
+  handleAddressMarkerClick = () => {
+    console.log('AN ADDRESS MARKER WAS CLICKED; WRITE MY FUNCTION!')
+    //WRITE FUNCTION
+  }
+
+  handleNeighborhoodMarkerClick = complaint => {
     console.log('MARKER CLICKED')
     console.log({complaint})
     //Popup Logic requires selectedAddress
@@ -125,10 +133,13 @@ class HomePage extends Component {
       neighborhoodComplaints
     } = this.state
 
+    const scrollZoom = !selectedAddress
+
     return (
       <div>
         <MapGL
           id="mapGl"
+          scrollZoom={scrollZoom}
           {...viewport}
           width="100vw"
           height="88vh"
@@ -162,7 +173,9 @@ class HomePage extends Component {
                       >
                         <img
                           src="http://i.imgur.com/WbMOfMl.png"
-                          onClick={() => this.handleMarkerClick(complaint)}
+                          onClick={() =>
+                            this.handleAddressMarkerClick(complaint)
+                          } // THIS FUNCTION NEEDS TO BE WRITTEN
                         />
                       </Marker>
                     )
@@ -183,7 +196,9 @@ class HomePage extends Component {
                       >
                         <img
                           src="http://i.imgur.com/WbMOfMl.png"
-                          onClick={() => this.handleMarkerClick(complaint)}
+                          onClick={() =>
+                            this.handleNeighborhoodMarkerClick(complaint)
+                          }
                         />
                       </Marker>
                     )
@@ -191,27 +206,23 @@ class HomePage extends Component {
                 : null}
             </div>
           )}
-          {selectedAddress ? (
+          {/* SelectedAddress logic: Click a marker neighborhood ONLY */}
+          {selectedAddress && this.state.viewport.zoom < 15.5 ? (
             <Popup
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
               style={{maxWidth: '200px'}}
-              onClose={() => {
-                this.mapRef.scrollZoom.disable()
-              }} // width="500px" // height="500px"
-              // marginRight="calc(50vw-250px)"
-              // marginBottom="calc(50vw-250px)"
+              onClose={() => this.setState({selectedAddress: null})}
               className="popup"
-              onopen={() => {
-                console.log('HEY')
-                this.mapRef.props.scrollZoom = false
-              }}
             >
               <div>
                 <BarGraph rawData={data} />
-                <h1>Complaints for {selectedAddress.incident_address}</h1>
-                <h3>Complaint Type: {selectedAddress.complaint_type}</h3>
-                <p>Description: {selectedAddress.descriptor}</p>
+                <h1>
+                  Total Complaints for {selectedAddress.incident_address}:
+                </h1>
+                {'STUFF'}
+                {/* <h3>Complaint Type: {selectedAddress.complaint_type}</h3>
+                <p>Description: {selectedAddress.descriptor}</p> */}
                 <button
                   type="button"
                   onClick={() => this.handleSeeMoreClick(selectedAddress)}
@@ -220,9 +231,7 @@ class HomePage extends Component {
                 </button>
               </div>
             </Popup>
-          ) : (
-            console.log(this.props)
-          )}
+          ) : null}
         </MapGL>
       </div>
     )
