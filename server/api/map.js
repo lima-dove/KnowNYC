@@ -61,44 +61,63 @@ router.get(
             [Op.lt]: [Number(eastLng)],
             [Op.gt]: [Number(westLng)]
           }
-        }
+        },
+        attributes: ['id', 'incident_address', 'latitude', 'longitude']
       })
+      console.log('complaints', boundedComplaints[0])
       // Returns an array of objects, each object has 4 properties: 1) address property and 2) complaints property with 2D array: each subelement is comprised of [type, frequency], sorted by frequency 3) latitude property, 4) longtitude property
       let obj = {}
       for (let i = 0; i < boundedComplaints.length; i++) {
         if (!obj[boundedComplaints[i].incident_address]) {
-          obj[boundedComplaints[i].incident_address] = [boundedComplaints[i]]
-        } else {
-          obj[boundedComplaints[i].incident_address].push(boundedComplaints[i])
+          obj[boundedComplaints[i].incident_address] = boundedComplaints[i]
         }
       }
+      let addressArray = []
+      for (let key in obj) {
+        addressArray.push(obj[key])
+      }
 
-      let addressArray = Object.entries(obj)
-      const groupedByAddress = addressArray.map((el, idx) => {
-        let newObj = {}
-        newObj.id = idx + 1
-        newObj.address = el[0]
-        newObj.complaints = el[1]
-        newObj.latitude = el[1][0].latitude
-        newObj.longitude = el[1][0].longitude
-        return newObj
-      })
+      // let addressArray = Object.entries(obj)
+      // const groupedByAddress = addressArray.map((el, idx) => {
+      //   let newObj = {}
+      //   newObj.id = idx + 1
+      //   newObj.address = el[0]
+      //   newObj.complaints = el[1]
+      //   newObj.latitude = el[1][0].latitude
+      //   newObj.longitude = el[1][0].longitude
+      //   return newObj
+      // })
+      // console.log('GROUP===', groupedByAddress[0].complaints[0])
 
-      res.send(groupedByAddress)
+      res.send(addressArray)
     } catch (err) {
       next(err)
     }
   }
 )
 
-router.get('/getAddress/:address', async (req, res, next) => {
+router.get('/getAddress/:location', async (req, res, next) => {
   try {
-    const address = req.params.address
-    const complaints = await Complaint.findAll({
-      where: {
-        incident_address: address
-      }
-    })
+    let complaints
+    let location = req.params.location
+    if (location[0] === 'A') {
+      const address = location.slice(1)
+      complaints = await Complaint.findAll({
+        where: {
+          incident_address: address
+        }
+      })
+    } else {
+      let coordinatesArr = location.slice(1).split(',')
+      console.log('COORD====', coordinatesArr)
+      complaints = await Complaint.findAll({
+        where: {
+          latitude: Number(coordinatesArr[0]),
+          longitude: Number(coordinatesArr[1])
+        }
+      })
+      console.log('complaints========', complaints)
+    }
     res.send(complaints)
   } catch (error) {
     next(error)
