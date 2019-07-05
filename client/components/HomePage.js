@@ -125,8 +125,6 @@ class HomePage extends Component {
       neighborhoodComplaints
     } = this.state
 
-    console.log('ADDRESS', selectedAddress)
-
     return (
       <div>
         <MapGL

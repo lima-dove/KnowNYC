@@ -45,10 +45,9 @@ export default class MapSearchBar extends Component {
   }
 
   render() {
-    console.log('STATE', this.state)
     const classes = useStyles
     return (
-      <Paper style={classes.root} fullWidth={true}>
+      <Paper style={classes.root}>
         <InputBase
           style={classes.input}
           placeholder="Search KnowNYC"
