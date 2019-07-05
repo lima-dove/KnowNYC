@@ -5,8 +5,8 @@ import React, {Component} from 'react'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import SearchBar from './SearchBar'
 import BarGraph from './BarGraphTest'
-import redPointer from '../../public/red-location-pointer.png'
-import greenPointer from '../../public/green-location-pointer.png'
+import redPointer from '../../markers/red-marker.png'
+import greenPointer from '../../markers/green-marker.png'
 import {green} from '@material-ui/core/colors'
 
 const styles = theme => ({
@@ -139,6 +139,7 @@ class HomePage extends Component {
   }
 
   render() {
+    console.log(greenPointer)
     const {classes} = this.props
 
     const {
