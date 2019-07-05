@@ -3,7 +3,7 @@ import {withStyles} from '@material-ui/core/styles'
 import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {Marker, Popup} from 'react-map-gl'
-import BarGraph from './BarGraphTest'
+import SearchBar from './SearchBar'
 
 const styles = theme => ({
   button: {
@@ -33,6 +33,7 @@ class HomePage extends Component {
     this.handleMapClick = this.handleMapClick.bind(this)
     this.handleMarkerClick = this.handleMarkerClick.bind(this)
     this.handleSeeMoreClick = this.handleSeeMoreClick.bind(this)
+    this.handleSearchSubmit = this.handleSearchSubmit.bind(this)
     this.mapRef = React.createRef()
   }
 
@@ -79,10 +80,12 @@ class HomePage extends Component {
     })
   }
 
-  handleMapClick = () => {
-    this.setState({
-      selectedAddress: null
-    })
+  handleMapClick = e => {
+    e.preventDefault()
+    // Add other logic to close popup
+    //     this.setState({
+    //       selectedAddress: null
+    //     })
   }
 
   handleSeeMoreClick = complaint => {
@@ -105,6 +108,11 @@ class HomePage extends Component {
     } else {
       this.setState({viewport: viewport})
     }
+  }
+
+  async handleSearchSubmit(address) {
+    const {data} = await axios.get(`api/map/getAddress/${address}`)
+    this.setState({selectedAddress: data})
   }
 
   render() {
@@ -132,6 +140,20 @@ class HomePage extends Component {
           mapboxApiAccessToken={token}
           onClick={this.handleMapClick}
         >
+          <SearchBar handleSearchSubmit={this.handleSearchSubmit} />
+          {selectedAddress ? (
+            <Marker
+              latitude={selectedAddress[0].latitude}
+              longitude={selectedAddress[0].longitude}
+              offsetLeft={-20}
+              offsetTop={-10}
+            >
+              <img
+                src="http://i.imgur.com/WbMOfMl.png"
+                onClick={() => this.handleMarkerClick(complaint)}
+              />
+            </Marker>
+          ) : null}
           {this.state.viewport.zoom > 15.5 ? (
             <div>
               <div style={{display: 'flex', justifyContent: 'center'}}>
@@ -191,7 +213,7 @@ class HomePage extends Component {
               overflow="scroll"
               onClose={() => this.setState({selectedAddress: null, data: null})}
             >
-              <div>
+              {/* <div>
                 <BarGraph rawData={data} />
                 <h1>Complaints for {selectedAddress.incident_address}</h1>
                 <h3>Complaint Type: {selectedAddress.complaint_type}</h3>
@@ -202,7 +224,7 @@ class HomePage extends Component {
                 >
                   See More...
                 </button>
-              </div>
+              </div> */}
             </Popup>
           ) : (
             console.log('NO SELECTED ADDRESS, OR IS NULL')
