@@ -158,7 +158,7 @@ class HomePage extends Component {
           onClick={this.handleMapClick}
         >
           <SearchBar handleSearchSubmit={this.handleSearchSubmit} />
-          {selectedAddress ? (
+          {/* {selectedAddress ? (
             <Marker
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
@@ -170,7 +170,7 @@ class HomePage extends Component {
                 onClick={() => this.handleMarkerClick(complaint)}
               />
             </Marker>
-          ) : null}
+          ) : null} */}
           {this.state.viewport.zoom > 15.5 ? (
             <div>
               <div style={{display: 'flex', justifyContent: 'center'}}>
