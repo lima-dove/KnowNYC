@@ -21,7 +21,7 @@
     "start": "node server",
     "start-dev": "NODE_ENV='development' npm run build-client-watch & NODE_ENV='development' npm run start-server",
     "start-server": "nodemon server -e html,js,scss --ignore public --ignore client",
-    "test": "NODE_ENV='test' mocha \"./tests/*.spec.js\" --require @babel/polyfill --require @babel/register"
+    "test": "NODE_ENV='test' mocha \"./tests/*.spec.js\" --require @babel/polyfill --require @babel/register --require ./mochacfg.js"
   },
   "husky": {
     "hooks": {
@@ -52,6 +52,7 @@
     "d3": "^5.9.5",
     "express": "^4.16.4",
     "express-session": "^1.15.1",
+    "file-loader": "^4.0.0",
     "firebase": "^6.2.3",
     "history": "^4.9.0",
     "mapbox": "^1.0.0-beta10",
@@ -75,7 +76,8 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "sequelize": "^5.3.1",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.2.0",
+    "url-loader": "^2.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.4.3",
