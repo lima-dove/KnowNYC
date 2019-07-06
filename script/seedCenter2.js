@@ -19,24 +19,25 @@ const findMaxArray = nestedArray => {
   return maxArray
 }
 
-// ITERATOR VARIABLES
+// ITERATOR
+let total = 0
 let object = {}
-let arrayOfHoodObjects = []
-let complaintType = []
+let complaintsByHood = []
+let complaintTypes = []
 let complaintRow
 
-// Recieve complaint types from all neighborhoods array, where each element is a neighborhood object with a complaints key
-const complaintTypeIterator = {
+// Recieve complaint types from
+const complaintTypesIterator = {
   [Symbol.asyncIterator]: function() {
     let k = -1
     return {
       next: async function() {
         k++
-        if (k < complaintType.length) {
+        if (k < complaintTypes.length) {
           complaintRow = await NeighborhoodAggregate.create({
-            neighborhoodId: object[complaintType[k]].neighborhoodId,
-            complaint: complaintType[k],
-            frequency: object[complaintType[k]].frequency
+            neighborhoodId: object[complaintTypes[k]].neighborhoodId,
+            complaint: complaintTypes[k],
+            frequency: object[complaintTypes[k]].frequency
           })
           return {value: complaintRow.id, done: false}
         }
@@ -46,21 +47,17 @@ const complaintTypeIterator = {
   }
 }
 
-const neighborhoodAggregateRowCreateIterator = {
+const neighborhoodAggregateRowCreator = {
   [Symbol.asyncIterator]: function() {
-    let i = -1
-    let hood
-    let total = 0
-
+    let i = 0
+    console.log({i})
     return {
       next: async function() {
-        i++
-        hood = arrayOfHoodObjects[i]
-        if (i < arrayOfHoodObjects.length) {
-          total = hood.complaints.length
-          // Build a new neighborhood's object:
-          object = {}
+        let hood = complaintsByHood[i]
+        total = hood.complaints.length
+        if (i < total) {
           for (let j = 0; j < total; j++) {
+            // Build a neighborhood object:
             // Check if the neighborhood's object already has this complaint type object:
             if (object.hasOwnProperty([hood.complaints[j].complaint_type])) {
               object[hood.complaints[j].complaint_type].frequency++ // If yes, increment the frequency
@@ -81,21 +78,25 @@ const neighborhoodAggregateRowCreateIterator = {
             {total_complaints: total},
             {where: {id: hood.id}}
           )
-
-          complaintType = new Set()
+          complaintTypes = new Set()
           for (let complaint in object) {
             if (object.hasOwnProperty(complaint)) {
-              complaintType.add(complaint)
+              complaintTypes.add(complaint)
             }
           }
-          complaintType = [...complaintType]
-          for await (const complaintAggregate of complaintTypeIterator) {
+
+          console.log(complaintTypes.size)
+          complaintTypes = [...complaintTypes]
+          console.log(complaintTypes.length)
+          console.log({complaintTypes})
+          for await (const complaintAggregate of complaintTypesIterator) {
             // console.log({complaintAggregate})
           }
+          i++
 
           return {
             value: {
-              complaintTypeLength: complaintType.length,
+              complaintTypes,
               neighborhoodId: complaintRow.dataValues.neighborhoodId,
               complaint: complaintRow.dataValues.complaint,
               frequency: complaintRow.dataValues.frequency
@@ -103,12 +104,7 @@ const neighborhoodAggregateRowCreateIterator = {
             done: false
           }
         }
-        return {
-          value: `updated ${arrayOfHoodObjects[i - 1].id} with total: ${
-            arrayOfHoodObjects[i - 1].complaints.length
-          }`,
-          done: true
-        }
+        return {value: `updated ${hood.id} with total: ${total}`, done: true}
       }
     }
   }
@@ -117,7 +113,7 @@ const neighborhoodAggregateRowCreateIterator = {
 const createAggregates = async () => {
   try {
     // Returns an array of neighborhood objects whose name key is the neighborhood name and whose complaints key is an array of complaints from that neighborhood
-    arrayOfHoodObjects = await Neighborhood.findAll({
+    complaintsByHood = await Neighborhood.findAll({
       where: {
         boroughId: 3
       },
@@ -128,12 +124,8 @@ const createAggregates = async () => {
         }
       ]
     })
-    console.log(
-      'what does the last+1 index of arrayhoodobjects equal?',
-      arrayOfHoodObjects[arrayOfHoodObjects.length]
-    )
 
-    for await (const row of neighborhoodAggregateRowCreateIterator) {
+    for await (const row of neighborhoodAggregateRowCreator) {
       // console.log({row})
     }
   } catch (err) {
