@@ -36,7 +36,8 @@ function TabContainer({children, dir}) {
 
 const styles = theme => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
+    width: '100%'
   },
   title: {
     flexGrow: 1,
@@ -209,83 +210,73 @@ class InfoPage extends React.Component {
               </Card>
             </Grid>
           </Grid>
-          <br />
-          <Paper className={classes.root}>
+        </Container>
+        <br />
+        <Paper className={classes.root}>
+          <AppBar position="static" color="default">
             <Tabs
               value={this.state.tabValue}
               onChange={this.handleTabChange}
               indicatorColor="primary"
               textColor="primary"
-              centered
+              variant="standard"
+              tabIndicatorProps={{width: '100px'}}
+              scrollButtons="on"
             >
               <Tab label="All Complaints" />
               <Tab label="311 Complaints" />
               <Tab label="User Complaints" />
             </Tabs>
-
-            <SwipeableViews
-              axis={
-                classes.tabDirection.direction === 'rtl' ? 'x-reverse' : 'x'
-              }
-              index={this.state.tabValue}
-              onChangeIndex={this.handleChangeIndex}
-            >
-              <TabContainer dir={classes.tabDirection.direction}>
-                <Paper className={classes.paperTable}>
-                  <Table className={classes.tableTable}>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell align="center">Address</TableCell>
-                        <TableCell align="center">Complaint Type</TableCell>
-                        <TableCell align="center">Description</TableCell>
-                        <TableCell align="center">Resolution</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {this.state.complaints.map(complaint => {
-                        return (
-                          // <Paper
-                          //   key={complaint.unique_key}
-                          //   className={classes.paperTable}
-                          // >
-                          //   <Table className={classes.tableTable}>
-                          //     <TableHead>
-                          //       <TableRow>
-                          //         <TableCell>Address</TableCell>
-                          //         <TableCell align="right">Complaint Type</TableCell>
-                          //         <TableCell align="right">Description</TableCell>
-                          //         <TableCell align="right">Resolution</TableCell>
-                          //       </TableRow>
-                          //     </TableHead>
-                          <TableRow key={complaint.unique_key}>
-                            <TableCell component="th" scope="row">
-                              {complaint.incident_address}
-                            </TableCell>
-                            <TableCell align="center">
-                              {complaint.complaint_type}
-                            </TableCell>
-                            <TableCell align="center">
-                              {complaint.descriptor}
-                            </TableCell>
-                            <TableCell align="center">
-                              {complaint.resolution_description}
-                            </TableCell>
-                          </TableRow>
-                        )
-                      })}
-                    </TableBody>
-                  </Table>
-                </Paper>
-              </TabContainer>
-              <TabContainer dir={classes.tabDirection.direction}>
-                Item Two
-              </TabContainer>
-              <TabContainer dir={classes.tabDirection.direction}>
-                Item Three
-              </TabContainer>
-            </SwipeableViews>
-          </Paper>
-        </Container>
+          </AppBar>
+          <SwipeableViews
+            enableMouseEvents
+            animateHeight={true}
+            axis={classes.tabDirection.direction === 'rtl' ? 'x-reverse' : 'x'}
+            index={this.state.tabValue}
+            onChangeIndex={this.handleChangeIndex}
+          >
+            <TabContainer dir={classes.tabDirection.direction}>
+              <Paper className={classes.paperTable}>
+                <Table className={classes.tableTable}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">Address</TableCell>
+                      <TableCell align="center">Complaint Type</TableCell>
+                      <TableCell align="center">Description</TableCell>
+                      <TableCell align="center">Resolution</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {this.state.complaints.map(complaint => {
+                      return (
+                        <TableRow key={complaint.unique_key}>
+                          <TableCell component="th" scope="row">
+                            {complaint.incident_address}
+                          </TableCell>
+                          <TableCell align="center">
+                            {complaint.complaint_type}
+                          </TableCell>
+                          <TableCell align="center">
+                            {complaint.descriptor}
+                          </TableCell>
+                          <TableCell align="center">
+                            {complaint.resolution_description}
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                  </TableBody>
+                </Table>
+              </Paper>
+            </TabContainer>
+            <TabContainer dir={classes.tabDirection.direction}>
+              Item Two
+            </TabContainer>
+            <TabContainer dir={classes.tabDirection.direction}>
+              Item Three
+            </TabContainer>
+          </SwipeableViews>
+        </Paper>
         <br />
       </div>
     )

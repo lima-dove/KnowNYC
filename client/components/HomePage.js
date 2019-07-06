@@ -144,7 +144,7 @@ class HomePage extends Component {
   }
 
   mouseHandle() {
-    this.setState({mouse: !this.state.mouse})
+    this.setState({mouse: true})
   }
 
   render() {
@@ -162,6 +162,7 @@ class HomePage extends Component {
     } = this.state
 
     const scrollZoom = !selectedAddress
+    console.log(this.refs.hi)
 
     return (
       <div>
@@ -270,6 +271,8 @@ class HomePage extends Component {
           {selectedAddress ? (
             <div onMouseEnter={this.mouseHandle}>
               <Popup
+                ref="hi"
+                closeOnClick={false}
                 latitude={this.state.viewport.latitude}
                 longitude={this.state.viewport.longitude}
                 style={{maxWidth: '10%'}}
