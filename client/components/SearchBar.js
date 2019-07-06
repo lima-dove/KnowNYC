@@ -83,7 +83,8 @@ export default class MapSearchBar extends Component {
     })
   }
 
-  handleClickSubmit = address => {
+  handleClickSubmit = (event, address) => {
+    console.log({address})
     let searchAddress
     if (address) {
       const slicedAddress = address.slice(0, address.indexOf(','))
@@ -111,6 +112,7 @@ export default class MapSearchBar extends Component {
 
   render() {
     const classes = useStyles
+    const {error} = this.props
     const {searchInput, autoComplete} = this.state
     return (
       <div>
@@ -131,6 +133,13 @@ export default class MapSearchBar extends Component {
             <SearchIcon />
           </IconButton>
         </Paper>
+        {error ? (
+          <Paper style={classes.root}>
+            <p style={{color: 'red'}}>
+              Address Does Not Exist OR Address Has No Complaints
+            </p>
+          </Paper>
+        ) : null}
         {autoComplete ? (
           <Paper style={classes.dropDown}>
             {autoComplete.features.map(address => (

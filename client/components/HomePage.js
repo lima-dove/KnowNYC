@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import Button from '@material-ui/core/Button'
 import {withStyles} from '@material-ui/core/styles'
 import axios from 'axios'
@@ -26,6 +27,7 @@ class HomePage extends Component {
       selectedNeighborhood: null,
       selectedAddress: null,
       data: null,
+      searchError: false,
       viewport: {
         latitude: 40.7484,
         longitude: -73.9857,
@@ -138,21 +140,35 @@ class HomePage extends Component {
   }
 
   async handleSearchSubmit(address) {
-    const {data} = await axios.get(`api/map/getAddress/A${address}`)
-    this.setState({
-      selectedAddress: data,
-      viewport: {
-        latitude: data.latitude,
-        longitude: data.longitude,
-        zoom: 18,
-        bearing: 0,
-        pitch: 0
+    try {
+      const {data} = await axios.get(`api/map/getAddress/A${address}`)
+      this.setState({
+        selectedAddress: data,
+        viewport: {
+          latitude: data.latitude,
+          longitude: data.longitude,
+          zoom: 18,
+          bearing: 0,
+          pitch: 0
+        }
+      })
+    } catch (error) {
+      if (error.response.status === 500) {
+        this.setState(
+          {
+            searchError: true
+          },
+          () => {
+            setTimeout(() => {
+              this.setState({searchError: false})
+            }, 3000)
+          }
+        )
       }
-    })
+    }
   }
 
   render() {
-    console.log('SELECTED_ADDRESS===', this.state.selectedAddress)
     const {classes} = this.props
 
     const {
@@ -161,7 +177,8 @@ class HomePage extends Component {
       selectedAddress,
       selectedNeighborhood,
       data,
-      neighborhoodComplaints
+      neighborhoodComplaints,
+      searchError
     } = this.state
 
     const scrollZoom = !selectedAddress
@@ -189,6 +206,7 @@ class HomePage extends Component {
             <SearchBar
               handleSearchSubmit={this.handleSearchSubmit}
               captureClick={true}
+              error={searchError}
             />
             {selectedAddress ? (
               <Marker
