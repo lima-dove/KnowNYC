@@ -83,8 +83,7 @@ export default class MapSearchBar extends Component {
     })
   }
 
-  handleClickSubmit = (event, address) => {
-    console.log({address})
+  handleClickSubmit = address => {
     let searchAddress
     if (address) {
       const slicedAddress = address.slice(0, address.indexOf(','))

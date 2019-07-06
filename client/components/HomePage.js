@@ -67,7 +67,6 @@ class HomePage extends Component {
   }
 
   async handleAddressMarkerClick(address) {
-    console.log('ADDRESS========', address)
     let response
     if (address.incident_address) {
       response = await axios.get(
@@ -85,19 +84,15 @@ class HomePage extends Component {
   }
 
   handleNeighborhoodMarkerClick = complaint => {
-    console.log('MARKER CLICKED')
-    console.log({complaint})
     //Popup Logic requires selectedAddress
     // THE BELOW IS SPECIFICALLY FOR AGGREGATES
     let data = complaint.complaints.map(complaintAggregate => {
-      console.log({complaintAggregate})
       let aggregateObj = {
         type: complaintAggregate[0],
         frequency: complaintAggregate[1]
       }
       return aggregateObj
     })
-    console.log('handlemarkerclick object', data)
 
     this.setState({
       selectedNeighborhood: {
@@ -106,7 +101,6 @@ class HomePage extends Component {
       },
       data
     })
-    console.log('NEIGHBORRHOOD===', this.state.selectedNeighborhood)
   }
 
   handleMapClick = e => {
