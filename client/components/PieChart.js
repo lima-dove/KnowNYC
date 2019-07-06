@@ -41,19 +41,21 @@ const PieChart = props => {
   // }
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${size} ${size}`}>
-      <g transform={`translate(${radius}, ${radius})`}>
-        {chart(data).map((d, i) => (
-          <g key={i} className="arc">
-            <path d={dataArc(d)} fill={colors(d.data.type)} />
+    <div id="chart">
+      <svg width={width} height={height} viewBox={`0 0 ${size} ${size}`}>
+        <g transform={`translate(${radius}, ${radius})`}>
+          {chart(data).map((d, i) => (
+            <g key={i} className="arc">
+              <path d={dataArc(d)} fill={colors(d.data.type)} />
 
-            <text dy=".35em" transform={`translate(${labelArc.centroid(d)})`}>
-              {d.data.type}
-            </text>
-          </g>
-        ))}
-      </g>
-    </svg>
+              <text dy=".35em" transform={`translate(${labelArc.centroid(d)})`}>
+                {d.data.type}
+              </text>
+            </g>
+          ))}
+        </g>
+      </svg>
+    </div>
   )
 }
 

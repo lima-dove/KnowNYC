@@ -272,7 +272,7 @@ class HomePage extends Component {
               <Popup
                 latitude={this.state.viewport.latitude}
                 longitude={this.state.viewport.longitude}
-                style={{maxWidth: '200px'}}
+                style={{maxWidth: '10%'}}
                 onClose={() => this.setState({selectedAddress: null})}
                 className="popup"
               >

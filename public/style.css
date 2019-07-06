@@ -1,7 +1,7 @@
-#infoPage {
-  z-index: 1;
+#chart {
+  width: 50%;
+  height: 50%;
 }
-
 .MuiGrid-item {
   text-align: center;
 }
@@ -21,6 +21,8 @@ body {
 }
 
 .mapboxgl-popup-content {
+  transition: transform 2s;
+  /* transition-property: all; */
   height: 500px;
   width: 500px;
   position: fixed;
@@ -29,6 +31,9 @@ body {
   background-color: transparent;
   overflow-y: scroll !important;
   overflow-x: scroll !important;
+}
+.mapboxgl-popup-content:hover {
+  transform: scale(1.25, 1.25);
 }
 
 .mapboxgl-popup-anchor-top .mapboxgl-popup-tip,
