@@ -4,6 +4,11 @@ import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {FlyToInterpolator, Marker, Popup} from 'react-map-gl'
 import BarGraph from './BarGraphTest'
+import redPointer from '../../markers/red-marker.png'
+import greenPointer from '../../markers/green-marker.png'
+import greenDot from '../../markers/green-circle.png'
+import redDot from '../../markers/red-circle.png'
+import {green} from '@material-ui/core/colors'
 import SearchBar from './SearchBar'
 
 const styles = theme => ({
@@ -12,6 +17,8 @@ const styles = theme => ({
     justifySelf: 'center'
   }
 })
+
+const dotStyle = {width: '15px', height: '15px'}
 
 const token =
   'pk.eyJ1IjoibnNjaGVmZXIiLCJhIjoiY2p2Mml0azl1MjVtejQ0bzBmajZhOHViZCJ9.iPyB8tGgsYgboP_fKLQGnw'
@@ -26,6 +33,8 @@ class HomePage extends Component {
       selectedNeighborhood: null,
       selectedAddress: null,
       data: null,
+      selectedMarkerImage: null,
+      selectedDotImage: null,
       viewport: {
         latitude: 40.7484,
         longitude: -73.9857,
@@ -61,10 +70,20 @@ class HomePage extends Component {
     const {data} = await axios.get(
       `/api/map/searchByArea/${northLat},${southLat},${westLng},${eastLng}`
     )
+    console.log(data)
     this.setState({boundaryAddresses: data})
   }
 
-  async handleAddressMarkerClick(address) {
+  async handleAddressMarkerClick(event, address) {
+    let dot
+    if (this.state.selectedDotImage) {
+      dot = this.state.selectedDotImage
+      dot.src = greenDot
+    }
+    event.target.src = redDot
+    this.setState({
+      selectedDotImage: event.target
+    })
     console.log('ADDRESS========', address)
     let response
     if (address.incident_address) {
@@ -76,18 +95,22 @@ class HomePage extends Component {
         `api/map/getAddress/C${address.latitude},${address.longitude}`
       )
     }
-
-    this.setState({
+    await this.setState({
       selectedAddress: response.data
     })
   }
 
-  handleNeighborhoodMarkerClick = complaint => {
-    console.log('MARKER CLICKED')
-    console.log({complaint})
+  handleNeighborhoodMarkerClick = (event, neighborhoodAggregate) => {
+    console.log(neighborhoodAggregate)
     //Popup Logic requires selectedAddress
     // THE BELOW IS SPECIFICALLY FOR AGGREGATES
-    let data = complaint.complaints.map(complaintAggregate => {
+    let marker
+    if (this.state.selectedMarkerImage) {
+      marker = this.state.selectedMarkerImage
+      marker.src = greenPointer
+    }
+    event.target.src = redPointer
+    let data = neighborhoodAggregate.complaints.map(complaintAggregate => {
       console.log({complaintAggregate})
       let aggregateObj = {
         type: complaintAggregate[0],
@@ -99,10 +122,16 @@ class HomePage extends Component {
 
     this.setState({
       selectedNeighborhood: {
-        incident_address: complaint.name,
-        location: {coordinates: [complaint.latitude, complaint.longitude]}
+        incident_address: neighborhoodAggregate.name,
+        location: {
+          coordinates: [
+            neighborhoodAggregate.latitude,
+            neighborhoodAggregate.longitude
+          ]
+        }
       },
-      data
+      data,
+      selectedMarkerImage: event.target
     })
     console.log('NEIGHBORRHOOD===', this.state.selectedNeighborhood)
   }
@@ -160,11 +189,13 @@ class HomePage extends Component {
       viewport,
       selectedAddress,
       selectedNeighborhood,
+      selectedMarkerImage,
+      selectedDotImage,
       data,
       neighborhoodComplaints
     } = this.state
 
-    const scrollZoom = !selectedAddress
+    const scrollZoom = !selectedMarkerImage && !selectedDotImage
 
     return (
       <div>
@@ -198,8 +229,11 @@ class HomePage extends Component {
                 offsetTop={-10}
               >
                 <img
-                  src="http://i.imgur.com/WbMOfMl.png"
-                  onClick={() => this.handleMarkerClick(complaint)}
+                  style={dotStyle}
+                  src={greenDot}
+                  onClick={() =>
+                    this.handleAddressMarkerClick(event, selectedAddress)
+                  }
                 />
               </Marker>
             ) : null}
@@ -225,9 +259,10 @@ class HomePage extends Component {
                           offsetTop={-10}
                         >
                           <img
-                            src="http://i.imgur.com/WbMOfMl.png"
-                            onClick={() =>
-                              this.handleAddressMarkerClick(address)
+                            style={dotStyle}
+                            src={greenDot}
+                            onClick={event =>
+                              this.handleAddressMarkerClick(event, address)
                             } // THIS FUNCTION NEEDS TO BE WRITTEN
                           />
                         </Marker>
@@ -248,9 +283,12 @@ class HomePage extends Component {
                           offsetTop={-10}
                         >
                           <img
-                            src="http://i.imgur.com/WbMOfMl.png"
-                            onClick={() =>
-                              this.handleNeighborhoodMarkerClick(complaint)
+                            src={greenPointer}
+                            onClick={event =>
+                              this.handleNeighborhoodMarkerClick(
+                                event,
+                                complaint
+                              )
                             }
                           />
                         </Marker>
@@ -265,7 +303,14 @@ class HomePage extends Component {
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
               style={{maxWidth: '200px'}}
-              onClose={() => this.setState({selectedNeighborhood: null})}
+              onClose={() => {
+                const marker = this.state.selectedMarkerImage
+                marker.src = greenPointer
+                this.setState({
+                  selectedNeighborhood: null,
+                  selectedMarkerImage: null
+                })
+              }}
               className="popup"
             >
               <div>
@@ -282,7 +327,14 @@ class HomePage extends Component {
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
               style={{maxWidth: '200px'}}
-              onClose={() => this.setState({selectedAddress: null})}
+              onClose={() => {
+                const dot = this.state.selectedDotImage
+                dot.src = greenDot
+                this.setState({
+                  selectedDotImage: null,
+                  selectedAddress: null
+                })
+              }}
               className="popup"
             >
               <div>
