@@ -23,6 +23,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import LineGraph from './LineGraph'
+import PieChart from './PieChart'
+import BarGraph from './BarGraphTest'
 
 function TabContainer({children, dir}) {
   return (
@@ -104,6 +106,8 @@ class InfoPage extends React.Component {
       tabValue: 0,
       inputAddress: ''
     }
+    const rowData = this.props.data
+    console.log('PROPS', this.props)
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
@@ -178,7 +182,8 @@ class InfoPage extends React.Component {
                   <Typography gutterBottom variant="h5" component="h2">
                     Complaint Frequency
                   </Typography>
-                  <LineGraph />
+                  <PieChart data={this.props.data.aggregate_data} />
+                  {/* <LineGraph /> */}
                 </CardContent>
                 <CardActions>
                   <Button size="small" color="primary">
@@ -193,7 +198,8 @@ class InfoPage extends React.Component {
                   <Typography gutterBottom variant="h5" component="h2">
                     Complaints over time
                   </Typography>
-                  <LineGraph />
+                  <BarGraph rawData={this.props.data.aggregate_data} />
+                  {/* <LineGraph /> */}
                 </CardContent>
                 <CardActions>
                   <Button size="small" color="primary">

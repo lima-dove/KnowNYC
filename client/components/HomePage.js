@@ -5,6 +5,7 @@ import React, {Component} from 'react'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import SearchBar from './SearchBar'
 import BarGraph from './BarGraphTest'
+import InfoPage from './InfoPage'
 
 const styles = theme => ({
   button: {
@@ -24,6 +25,7 @@ class HomePage extends Component {
       neighborhoodComplaints: null,
       boundaryAddresses: null,
       selectedNeighborhood: null,
+      selectedAddress: null,
       data: null,
       viewport: {
         latitude: 40.7484,
@@ -31,7 +33,8 @@ class HomePage extends Component {
         zoom: 12,
         bearing: 0,
         pitch: 0
-      }
+      },
+      mouse: false
     }
     this.handleSearchClick = this.handleSearchClick.bind(this)
     this.handleMapClick = this.handleMapClick.bind(this)
@@ -41,6 +44,7 @@ class HomePage extends Component {
     this.handleSeeMoreClick = this.handleSeeMoreClick.bind(this)
     this.handleSearchSubmit = this.handleSearchSubmit.bind(this)
     this.handleAddressMarkerClick = this.handleAddressMarkerClick.bind(this)
+    this.mouseHandle = this.mouseHandle.bind(this)
     this.mapRef = React.createRef()
   }
 
@@ -64,7 +68,6 @@ class HomePage extends Component {
   }
 
   async handleAddressMarkerClick(address) {
-    console.log('ADDRESS========', address)
     let response
     if (address.incident_address) {
       response = await axios.get(
@@ -103,7 +106,6 @@ class HomePage extends Component {
       },
       data
     })
-    console.log('NEIGHBORRHOOD===', this.state.selectedNeighborhood)
   }
 
   handleMapClick = e => {
@@ -141,8 +143,12 @@ class HomePage extends Component {
     this.setState({selectedAddress: data})
   }
 
+  mouseHandle() {
+    this.setState({mouse: !this.state.mouse})
+  }
+
   render() {
-    console.log('SELECTED_ADDRESS===', this.state.selectedAddress)
+    console.log('MOUSE', this.state.mouse)
     const {classes} = this.props
 
     const {
@@ -151,7 +157,8 @@ class HomePage extends Component {
       selectedAddress,
       selectedNeighborhood,
       data,
-      neighborhoodComplaints
+      neighborhoodComplaints,
+      mouse
     } = this.state
 
     const scrollZoom = !selectedAddress
@@ -259,30 +266,36 @@ class HomePage extends Component {
               </div>
             </Popup>
           ) : null}
-          {/* SelectedAddress logic: Click a marker neighborhood ONLY */}
+          {/* SelectedAddress logic: Click a marker address ONLY */}
           {selectedAddress ? (
-            <Popup
-              latitude={this.state.viewport.latitude}
-              longitude={this.state.viewport.longitude}
-              style={{maxWidth: '200px'}}
-              onClose={() => this.setState({selectedAddress: null})}
-              className="popup"
-            >
-              <div>
-                <BarGraph rawData={selectedAddress.aggregate_data} />
-                <h1>
-                  Total Complaints for {selectedAddress.incident_address}:
-                </h1>
-                <h3>Complaint Type: {selectedAddress.complaint_type}</h3>
-                <p>Description: {selectedAddress.descriptor}</p>
-                <button
-                  type="button"
-                  onClick={() => this.handleSeeMoreClick(selectedAddress)}
-                >
-                  See More...
-                </button>
-              </div>
-            </Popup>
+            <div onMouseEnter={this.mouseHandle}>
+              <Popup
+                latitude={this.state.viewport.latitude}
+                longitude={this.state.viewport.longitude}
+                style={{maxWidth: '200px'}}
+                onClose={() => this.setState({selectedAddress: null})}
+                className="popup"
+              >
+                {mouse ? (
+                  <InfoPage data={selectedAddress} />
+                ) : (
+                  <div>
+                    <BarGraph rawData={selectedAddress.aggregate_data} />
+                    <h1>
+                      Total Complaints for {selectedAddress.incident_address}:
+                    </h1>
+                    <h3>Complaint Type: {selectedAddress.complaint_type}</h3>
+                    <p>Description: {selectedAddress.descriptor}</p>
+                    <button
+                      type="button"
+                      onClick={() => this.handleSeeMoreClick(selectedAddress)}
+                    >
+                      See More...
+                    </button>
+                  </div>
+                )}
+              </Popup>
+            </div>
           ) : null}
         </MapGL>
       </div>

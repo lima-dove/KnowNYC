@@ -1,3 +1,7 @@
+#infoPage {
+  z-index: 1;
+}
+
 .MuiGrid-item {
   text-align: center;
 }

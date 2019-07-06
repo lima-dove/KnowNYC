@@ -25,7 +25,7 @@ export default class GraphTest extends Component {
   }
 
   render() {
-    console.log('DATA===', this.state.complaints)
+    console.log('DATA===???', this.state.complaints)
     return (
       <div>
         <BarGraphTest rawData={this.state.complaints} />

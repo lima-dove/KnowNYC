@@ -3,42 +3,42 @@ import {arc, pie} from 'd3-shape'
 import React from 'react'
 import {scaleOrdinal} from 'd3-scale'
 
-const size = 300
+const size = 180
 const radius = size / 2
 const colors = d3.scaleOrdinal(d3.schemeAccent)
 
 const dataArc = arc()
-  .outerRadius(radius - 10)
+  .outerRadius(radius - 40)
   .innerRadius(0)
 
 const labelArc = arc()
-  .outerRadius(radius - 40)
-  .innerRadius(radius - 40)
+  .outerRadius(radius - 0)
+  .innerRadius(radius - 0)
 
 const chart = pie()
   .sort(null)
-  .value(d => d.quantity)
+  .value(d => d.frequency)
 
-const width = 300
-const height = 300
+const width = 180
+const height = 180
 
 const PieChart = props => {
-  const rawData = props.rowData
-  let complaintObj = {}
-  rawData.forEach(el => {
-    if (complaintObj[el.complaint_type] >= 1) {
-      complaintObj[el.complaint_type] = ++complaintObj[el.complaint_type]
-    } else {
-      complaintObj[el.complaint_type] = 1
-    }
-  })
+  const data = props.data
+  // let complaintObj = {}
+  // data.forEach(el => {
+  //   if (complaintObj[el.type] >= 1) {
+  //     complaintObj[el.type] = ++complaintObj[el.type]
+  //   } else {
+  //     complaintObj[el.type] = 1
+  //   }
+  // })
 
-  let data = []
+  // let data = []
 
   // eslint-disable-next-line guard-for-in
-  for (let key in complaintObj) {
-    data.push({type: key, quantity: complaintObj[key]})
-  }
+  // for (let key in complaintObj) {
+  //   data.push({type: key, quantity: complaintObj[key]})
+  // }
 
   return (
     <svg width={width} height={height} viewBox={`0 0 ${size} ${size}`}>
