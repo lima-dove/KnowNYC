@@ -36,11 +36,13 @@ const neighborhoodAggregateRowCreator = {
         if (i < total) {
           for (let j = 0; j < total; j++) {
             // Take each complaint and build a neighborhood object out of it:
-            if (object[hood.complaints[j].complaint_type]) {
-              // Check if the neighborhood's object already has this complaint type object
+            // Check if the neighborhood's object already has this complaint type object
+            if (object[hood.complaints[j].complaint_type] !== 'undefined') {
               object[hood.complaints[j].complaint_type].frequency++ // If yes, increment the frequency
-            } else if (!object[hood.complaints[j].complaint_type]) {
               // Else, make the single complaint-type aggregate object
+            } else if (
+              object[hood.complaints[j].complaint_type] === 'undefined'
+            ) {
               object[hood.complaints[j].complaint_type] = {
                 // Populate it with initilized frequency and note the neighborhoodId
                 frequency: 1,
@@ -64,7 +66,7 @@ const neighborhoodAggregateRowCreator = {
           }
           let complaintRow
           for await (const complaintRowInfo of complaintTypes) {
-            // iterate over comaplint type keys to create row with information:
+            // iterate over neighborhood's complaint-type keys to create row with information:
             complaintRow = await NeighborhoodAggregate.create({
               neighborhoodId: object[complaintRowInfo].neighborhoodId,
               complaint: complaintRowInfo,
