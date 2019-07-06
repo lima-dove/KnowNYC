@@ -2,14 +2,14 @@ import Button from '@material-ui/core/Button'
 import {withStyles} from '@material-ui/core/styles'
 import axios from 'axios'
 import React, {Component} from 'react'
-import MapGL, {Marker, Popup} from 'react-map-gl'
-import SearchBar from './SearchBar'
+import MapGL, {FlyToInterpolator, Marker, Popup} from 'react-map-gl'
 import BarGraph from './BarGraphTest'
 import redPointer from '../../markers/red-marker.png'
 import greenPointer from '../../markers/green-marker.png'
 import greenDot from '../../markers/green-circle.png'
 import redDot from '../../markers/red-circle.png'
 import {green} from '@material-ui/core/colors'
+import SearchBar from './SearchBar'
 
 const styles = theme => ({
   button: {
@@ -31,8 +31,8 @@ class HomePage extends Component {
       neighborhoodComplaints: null,
       boundaryAddresses: null,
       selectedNeighborhood: null,
-      data: null,
       selectedAddress: null,
+      data: null,
       selectedMarkerImage: null,
       selectedDotImage: null,
       viewport: {
@@ -139,9 +139,9 @@ class HomePage extends Component {
   handleMapClick = e => {
     e.preventDefault()
     // Add other logic to close popup
-    //     this.setState({
-    //       selectedAddress: null
-    //     })
+    // this.setState({
+    //   selectedAddress: null
+    // })
   }
 
   handleSeeMoreClick = complaint => {
@@ -168,7 +168,16 @@ class HomePage extends Component {
 
   async handleSearchSubmit(address) {
     const {data} = await axios.get(`api/map/getAddress/A${address}`)
-    this.setState({selectedAddress: data})
+    this.setState({
+      selectedAddress: data,
+      viewport: {
+        latitude: data.latitude,
+        longitude: data.longitude,
+        zoom: 18,
+        bearing: 0,
+        pitch: 0
+      }
+    })
   }
 
   render() {
@@ -202,9 +211,16 @@ class HomePage extends Component {
           ref={map => (this.mapRef = map)}
           mapboxApiAccessToken={token}
           onClick={this.handleMapClick}
+          transitionDuration={selectedAddress ? 2000 : 0}
+          transitionInterpolator={
+            selectedAddress ? new FlyToInterpolator() : null
+          }
         >
           <div style={{display: 'flex'}}>
-            <SearchBar handleSearchSubmit={this.handleSearchSubmit} />
+            <SearchBar
+              handleSearchSubmit={this.handleSearchSubmit}
+              captureClick={true}
+            />
             {selectedAddress ? (
               <Marker
                 latitude={selectedAddress.latitude}
