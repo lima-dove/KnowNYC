@@ -1,3 +1,4 @@
+// ATEMPT TO USE ITERATOR
 const db = require('../server/db')
 const {
   Neighborhood,
@@ -18,9 +19,76 @@ const findMaxArray = nestedArray => {
   return maxArray
 }
 
+// ITERATOR
+let total = 0
+let object = {}
+let complaintsByHood = []
+
+const neighborhoodAggregateRowCreator = {
+  [Symbol.asyncIterator]: function() {
+    let i = -1
+    console.log({i})
+    return {
+      next: async function() {
+        i++
+        let hood = complaintsByHood[i]
+        total = hood.complaints.length
+        if (i < total) {
+          for (let j = 0; j < total; j++) {
+            // Take each complaint and build a neighborhood object out of it:
+            if (object[hood.complaints[j].complaint_type]) {
+              // Check if the neighborhood's object already has this complaint type object
+              object[hood.complaints[j].complaint_type].frequency++ // If yes, increment the frequency
+            } else if (!object[hood.complaints[j].complaint_type]) {
+              // Else, make the single complaint-type aggregate object
+              object[hood.complaints[j].complaint_type] = {
+                // Populate it with initilized frequency and note the neighborhoodId
+                frequency: 1,
+                neighborhoodId: hood.id
+              }
+            }
+          }
+
+          await Neighborhood.update(
+            // Add the total complaints for the neighborhood to the total_complaints column in the neighborhood model
+            {total_complaints: total},
+            {where: {id: hood.id}}
+          )
+
+          let complaintTypes = []
+          for (let complaint in object) {
+            // Take the single complaint-type aggregate object and create a new row in the neighborhood-aggregate model
+            if (object.hasOwnProperty(complaint)) {
+              complaintTypes.push(complaint)
+            }
+          }
+          let complaintRow
+          for await (const complaintRowInfo of complaintTypes) {
+            // iterate over comaplint type keys to create row with information:
+            complaintRow = await NeighborhoodAggregate.create({
+              neighborhoodId: object[complaintRowInfo].neighborhoodId,
+              complaint: complaintRowInfo,
+              frequency: object[complaintRowInfo].frequency
+            })
+          }
+          return {
+            value: {
+              neighborhoodId: complaintRow.dataValues.neighborhoodId,
+              complaint: complaintRow.dataValues.complaint
+            },
+            done: false
+          }
+        }
+        return {value: `updated ${hood.id} with total: ${total}`, done: true}
+      }
+    }
+  }
+}
+
 const createAggregates = async () => {
   try {
-    const complaintsByHood = await Neighborhood.findAll({
+    // Returns an array of neighborhood objects
+    complaintsByHood = await Neighborhood.findAll({
       where: {
         boroughId: 3
       },
@@ -32,36 +100,8 @@ const createAggregates = async () => {
       ]
     })
 
-    let total = 0
-    let object = {}
-    complaintsByHood.forEach(async hood => {
-      total = hood.complaints.length
-      for (let i = 0; i < total; i++) {
-        if (object[hood.complaints[i].complaint_type]) {
-          object[hood.complaints[i].complaint_type].frequency++
-        } else if (!object[hood.complaints[i].complaint_type]) {
-          object[hood.complaints[i].complaint_type] = {
-            frequency: 1,
-            neighborhoodId: hood.id
-          }
-        }
-      }
-
-      await Neighborhood.update(
-        {total_complaints: total},
-        {
-          where: {id: hood.id}
-        }
-      )
-    })
-
-    // eslint-disable-next-line guard-for-in
-    for (let complaint in object) {
-      await NeighborhoodAggregate.create({
-        neighborhoodId: object[complaint].neighborhoodId,
-        complaint,
-        frequency: object[complaint].frequency
-      })
+    for await (const row of neighborhoodAggregateRowCreator) {
+      console.log({row})
     }
   } catch (err) {
     console.error(err)
@@ -100,6 +140,7 @@ async function seed() {
       })
     })
 
+    // THIS ENDS UP POPULATING TOTALLY WITHOUT THE NEED FOR FOR.. OF ITERATION
     // eslint-disable-next-line guard-for-in
     for (let borough in neighborhoodObj) {
       // eslint-disable-next-line guard-for-in
