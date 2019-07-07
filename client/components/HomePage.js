@@ -11,6 +11,7 @@ import greenDot from '../../markers/green-circle.png'
 import redDot from '../../markers/red-circle.png'
 import {green} from '@material-ui/core/colors'
 import SearchBar from './SearchBar'
+import Sidebar from './Sidebar'
 
 const styles = theme => ({
   button: {
@@ -232,11 +233,15 @@ class HomePage extends Component {
           }
         >
           <div style={{display: 'flex'}}>
-            <SearchBar
-              handleSearchSubmit={this.handleSearchSubmit}
-              captureClick={true}
-              error={searchError}
-            />
+            <div id="sideSearch">
+              <SearchBar
+                handleSearchSubmit={this.handleSearchSubmit}
+                captureClick={true}
+                error={searchError}
+              />
+              <Sidebar viewport={viewport.zoom} />
+            </div>
+
             {selectedAddress ? (
               <Marker
                 latitude={selectedAddress.latitude}
@@ -253,6 +258,7 @@ class HomePage extends Component {
                 />
               </Marker>
             ) : null}
+
             {this.state.viewport.zoom > 15.5 ? (
               <div>
                 <div style={{display: 'flex'}}>
@@ -314,6 +320,7 @@ class HomePage extends Component {
               </div>
             )}
           </div>
+
           {selectedNeighborhood ? (
             <Popup
               latitude={this.state.viewport.latitude}
@@ -338,7 +345,7 @@ class HomePage extends Component {
               </div>
             </Popup>
           ) : null}
-          {/* SelectedAddress logic: Click a marker neighborhood ONLY */}
+
           {selectedAddress ? (
             <Popup
               latitude={this.state.viewport.latitude}
@@ -355,7 +362,7 @@ class HomePage extends Component {
               className="popup"
             >
               <div>
-                {selectedAddress.aggregate_data}
+                <h1>{selectedAddress.aggregate_data}</h1>
                 <BarGraph rawData={selectedAddress.aggregate_data} />
                 <h2>
                   Total Complaints for {selectedAddress.incident_address}:

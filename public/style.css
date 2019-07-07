@@ -16,6 +16,21 @@ body {
   margin: 0;
 }
 
+.sidebar {
+  background-color: rgb(63, 91, 170);
+  height: 100vh !important;
+  width: 33vh;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  z-index: 1;
+  color: #ffffff;
+}
+
+.sideText {
+  padding: 5%;
+}
+
 .mapboxgl-popup-content {
   height: 500px;
   width: 500px;
