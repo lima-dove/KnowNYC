@@ -125,6 +125,7 @@ class HomePage extends Component {
     this.setState({
       selectedNeighborhood: {
         incident_address: neighborhoodAggregate.name,
+        total: neighborhoodAggregate.total,
         location: {
           coordinates: [
             neighborhoodAggregate.latitude,
@@ -295,12 +296,12 @@ class HomePage extends Component {
             ) : (
               <div>
                 {neighborhoodComplaints
-                  ? neighborhoodComplaints.map(complaint => {
+                  ? neighborhoodComplaints.map(neighborhoodAggregate => {
                       return (
                         <Marker
-                          key={complaint.id}
-                          latitude={complaint.latitude}
-                          longitude={complaint.longitude}
+                          key={neighborhoodAggregate.id}
+                          latitude={neighborhoodAggregate.latitude}
+                          longitude={neighborhoodAggregate.longitude}
                           offsetLeft={-20}
                           offsetTop={-10}
                         >
@@ -309,7 +310,7 @@ class HomePage extends Component {
                             onClick={event =>
                               this.handleNeighborhoodMarkerClick(
                                 event,
-                                complaint
+                                neighborhoodAggregate
                               )
                             }
                           />
@@ -320,7 +321,7 @@ class HomePage extends Component {
               </div>
             )}
           </div>
-
+          {/* NEIGHBORHOOD POPUP */}
           {selectedNeighborhood ? (
             <Popup
               latitude={this.state.viewport.latitude}
@@ -340,12 +341,14 @@ class HomePage extends Component {
                 <h1>{selectedNeighborhood.incident_address}</h1>
                 <BarGraph rawData={data} />
                 <h2>
-                  Total Complaints for {selectedNeighborhood.incident_address}:
+                  Total Complaints for {selectedNeighborhood.incident_address}:{' '}
+                  <span> {selectedNeighborhood.total}</span>
                 </h2>
               </div>
             </Popup>
           ) : null}
 
+          {/* ADDRESS POPUP */}
           {selectedAddress ? (
             <Popup
               latitude={this.state.viewport.latitude}
