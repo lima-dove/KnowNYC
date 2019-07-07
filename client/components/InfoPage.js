@@ -239,7 +239,7 @@ class InfoPage extends React.Component {
                       })
                       .map(complaint => {
                         return (
-                          <TableRow key={complaint.unique_key}>
+                          <TableRow key={complaint.id}>
                             <TableCell component="th" scope="row">
                               {this.createDate(complaint.created_date)}
                             </TableCell>

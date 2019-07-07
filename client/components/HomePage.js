@@ -332,6 +332,7 @@ class HomePage extends Component {
           {selectedAddress ? (
             <div onMouseEnter={this.mouseHandle}>
               <Popup
+                closeOnClick={false}
                 latitude={this.state.viewport.latitude}
                 longitude={this.state.viewport.longitude}
                 style={{maxWidth: '200px'}}
