@@ -88,7 +88,12 @@ export default class BarGraphTest extends Component {
       .attr('dx', '-.8em')
       .attr('dy', '.15em')
       .attr('transform', 'rotate(-65)')
-    d3.select(this.refs.yAxis).call(this.yAxis)
+      .style('font-size', '15px')
+    d3
+      .select(this.refs.yAxis)
+      .call(this.yAxis)
+      .selectAll('text')
+      .style('font-size', '15px')
   }
 
   componentDidUpdate() {
