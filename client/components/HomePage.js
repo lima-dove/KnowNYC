@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import Button from '@material-ui/core/Button'
 import {withStyles} from '@material-ui/core/styles'
 import axios from 'axios'
@@ -33,6 +34,7 @@ class HomePage extends Component {
       selectedNeighborhood: null,
       selectedAddress: null,
       data: null,
+      searchError: false,
       selectedMarkerImage: null,
       selectedDotImage: null,
       viewport: {
@@ -74,6 +76,7 @@ class HomePage extends Component {
     this.setState({boundaryAddresses: data})
   }
 
+
   async handleAddressMarkerClick(event, address) {
     let dot
     if (this.state.selectedDotImage) {
@@ -100,6 +103,7 @@ class HomePage extends Component {
     })
   }
 
+
   handleNeighborhoodMarkerClick = (event, neighborhoodAggregate) => {
     console.log(neighborhoodAggregate)
     //Popup Logic requires selectedAddress
@@ -118,7 +122,6 @@ class HomePage extends Component {
       }
       return aggregateObj
     })
-    console.log('handlemarkerclick object', data)
 
     this.setState({
       selectedNeighborhood: {
@@ -133,7 +136,6 @@ class HomePage extends Component {
       data,
       selectedMarkerImage: event.target
     })
-    console.log('NEIGHBORRHOOD===', this.state.selectedNeighborhood)
   }
 
   handleMapClick = e => {
@@ -167,21 +169,35 @@ class HomePage extends Component {
   }
 
   async handleSearchSubmit(address) {
-    const {data} = await axios.get(`api/map/getAddress/A${address}`)
-    this.setState({
-      selectedAddress: data,
-      viewport: {
-        latitude: data.latitude,
-        longitude: data.longitude,
-        zoom: 18,
-        bearing: 0,
-        pitch: 0
+    try {
+      const {data} = await axios.get(`api/map/getAddress/A${address}`)
+      this.setState({
+        selectedAddress: data,
+        viewport: {
+          latitude: data.latitude,
+          longitude: data.longitude,
+          zoom: 18,
+          bearing: 0,
+          pitch: 0
+        }
+      })
+    } catch (error) {
+      if (error.response.status === 500) {
+        this.setState(
+          {
+            searchError: true
+          },
+          () => {
+            setTimeout(() => {
+              this.setState({searchError: false})
+            }, 3000)
+          }
+        )
       }
-    })
+    }
   }
 
   render() {
-    console.log('SELECTED_ADDRESS===', this.state.selectedAddress)
     const {classes} = this.props
 
     const {
@@ -192,7 +208,8 @@ class HomePage extends Component {
       selectedMarkerImage,
       selectedDotImage,
       data,
-      neighborhoodComplaints
+      neighborhoodComplaints,
+      searchError
     } = this.state
 
     const scrollZoom = !selectedMarkerImage && !selectedDotImage
@@ -220,6 +237,7 @@ class HomePage extends Component {
             <SearchBar
               handleSearchSubmit={this.handleSearchSubmit}
               captureClick={true}
+              error={searchError}
             />
             {selectedAddress ? (
               <Marker
