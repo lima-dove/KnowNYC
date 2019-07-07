@@ -5,7 +5,7 @@ import React, {Component} from 'react'
 
 const width = 650
 const height = 500
-const margin = {top: 20, right: 5, bottom: 170, left: 50}
+const margin = {top: 20, right: 5, bottom: 170, left: 75}
 const red = '#eb6a5b'
 const green = '#b6e86f'
 const blue = '#52b6ca'
@@ -151,6 +151,30 @@ export default class BarGraphTest extends Component {
           />
           <g ref="yAxis" transform={`translate(${margin.left}, 0)`} />
         </g>
+        <text
+          transform={`translate(${width / 2}, ${height - margin.bottom / 9})`}
+          style={{
+            textAnchor: 'middle',
+            fontSize: '18px',
+            fontFamily: 'sans-serif',
+            fontWeight: 'bold'
+          }}
+        >
+          Incident Types
+        </text>
+        <text
+          y={margin.left / 4}
+          x={0 - height / 3}
+          transform="rotate(-90)"
+          style={{
+            textAnchor: 'middle',
+            fontSize: '18px',
+            fontFamily: 'sans-serif',
+            fontWeight: 'bold'
+          }}
+        >
+          Number of Incident Calls
+        </text>
       </svg>
     )
   }
