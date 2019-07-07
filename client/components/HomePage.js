@@ -326,7 +326,6 @@ class HomePage extends Component {
             <Popup
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
-              style={{maxWidth: '200px'}}
               onClose={() => {
                 const marker = this.state.selectedMarkerImage
                 marker.src = greenPointer
@@ -352,7 +351,6 @@ class HomePage extends Component {
                 closeOnClick={false}
                 latitude={this.state.viewport.latitude}
                 longitude={this.state.viewport.longitude}
-                style={{maxWidth: '200px'}}
                 onClose={() => {
                   const dot = this.state.selectedDotImage
                   dot.src = greenDot
