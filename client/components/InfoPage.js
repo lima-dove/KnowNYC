@@ -25,6 +25,7 @@ import SwipeableViews from 'react-swipeable-views'
 import LineGraph from './LineGraph'
 import PieChart from './PieChart'
 import BarGraph from './BarGraphTest'
+import FullWidthTabs from './GraphTabs'
 
 function TabContainer({children, dir}) {
   return (
@@ -114,11 +115,22 @@ class InfoPage extends React.Component {
     this.handleKeyDown = this.handleKeyDown.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
-  async componentDidMount() {
-    const {data} = await axios.get(
-      'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=219%20EAST%20196TH%20STREET'
-    )
-    this.setState({complaints: data})
+  componentDidMount() {
+    this.setState({
+      complaints: this.props.data.complaints,
+      address: this.props.data.incident_address
+    })
+  }
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.data.complaints[0].incident_address !==
+      this.props.data.complaints[0].incident_address
+    ) {
+      this.setState({
+        address: this.props.data.complaints[0].incident_address,
+        complaints: this.props.data.complaints
+      })
+    }
   }
   handleTabChange(event, newValue) {
     this.setState({tabValue: newValue})
@@ -139,6 +151,9 @@ class InfoPage extends React.Component {
   }
   async handleChange(event) {
     await this.setState({inputAddress: event.target.value})
+  }
+  createDate(date) {
+    return date.slice(0, 10)
   }
   handleChangeIndex(index) {
     this.setState({tabValue: index})
@@ -176,40 +191,9 @@ class InfoPage extends React.Component {
             </AppBar>
           </div>
           <br />
-          <Grid container spacing={3}>
-            <Grid item xs={6}>
-              <Card>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    Complaint Frequency
-                  </Typography>
-                  <PieChart data={this.props.data.aggregate_data} />
-                  {/* <LineGraph /> */}
-                </CardContent>
-                <CardActions>
-                  <Button size="small" color="primary">
-                    Share
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-            <Grid item xs={6}>
-              <Card>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    Complaints over time
-                  </Typography>
-                  <BarGraph rawData={this.props.data.aggregate_data} />
-                  {/* <LineGraph /> */}
-                </CardContent>
-                <CardActions>
-                  <Button size="small" color="primary">
-                    Share
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          </Grid>
+          <div style={{display: 'flex', justifyContent: 'center'}}>
+            <FullWidthTabs data={this.props.data.aggregate_data} />
+          </div>
         </Container>
         <br />
         <Paper className={classes.root}>
@@ -222,6 +206,7 @@ class InfoPage extends React.Component {
               variant="standard"
               tabIndicatorProps={{width: '100px'}}
               scrollButtons="on"
+              centered
             >
               <Tab label="All Complaints" />
               <Tab label="311 Complaints" />
@@ -240,31 +225,37 @@ class InfoPage extends React.Component {
                 <Table className={classes.tableTable}>
                   <TableHead>
                     <TableRow>
-                      <TableCell align="center">Address</TableCell>
+                      <TableCell align="center">Date of Complaint</TableCell>
                       <TableCell align="center">Complaint Type</TableCell>
                       <TableCell align="center">Description</TableCell>
                       <TableCell align="center">Resolution</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {this.state.complaints.map(complaint => {
-                      return (
-                        <TableRow key={complaint.unique_key}>
-                          <TableCell component="th" scope="row">
-                            {complaint.incident_address}
-                          </TableCell>
-                          <TableCell align="center">
-                            {complaint.complaint_type}
-                          </TableCell>
-                          <TableCell align="center">
-                            {complaint.descriptor}
-                          </TableCell>
-                          <TableCell align="center">
-                            {complaint.resolution_description}
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
+                    {this.state.complaints
+                      .sort((a, b) => {
+                        return (
+                          new Date(b.created_date) - new Date(a.created_date)
+                        )
+                      })
+                      .map(complaint => {
+                        return (
+                          <TableRow key={complaint.unique_key}>
+                            <TableCell component="th" scope="row">
+                              {this.createDate(complaint.created_date)}
+                            </TableCell>
+                            <TableCell align="center">
+                              {complaint.complaint_type}
+                            </TableCell>
+                            <TableCell align="center">
+                              {complaint.descriptor}
+                            </TableCell>
+                            <TableCell align="center">
+                              {complaint.resolution_description}
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })}
                   </TableBody>
                 </Table>
               </Paper>

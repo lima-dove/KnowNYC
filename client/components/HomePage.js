@@ -271,7 +271,6 @@ class HomePage extends Component {
           {selectedAddress ? (
             <div onMouseEnter={this.mouseHandle}>
               <Popup
-                ref="hi"
                 closeOnClick={false}
                 latitude={this.state.viewport.latitude}
                 longitude={this.state.viewport.longitude}

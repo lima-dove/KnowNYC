@@ -12,8 +12,8 @@ const dataArc = arc()
   .innerRadius(0)
 
 const labelArc = arc()
-  .outerRadius(radius - 0)
-  .innerRadius(radius - 0)
+  .outerRadius(radius - 40)
+  .innerRadius(radius - 40)
 
 const chart = pie()
   .sort(null)
