@@ -204,7 +204,6 @@ class InfoPage extends React.Component {
               indicatorColor="primary"
               textColor="primary"
               variant="standard"
-              tabIndicatorProps={{width: '100px'}}
               scrollButtons="on"
               centered
             >
