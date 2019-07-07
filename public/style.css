@@ -25,6 +25,7 @@ body {
   background-color: transparent;
   overflow-y: scroll !important;
   overflow-x: scroll !important;
+  background: rgba(256, 256, 256, 0.75) !important;
 }
 
 .mapboxgl-popup-anchor-top .mapboxgl-popup-tip,

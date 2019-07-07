@@ -76,7 +76,6 @@ class HomePage extends Component {
     this.setState({boundaryAddresses: data})
   }
 
-
   async handleAddressMarkerClick(event, address) {
     let dot
     if (this.state.selectedDotImage) {
@@ -102,7 +101,6 @@ class HomePage extends Component {
       selectedAddress: response.data
     })
   }
-
 
   handleNeighborhoodMarkerClick = (event, neighborhoodAggregate) => {
     console.log(neighborhoodAggregate)
@@ -281,7 +279,7 @@ class HomePage extends Component {
                             src={greenDot}
                             onClick={event =>
                               this.handleAddressMarkerClick(event, address)
-                            } // THIS FUNCTION NEEDS TO BE WRITTEN
+                            }
                           />
                         </Marker>
                       )
@@ -332,10 +330,11 @@ class HomePage extends Component {
               className="popup"
             >
               <div>
+                <h1>{selectedNeighborhood.incident_address}</h1>
                 <BarGraph rawData={data} />
-                <h1>
+                <h2>
                   Total Complaints for {selectedNeighborhood.incident_address}:
-                </h1>
+                </h2>
               </div>
             </Popup>
           ) : null}
@@ -356,10 +355,11 @@ class HomePage extends Component {
               className="popup"
             >
               <div>
+                {selectedAddress.aggregate_data}
                 <BarGraph rawData={selectedAddress.aggregate_data} />
-                <h1>
+                <h2>
                   Total Complaints for {selectedAddress.incident_address}:
-                </h1>
+                </h2>
                 <h3>Complaint Type: {selectedAddress.complaint_type}</h3>
                 <p>Description: {selectedAddress.descriptor}</p>
                 <button
