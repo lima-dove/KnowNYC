@@ -362,7 +362,7 @@ class HomePage extends Component {
               className="popup"
             >
               <div>
-                <h1>{selectedAddress.aggregate_data}</h1>
+                <h1>{selectedAddress.incident_address}</h1>
                 <BarGraph rawData={selectedAddress.aggregate_data} />
                 <h2>
                   Total Complaints for {selectedAddress.incident_address}:
