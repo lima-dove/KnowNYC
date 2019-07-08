@@ -4,13 +4,12 @@ import {withStyles} from '@material-ui/core/styles'
 import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {FlyToInterpolator, Marker, Popup} from 'react-map-gl'
-import BarGraph from './BarGraphTest'
-import InfoPage from './InfoPage'
-import redPointer from '../../markers/red-marker.png'
-import greenPointer from '../../markers/green-marker.png'
 import greenDot from '../../markers/green-circle.png'
+import greenPointer from '../../markers/green-marker.png'
 import redDot from '../../markers/red-circle.png'
-import {green} from '@material-ui/core/colors'
+import redPointer from '../../markers/red-marker.png'
+import InfoPage from './InfoPage'
+import NeighborhoodInfoPage from './NeighborhoodInfoPage'
 import SearchBar from './SearchBar'
 import Sidebar from './Sidebar'
 
@@ -116,14 +115,22 @@ class HomePage extends Component {
       marker.src = greenPointer
     }
     event.target.src = redPointer
-    let data = neighborhoodAggregate.complaints.map(complaintAggregate => {
-      console.log({complaintAggregate})
-      let aggregateObj = {
-        type: complaintAggregate[0],
-        frequency: complaintAggregate[1]
+
+    let aggregateObj = {
+      name: neighborhoodAggregate.name,
+      total: neighborhoodAggregate.total,
+      aggregate_data: []
+    }
+
+    aggregateObj.aggregate_data = neighborhoodAggregate.complaints.map(
+      complaintAggregate => {
+        let aggregate = {
+          type: complaintAggregate[0],
+          frequency: complaintAggregate[1]
+        }
+        return aggregate
       }
-      return aggregateObj
-    })
+    )
 
     this.setState({
       selectedNeighborhood: {
@@ -136,7 +143,7 @@ class HomePage extends Component {
           ]
         }
       },
-      data,
+      data: aggregateObj,
       selectedMarkerImage: event.target
     })
   }
@@ -231,6 +238,9 @@ class HomePage extends Component {
     } = this.state
 
     const scrollZoom = !selectedMarkerImage && !selectedDotImage
+
+    console.log('Selected Hood Graph Data: ', data)
+    console.log('Selected Address Graph Data: ', selectedAddress)
 
     return (
       <div>
@@ -343,6 +353,7 @@ class HomePage extends Component {
           {/* NEIGHBORHOOD POPUP */}
           {selectedNeighborhood ? (
             <Popup
+              closeOnClick={false}
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
               onClose={() => {
@@ -355,28 +366,21 @@ class HomePage extends Component {
               }}
               className="popup"
             >
-              <div>
-                <h1>{selectedNeighborhood.incident_address}</h1>
-                <BarGraph rawData={data} />
-                <h2>
-                  Total Complaints for {selectedNeighborhood.incident_address}:{' '}
-                  <span> {selectedNeighborhood.total}</span>
-                </h2>
-              </div>
+              <NeighborhoodInfoPage data={data} />
             </Popup>
           ) : null}
 
-          { /*ADDRESS POPUP */}
+          {/*ADDRESS POPUP */}
           {selectedAddress ? (
-              <Popup
-                closeOnClick={false}
-                latitude={this.state.viewport.latitude}
-                longitude={this.state.viewport.longitude}
-                onClose={this.onCloseAddressPopup}
-                className="popup"
-              >
-                 <InfoPage data={selectedAddress} />
-              </Popup>
+            <Popup
+              closeOnClick={false}
+              latitude={this.state.viewport.latitude}
+              longitude={this.state.viewport.longitude}
+              onClose={this.onCloseAddressPopup}
+              className="popup"
+            >
+              <InfoPage data={selectedAddress} />
+            </Popup>
           ) : null}
         </MapGL>
       </div>
