@@ -76,18 +76,6 @@ router.get(
         addressArray.push(obj[key])
       }
 
-      // let addressArray = Object.entries(obj)
-      // const groupedByAddress = addressArray.map((el, idx) => {
-      //   let newObj = {}
-      //   newObj.id = idx + 1
-      //   newObj.address = el[0]
-      //   newObj.complaints = el[1]
-      //   newObj.latitude = el[1][0].latitude
-      //   newObj.longitude = el[1][0].longitude
-      //   return newObj
-      // })
-      // console.log('GROUP===', groupedByAddress[0].complaints[0])
-
       res.send(addressArray)
     } catch (err) {
       next(err)
