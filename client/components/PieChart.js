@@ -9,7 +9,7 @@ const colors = d3.scaleOrdinal(d3.schemeAccent)
 
 const dataArc = arc()
   .outerRadius(radius - 40)
-  .innerRadius(50)
+  .innerRadius(60)
 
 const labelArc = arc()
   .outerRadius(radius - 100)
@@ -22,24 +22,19 @@ const chart = pie()
 const width = 470
 const height = 470
 
+const angle = -90
+function midAngle(d) {
+  var a = (d.startAngle + d.endAngle) * 90 / Math.PI - 90
+  return a > 90 ? a - 180 : a
+}
+const fullCircle = d => {
+  if (d.endAngle - d.startAngle >= 6) {
+    return true
+  }
+}
+
 const PieChart = props => {
   const data = props.data
-  // let complaintObj = {}
-  // data.forEach(el => {
-  //   if (complaintObj[el.type] >= 1) {
-  //     complaintObj[el.type] = ++complaintObj[el.type]
-  //   } else {
-  //     complaintObj[el.type] = 1
-  //   }
-  // })
-
-  // let data = []
-
-  // eslint-disable-next-line guard-for-in
-  // for (let key in complaintObj) {
-  //   data.push({type: key, quantity: complaintObj[key]})
-  // }
-
   return (
     <div id="chart">
       <svg
@@ -52,10 +47,24 @@ const PieChart = props => {
           {chart(data).map((d, i) => (
             <g key={i} className="arc">
               <path d={dataArc(d)} fill={colors(d.data.type)} />
-
-              <text dy=".35em" transform={`translate(${labelArc.centroid(d)})`}>
-                {d.data.type}
-              </text>
+              {fullCircle(d) ? (
+                <text
+                  dy=".35em"
+                  transform={`translate(${labelArc.centroid(d)}`}
+                >
+                  {d.data.type}
+                </text>
+              ) : (
+                <text
+                  dy=".35em"
+                  alignmentBaseline="middle"
+                  transform={`translate(${labelArc.centroid(
+                    d
+                  )}), rotate(${midAngle(d)})`}
+                >
+                  {d.data.type}
+                </text>
+              )}
             </g>
           ))}
         </g>
@@ -63,5 +72,4 @@ const PieChart = props => {
     </div>
   )
 }
-
 export default PieChart

@@ -76,7 +76,7 @@ class HomePage extends Component {
     const {data} = await axios.get(
       `/api/map/searchByArea/${northLat},${southLat},${westLng},${eastLng}`
     )
-    console.log(data)
+
     this.setState({boundaryAddresses: data})
   }
 
@@ -107,7 +107,6 @@ class HomePage extends Component {
   }
 
   handleNeighborhoodMarkerClick = (event, neighborhoodAggregate) => {
-    console.log(neighborhoodAggregate)
     //Popup Logic requires selectedAddress
     // THE BELOW IS SPECIFICALLY FOR AGGREGATES
     let marker
@@ -200,7 +199,7 @@ class HomePage extends Component {
   }
 
   mouseHandle() {
-    this.setState({mouse: true, width: '60vw'})
+    this.setState({mouse: true})
   }
   onCloseAddressPopup() {
     const dot = this.state.selectedDotImage

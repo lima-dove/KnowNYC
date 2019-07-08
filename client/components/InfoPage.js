@@ -108,11 +108,11 @@ class InfoPage extends React.Component {
       tabValue: 0,
       inputAddress: ''
     }
-    const rowData = this.props.data
+    const rawData = this.props.data
     console.log('PROPS', this.props)
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
-    this.handleKeyDown = this.handleKeyDown.bind(this)
+    // this.handleKeyDown = this.handleKeyDown.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
   componentDidMount() {
@@ -135,20 +135,20 @@ class InfoPage extends React.Component {
   handleTabChange(event, newValue) {
     this.setState({tabValue: newValue})
   }
-  async handleKeyDown(event) {
-    if (event.key === 'Enter') {
-      try {
-        const {data} = await axios.get(
-          `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=${
-            this.state.inputAddress
-          }`
-        )
-        this.setState({complaints: data})
-      } catch (err) {
-        console.log(err)
-      }
-    }
-  }
+  // async handleKeyDown(event) {
+  //   if (event.key === 'Enter') {
+  //     try {
+  //       const {data} = await axios.get(
+  //         `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=${
+  //           this.state.inputAddress
+  //         }`
+  //       )
+  //       this.setState({complaints: data})
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+  //   }
+  // }
   async handleChange(event) {
     await this.setState({inputAddress: event.target.value})
   }

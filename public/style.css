@@ -18,6 +18,7 @@ body {
 
 .mapboxgl-popup-content {
   transition: transform 1s;
+  transition-duration: 120s;
   height: 75vh;
   width: 45vw;
   position: fixed;
