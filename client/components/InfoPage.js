@@ -1,11 +1,5 @@
 import AppBar from '@material-ui/core/AppBar'
-import Button from '@material-ui/core/Button'
-import Card from '@material-ui/core/Card'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
 import Container from '@material-ui/core/Container'
-import Grid from '@material-ui/core/Grid'
-import InputBase from '@material-ui/core/InputBase'
 import Paper from '@material-ui/core/Paper'
 import {fade, withStyles} from '@material-ui/core/styles'
 import Tab from '@material-ui/core/Tab'
@@ -17,14 +11,9 @@ import TableRow from '@material-ui/core/TableRow'
 import Tabs from '@material-ui/core/Tabs'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
-import SearchIcon from '@material-ui/icons/Search'
-import axios from 'axios'
 import PropTypes from 'prop-types'
 import React from 'react'
 import SwipeableViews from 'react-swipeable-views'
-import LineGraph from './LineGraph'
-import PieChart from './PieChart'
-import BarGraph from './BarGraphTest'
 import FullWidthTabs from './GraphTabs'
 
 function TabContainer({children, dir}) {
@@ -105,24 +94,20 @@ class InfoPage extends React.Component {
     this.state = {
       complaints: [],
       address: '',
-      tabValue: 0,
-      inputAddress: ''
+      tabValue: 0
     }
     const rowData = this.props.data
-    console.log('PROPS', this.props)
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
-    this.handleKeyDown = this.handleKeyDown.bind(this)
-    this.handleChange = this.handleChange.bind(this)
   }
-  
+
   componentDidMount() {
     this.setState({
       complaints: this.props.data.complaints,
       address: this.props.data.incident_address
     })
   }
-  
+
   componentDidUpdate(prevProps) {
     if (
       prevProps.data.complaints[0].incident_address !==
@@ -135,40 +120,83 @@ class InfoPage extends React.Component {
     }
     this.swipeableActions.updateHeight()
   }
-  
+
   handleTabChange(event, newValue) {
     this.setState({tabValue: newValue})
   }
-  
-  async handleKeyDown(event) { //LINKED TO SEARCH FN - DELETE
-    if (event.key === 'Enter') {
-      try {
-        const {data} = await axios.get(
-          `https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=${
-            this.state.inputAddress
-          }`
-        )
-        this.setState({complaints: data})
-      } catch (err) {
-        console.log(err)
-      }
-    }
-  }
-  
-  async handleChange(event) { //ALSO LINKED TO SEARCH FN
-    await this.setState({inputAddress: event.target.value})
-  }
-  
   createDate(date) {
     return date.slice(0, 10)
   }
-  
+
   handleChangeIndex(index) {
     this.setState({tabValue: index})
   }
-  
+  renderAddress(address) {
+    let th = [0, 4, 5, 6, 7, 8, 9]
+    let st = [1]
+    let nd = [2]
+    let rd = [3]
+    let splitAddress = address.split(' ')
+    if (splitAddress.length === 3) {
+      if (Number(splitAddress[1])) {
+        if (th.includes(Number(splitAddress[1][splitAddress[1].length - 1]))) {
+          let newSecond = splitAddress[1] + 'th'
+          splitAddress[1] = newSecond
+          return splitAddress.join(' ')
+        } else if (
+          st.includes(Number(splitAddress[1][splitAddress[1].length - 1]))
+        ) {
+          let newSecond = splitAddress[1] + 'st'
+          splitAddress[1] = newSecond
+          return splitAddress.join(' ')
+        } else if (
+          nd.includes(Number(splitAddress[1][splitAddress[1].length - 1]))
+        ) {
+          let newSecond = splitAddress[1] + 'nd'
+          splitAddress[1] = newSecond
+          return splitAddress.join(' ')
+        } else if (
+          rd.includes(Number(splitAddress[1][splitAddress[1].length - 1]))
+        ) {
+          let newSecond = splitAddress[1] + 'rd'
+          splitAddress[1] = newSecond
+          return splitAddress.join(' ')
+        }
+      } else {
+        return address
+      }
+    } else if (splitAddress.length === 4) {
+      if (Number(splitAddress[2])) {
+        if (th.includes(Number(splitAddress[2][splitAddress[2].length - 1]))) {
+          let newSecond = splitAddress[2] + 'th'
+          splitAddress[2] = newSecond
+          return splitAddress.join(' ')
+        } else if (
+          st.includes(Number(splitAddress[2][splitAddress[2].length - 1]))
+        ) {
+          let newSecond = splitAddress[2] + 'st'
+          splitAddress[2] = newSecond
+          return splitAddress.join(' ')
+        } else if (
+          nd.includes(Number(splitAddress[2][splitAddress[2].length - 1]))
+        ) {
+          let newSecond = splitAddress[2] + 'nd'
+          splitAddress[2] = newSecond
+          return splitAddress.join(' ')
+        } else if (
+          rd.includes(Number(splitAddress[2][splitAddress[2].length - 1]))
+        ) {
+          let newSecond = splitAddress[2] + 'rd'
+          splitAddress[2] = newSecond
+          return splitAddress.join(' ')
+        }
+      } else {
+        return address
+      }
+    }
+  }
   render() {
-    const {classes, theme} = this.props
+    const {classes} = this.props
 
     return (
       <div style={{backgroundColor: 'lightgrey'}}>
@@ -177,25 +205,14 @@ class InfoPage extends React.Component {
           <div className={classes.root}>
             <AppBar position="static">
               <Toolbar>
-                <Typography className={classes.title} variant="h6" noWrap>
-                  Graph data for...
+                <Typography
+                  align="center"
+                  className={classes.title}
+                  variant="h6"
+                  noWrap
+                >
+                  Data for {this.renderAddress(this.state.address)}
                 </Typography>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon />
-                  </div>
-                  <InputBase
-                    onKeyDown={this.handleKeyDown}
-                    onChange={this.handleChange}
-                    placeholder="Search for new address"
-                    classes={{
-                      root: classes.inputRoot,
-                      input: classes.inputInput
-                    }}
-                    inputProps={{'aria-label': 'Search'}}
-                    list="colors"
-                  />
-                </div>
               </Toolbar>
             </AppBar>
           </div>
@@ -203,7 +220,7 @@ class InfoPage extends React.Component {
           <div style={{display: 'flex', justifyContent: 'center'}}>
             <FullWidthTabs data={this.props.data.aggregate_data} />
           </div>
-          <br /> // CONFLICT STARTS HERE
+          <br />
           <Paper className={classes.root}>
             <AppBar position="static" color="default">
               <Tabs
