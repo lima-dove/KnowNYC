@@ -5,7 +5,7 @@ import {scaleOrdinal} from 'd3-scale'
 
 const size = 500
 const radius = size / 2
-const colors = d3.scaleOrdinal(d3.schemeAccent)
+const colors = d3.scaleOrdinal(d3.schemePastel2)
 
 const dataArc = arc()
   .outerRadius(radius - 40)
@@ -16,11 +16,12 @@ const labelArc = arc()
   .innerRadius(radius - 100)
 
 const chart = pie()
+  .padAngle(0.05)
   .sort(null)
   .value(d => d.frequency)
 
-const width = 470
-const height = 470
+const width = 475
+const height = 475
 
 const angle = -90
 function midAngle(d) {
