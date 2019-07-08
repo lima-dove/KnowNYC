@@ -150,10 +150,6 @@ class HomePage extends Component {
 
   handleMapClick = e => {
     e.preventDefault()
-    // Add other logic to close popup
-    // this.setState({
-    //   selectedAddress: null
-    // })
   }
 
   handleSeeMoreClick = complaint => {
@@ -233,14 +229,10 @@ class HomePage extends Component {
       selectedDotImage,
       data,
       neighborhoodComplaints,
-      mouse,
       searchError
     } = this.state
 
     const scrollZoom = !selectedMarkerImage && !selectedDotImage
-
-    console.log('Selected Hood Graph Data: ', data)
-    console.log('Selected Address Graph Data: ', selectedAddress)
 
     return (
       <div>
