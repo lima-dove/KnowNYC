@@ -1,3 +1,4 @@
+// ATEMPT TO USE ITERATOR
 const db = require('../server/db')
 const {
   Neighborhood,
@@ -18,9 +19,105 @@ const findMaxArray = nestedArray => {
   return maxArray
 }
 
+// ITERATOR VARIABLES
+let object = {}
+let arrayOfHoodObjects = []
+let complaintType = []
+let complaintRow
+
+// Recieve complaint types from all neighborhoods array, where each element is a neighborhood object with a complaints key
+const complaintTypeIterator = {
+  [Symbol.asyncIterator]: function() {
+    let k = -1
+    return {
+      next: async function() {
+        k++
+        if (k < complaintType.length) {
+          complaintRow = await NeighborhoodAggregate.create({
+            neighborhoodId: object[complaintType[k]].neighborhoodId,
+            complaint: complaintType[k],
+            frequency: object[complaintType[k]].frequency
+          })
+          return {value: complaintRow.id, done: false}
+        }
+        return {value: k, done: true}
+      }
+    }
+  }
+}
+
+const neighborhoodAggregateRowCreateIterator = {
+  [Symbol.asyncIterator]: function() {
+    let i = -1
+    let hood
+    let total = 0
+
+    return {
+      next: async function() {
+        i++
+        hood = arrayOfHoodObjects[i]
+        if (i < arrayOfHoodObjects.length) {
+          total = hood.complaints.length
+          // Build a new neighborhood's object:
+          object = {}
+          for (let j = 0; j < total; j++) {
+            // Check if the neighborhood's object already has this complaint type object:
+            if (object.hasOwnProperty([hood.complaints[j].complaint_type])) {
+              object[hood.complaints[j].complaint_type].frequency++ // If yes, increment the frequency
+              // Else, make the single complaint-type aggregate object
+            } else if (
+              !object.hasOwnProperty([hood.complaints[j].complaint_type])
+            ) {
+              object[hood.complaints[j].complaint_type] = {
+                // Populate it with initilized frequency and note the neighborhoodId
+                frequency: 1,
+                neighborhoodId: hood.id
+              }
+            }
+          }
+
+          await Neighborhood.update(
+            // Add the total complaints for the neighborhood to the total_complaints column in the neighborhood model
+            {total_complaints: total},
+            {where: {id: hood.id}}
+          )
+
+          complaintType = new Set()
+          for (let complaint in object) {
+            if (object.hasOwnProperty(complaint)) {
+              complaintType.add(complaint)
+            }
+          }
+          complaintType = [...complaintType]
+          for await (const complaintAggregate of complaintTypeIterator) {
+            // console.log({complaintAggregate})
+          }
+
+          return {
+            value: {
+              complaintTypeLength: complaintType.length,
+              neighborhoodId: complaintRow.dataValues.neighborhoodId,
+              complaint: complaintRow.dataValues.complaint,
+              frequency: complaintRow.dataValues.frequency
+            },
+            done: false
+          }
+        }
+        return {
+          value: `updated ${arrayOfHoodObjects[i - 1].id} with total: ${
+            arrayOfHoodObjects[i - 1].complaints.length
+          }`,
+          done: true
+        }
+      }
+    }
+  }
+}
+
 const createAggregates = async () => {
   try {
-    const complaintsByHood = await Neighborhood.findAll({
+    // Returns an array of neighborhood objects whose name key is the neighborhood name and whose complaints key is an array of complaints from that neighborhood
+    arrayOfHoodObjects = await Neighborhood.findAll({
       where: {
         boroughId: 3
       },
@@ -31,37 +128,13 @@ const createAggregates = async () => {
         }
       ]
     })
+    console.log(
+      'what does the last+1 index of arrayhoodobjects equal?',
+      arrayOfHoodObjects[arrayOfHoodObjects.length]
+    )
 
-    let total = 0
-    let object = {}
-    complaintsByHood.forEach(async hood => {
-      total = hood.complaints.length
-      for (let i = 0; i < total; i++) {
-        if (object[hood.complaints[i].complaint_type]) {
-          object[hood.complaints[i].complaint_type].frequency++
-        } else if (!object[hood.complaints[i].complaint_type]) {
-          object[hood.complaints[i].complaint_type] = {
-            frequency: 1,
-            neighborhoodId: hood.id
-          }
-        }
-      }
-
-      await Neighborhood.update(
-        {total_complaints: total},
-        {
-          where: {id: hood.id}
-        }
-      )
-    })
-
-    // eslint-disable-next-line guard-for-in
-    for (let complaint in object) {
-      await NeighborhoodAggregate.create({
-        neighborhoodId: object[complaint].neighborhoodId,
-        complaint,
-        frequency: object[complaint].frequency
-      })
+    for await (const row of neighborhoodAggregateRowCreateIterator) {
+      // console.log({row})
     }
   } catch (err) {
     console.error(err)
@@ -100,6 +173,7 @@ async function seed() {
       })
     })
 
+    // THIS ENDS UP POPULATING TOTALLY WITHOUT THE NEED FOR FOR.. OF ITERATION
     // eslint-disable-next-line guard-for-in
     for (let borough in neighborhoodObj) {
       // eslint-disable-next-line guard-for-in
