@@ -202,8 +202,9 @@ class HomePage extends Component {
   }
 
   mouseHandle() {
-    this.setState({mouse: true, width: '60vw'})
+    this.setState({mouse: true})
   }
+
   onCloseAddressPopup() {
     const dot = this.state.selectedDotImage
     dot.src = greenDot
@@ -366,17 +367,17 @@ class HomePage extends Component {
             </Popup>
           ) : null}
 
-          { /*ADDRESS POPUP */}
+          {/*ADDRESS POPUP */}
           {selectedAddress ? (
-              <Popup
-                closeOnClick={false}
-                latitude={this.state.viewport.latitude}
-                longitude={this.state.viewport.longitude}
-                onClose={this.onCloseAddressPopup}
-                className="popup"
-              >
-                 <InfoPage data={selectedAddress} />
-              </Popup>
+            <Popup
+              closeOnClick={false}
+              latitude={this.state.viewport.latitude}
+              longitude={this.state.viewport.longitude}
+              onClose={this.onCloseAddressPopup}
+              className="popup"
+            >
+              <InfoPage data={selectedAddress} />
+            </Popup>
           ) : null}
         </MapGL>
       </div>

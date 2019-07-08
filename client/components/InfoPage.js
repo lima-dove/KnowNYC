@@ -100,12 +100,14 @@ class InfoPage extends React.Component {
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
   }
+
   componentDidMount() {
     this.setState({
       complaints: this.props.data.complaints,
       address: this.props.data.incident_address
     })
   }
+
   componentDidUpdate(prevProps) {
     if (
       prevProps.data.complaints[0].incident_address !==
@@ -116,14 +118,16 @@ class InfoPage extends React.Component {
         complaints: this.props.data.complaints
       })
     }
+    this.swipeableActions.updateHeight()
   }
+
   handleTabChange(event, newValue) {
     this.setState({tabValue: newValue})
   }
-
   createDate(date) {
     return date.slice(0, 10)
   }
+
   handleChangeIndex(index) {
     this.setState({tabValue: index})
   }
@@ -216,33 +220,35 @@ class InfoPage extends React.Component {
           <div style={{display: 'flex', justifyContent: 'center'}}>
             <FullWidthTabs data={this.props.data.aggregate_data} />
           </div>
-        </Container>
-        <br />
-        <Paper className={classes.root}>
-          <AppBar position="static" color="default">
-            <Tabs
-              value={this.state.tabValue}
-              onChange={this.handleTabChange}
-              indicatorColor="primary"
-              textColor="primary"
-              variant="standard"
-              scrollButtons="on"
-              centered
+          <br />
+          <Paper className={classes.root}>
+            <AppBar position="static" color="default">
+              <Tabs
+                value={this.state.tabValue}
+                onChange={this.handleTabChange}
+                indicatorColor="primary"
+                textColor="primary"
+                variant="standard"
+                scrollButtons="on"
+                centered
+              >
+                <Tab label="All Complaints" />
+                <Tab label="311 Complaints" />
+                <Tab label="User Complaints" />
+              </Tabs>
+            </AppBar>
+            <SwipeableViews
+              enableMouseEvents
+              action={actions => {
+                this.swipeableActions = actions
+              }}
+              axis={
+                classes.tabDirection.direction === 'rtl' ? 'x-reverse' : 'x'
+              }
+              index={this.state.tabValue}
+              onChangeIndex={this.handleChangeIndex}
             >
-              <Tab label="All Complaints" />
-              <Tab label="311 Complaints" />
-              <Tab label="User Complaints" />
-            </Tabs>
-          </AppBar>
-          <SwipeableViews
-            enableMouseEvents
-            animateHeight={true}
-            axis={classes.tabDirection.direction === 'rtl' ? 'x-reverse' : 'x'}
-            index={this.state.tabValue}
-            onChangeIndex={this.handleChangeIndex}
-          >
-            <TabContainer dir={classes.tabDirection.direction}>
-              <Paper className={classes.paperTable}>
+              <TabContainer dir={classes.tabDirection.direction}>
                 <Table className={classes.tableTable}>
                   <TableHead>
                     <TableRow>
@@ -279,16 +285,16 @@ class InfoPage extends React.Component {
                       })}
                   </TableBody>
                 </Table>
-              </Paper>
-            </TabContainer>
-            <TabContainer dir={classes.tabDirection.direction}>
-              Item Two
-            </TabContainer>
-            <TabContainer dir={classes.tabDirection.direction}>
-              Item Three
-            </TabContainer>
-          </SwipeableViews>
-        </Paper>
+              </TabContainer>
+              <TabContainer dir={classes.tabDirection.direction}>
+                Item Two
+              </TabContainer>
+              <TabContainer dir={classes.tabDirection.direction}>
+                Item Three
+              </TabContainer>
+            </SwipeableViews>
+          </Paper>
+        </Container>
         <br />
       </div>
     )
