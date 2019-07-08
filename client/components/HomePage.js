@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import Button from '@material-ui/core/Button'
 import {withStyles} from '@material-ui/core/styles'
 import axios from 'axios'
@@ -34,6 +35,7 @@ class HomePage extends Component {
       selectedNeighborhood: null,
       selectedAddress: null,
       data: null,
+      searchError: false,
       selectedMarkerImage: null,
       selectedDotImage: null,
       viewport: {
@@ -54,6 +56,7 @@ class HomePage extends Component {
     this.handleSearchSubmit = this.handleSearchSubmit.bind(this)
     this.handleAddressMarkerClick = this.handleAddressMarkerClick.bind(this)
     this.mouseHandle = this.mouseHandle.bind(this)
+    this.onCloseAddressPopup = this.onCloseAddressPopup.bind(this)
     this.mapRef = React.createRef()
   }
 
@@ -87,7 +90,7 @@ class HomePage extends Component {
     this.setState({
       selectedDotImage: event.target
     })
-    console.log('ADDRESS========', address)
+
     let response
     if (address.incident_address) {
       response = await axios.get(
@@ -121,7 +124,6 @@ class HomePage extends Component {
       }
       return aggregateObj
     })
-    console.log('handlemarkerclick object', data)
 
     this.setState({
       selectedNeighborhood: {
@@ -169,25 +171,48 @@ class HomePage extends Component {
   }
 
   async handleSearchSubmit(address) {
-    const {data} = await axios.get(`api/map/getAddress/A${address}`)
-    this.setState({
-      selectedAddress: data,
-      viewport: {
-        latitude: data.latitude,
-        longitude: data.longitude,
-        zoom: 18,
-        bearing: 0,
-        pitch: 0
+    try {
+      const {data} = await axios.get(`api/map/getAddress/A${address}`)
+      this.setState({
+        selectedAddress: data,
+        viewport: {
+          latitude: data.latitude,
+          longitude: data.longitude,
+          zoom: 18,
+          bearing: 0,
+          pitch: 0
+        }
+      })
+    } catch (error) {
+      if (error.response.status === 500) {
+        this.setState(
+          {
+            searchError: true
+          },
+          () => {
+            setTimeout(() => {
+              this.setState({searchError: false})
+            }, 3000)
+          }
+        )
       }
-    })
+    }
   }
 
   mouseHandle() {
-    this.setState({mouse: true})
+    this.setState({mouse: true, width: '60vw'})
+  }
+  onCloseAddressPopup() {
+    const dot = this.state.selectedDotImage
+    dot.src = greenDot
+    this.setState({
+      selectedDotImage: null,
+      selectedAddress: null,
+      mouse: false
+    })
   }
 
   render() {
-    console.log('MOUSE', this.state.mouse)
     const {classes} = this.props
 
     const {
@@ -199,7 +224,8 @@ class HomePage extends Component {
       selectedDotImage,
       data,
       neighborhoodComplaints,
-      mouse
+      mouse,
+      searchError
     } = this.state
 
     const scrollZoom = !selectedMarkerImage && !selectedDotImage
@@ -227,6 +253,7 @@ class HomePage extends Component {
             <SearchBar
               handleSearchSubmit={this.handleSearchSubmit}
               captureClick={true}
+              error={searchError}
             />
             {selectedAddress ? (
               <Marker
@@ -251,6 +278,7 @@ class HomePage extends Component {
                     onClick={this.handleSearchClick}
                     variant="contained"
                     className={classes.button}
+                    style={{zIndex: '10'}}
                   >
                     Search this area
                   </Button>
@@ -270,7 +298,7 @@ class HomePage extends Component {
                             src={greenDot}
                             onClick={event =>
                               this.handleAddressMarkerClick(event, address)
-                            } // THIS FUNCTION NEEDS TO BE WRITTEN
+                            }
                           />
                         </Marker>
                       )
@@ -309,7 +337,6 @@ class HomePage extends Component {
             <Popup
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
-              style={{maxWidth: '200px'}}
               onClose={() => {
                 const marker = this.state.selectedMarkerImage
                 marker.src = greenPointer
@@ -335,15 +362,7 @@ class HomePage extends Component {
                 closeOnClick={false}
                 latitude={this.state.viewport.latitude}
                 longitude={this.state.viewport.longitude}
-                style={{maxWidth: '200px'}}
-                onClose={() => {
-                  const dot = this.state.selectedDotImage
-                  dot.src = greenDot
-                  this.setState({
-                    selectedDotImage: null,
-                    selectedAddress: null
-                  })
-                }}
+                onClose={this.onCloseAddressPopup}
                 className="popup"
               >
                 {mouse ? (
@@ -374,7 +393,3 @@ class HomePage extends Component {
 }
 
 export default withStyles(styles)(HomePage)
-// Function maybe:
-/* Get neighborhood:
-
-*/

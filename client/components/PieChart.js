@@ -3,24 +3,24 @@ import {arc, pie} from 'd3-shape'
 import React from 'react'
 import {scaleOrdinal} from 'd3-scale'
 
-const size = 180
+const size = 500
 const radius = size / 2
 const colors = d3.scaleOrdinal(d3.schemeAccent)
 
 const dataArc = arc()
   .outerRadius(radius - 40)
-  .innerRadius(0)
+  .innerRadius(50)
 
 const labelArc = arc()
-  .outerRadius(radius - 40)
-  .innerRadius(radius - 40)
+  .outerRadius(radius - 100)
+  .innerRadius(radius - 100)
 
 const chart = pie()
   .sort(null)
   .value(d => d.frequency)
 
-const width = 180
-const height = 180
+const width = 470
+const height = 470
 
 const PieChart = props => {
   const data = props.data
@@ -42,7 +42,12 @@ const PieChart = props => {
 
   return (
     <div id="chart">
-      <svg width={width} height={height} viewBox={`0 0 ${size} ${size}`}>
+      <svg
+        width={width}
+        height={height}
+        viewBox={`0 0 ${size} ${size}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
         <g transform={`translate(${radius}, ${radius})`}>
           {chart(data).map((d, i) => (
             <g key={i} className="arc">
