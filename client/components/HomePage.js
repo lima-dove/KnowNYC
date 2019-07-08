@@ -242,6 +242,7 @@ class HomePage extends Component {
           {...viewport}
           width="100vw"
           height="88vh"
+          minZoom={11}
           mapStyle="mapbox://styles/mapbox/streets-v9"
           onViewportChange={v => this.handleViewChange(v)}
           preventStyleDiffing={false}
