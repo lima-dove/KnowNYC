@@ -136,6 +136,7 @@ class InfoPage extends React.Component {
   }
 
   renderAddress(address) {
+    address = address.replace(/ +(?= )/g, '')
     let th = [0, 4, 5, 6, 7, 8, 9]
     let st = [1]
     let nd = [2]
@@ -201,7 +202,11 @@ class InfoPage extends React.Component {
   }
 
   render() {
-    const {classes} = this.props
+    const {classes, data} = this.props
+    console.log(data)
+    const displayAddress = this.state.address
+      ? this.renderAddress(this.state.address)
+      : `[${data.latitude}, ${data.longitude}]`
 
     return (
       <div style={{backgroundColor: 'lightgrey'}}>
@@ -216,7 +221,7 @@ class InfoPage extends React.Component {
                   variant="h6"
                   noWrap
                 >
-                  Data for {this.renderAddress(this.state.address)}
+                  Data for {displayAddress}
                 </Typography>
               </Toolbar>
             </AppBar>
@@ -254,42 +259,44 @@ class InfoPage extends React.Component {
               onChangeIndex={this.handleChangeIndex}
             >
               <TabContainer dir={classes.tabDirection.direction}>
-                <Table className={classes.tableTable}>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell align="center">Date of Complaint</TableCell>
-                      <TableCell align="center">Complaint Type</TableCell>
-                      <TableCell align="center">Description</TableCell>
-                      <TableCell align="center">Resolution</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {this.state.complaints
-                      .sort((a, b) => {
-                        return (
-                          new Date(b.created_date) - new Date(a.created_date)
-                        )
-                      })
-                      .map(complaint => {
-                        return (
-                          <TableRow key={complaint.id}>
-                            <TableCell component="th" scope="row">
-                              {this.createDate(complaint.created_date)}
-                            </TableCell>
-                            <TableCell align="center">
-                              {complaint.complaint_type}
-                            </TableCell>
-                            <TableCell align="center">
-                              {complaint.descriptor}
-                            </TableCell>
-                            <TableCell align="center">
-                              {complaint.resolution_description}
-                            </TableCell>
-                          </TableRow>
-                        )
-                      })}
-                  </TableBody>
-                </Table>
+                <Paper className={classes.paperTable}>
+                  <Table className={classes.tableTable}>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">Date of Complaint</TableCell>
+                        <TableCell align="center">Complaint Type</TableCell>
+                        <TableCell align="center">Description</TableCell>
+                        <TableCell align="center">Resolution</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {this.state.complaints
+                        .sort((a, b) => {
+                          return (
+                            new Date(b.created_date) - new Date(a.created_date)
+                          )
+                        })
+                        .map(complaint => {
+                          return (
+                            <TableRow key={complaint.id}>
+                              <TableCell component="th" scope="row">
+                                {this.createDate(complaint.created_date)}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.complaint_type}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.descriptor}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.resolution_description}
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })}
+                    </TableBody>
+                  </Table>
+                </Paper>
               </TabContainer>
               <TabContainer dir={classes.tabDirection.direction}>
                 <Paper className={classes.paperTable}>
