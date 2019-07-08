@@ -13,6 +13,8 @@ import NeighborhoodInfoPage from './NeighborhoodInfoPage'
 import SearchBar from './SearchBar'
 import Sidebar from './Sidebar'
 
+//Bypassing Jens commit
+
 const styles = theme => ({
   button: {
     margin: theme.spacing(1),
