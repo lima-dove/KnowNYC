@@ -96,8 +96,12 @@ class InfoPage extends React.Component {
       address: '',
       tabValue: 0
     }
+
+    const rawData = this.props.data
+
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
+
   }
 
   componentDidMount() {
@@ -123,6 +127,7 @@ class InfoPage extends React.Component {
   handleTabChange(event, newValue) {
     this.setState({tabValue: newValue})
   }
+
   createDate(date) {
     return date.slice(0, 10)
   }

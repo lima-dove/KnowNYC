@@ -76,6 +76,7 @@ class HomePage extends Component {
     const {data} = await axios.get(
       `/api/map/searchByArea/${northLat},${southLat},${westLng},${eastLng}`
     )
+
     this.setState({boundaryAddresses: data})
   }
 
