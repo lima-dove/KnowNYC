@@ -132,6 +132,7 @@ class InfoPage extends React.Component {
   }
 
   renderAddress(address) {
+    address = address.replace(/ +(?= )/g, '')
     let th = [0, 4, 5, 6, 7, 8, 9]
     let st = [1]
     let nd = [2]
@@ -197,7 +198,11 @@ class InfoPage extends React.Component {
   }
 
   render() {
-    const {classes} = this.props
+    const {classes, data} = this.props
+    console.log(data)
+    const displayAddress = this.state.address
+      ? this.renderAddress(this.state.address)
+      : `[${data.latitude}, ${data.longitude}]`
 
     return (
       <div style={{backgroundColor: 'lightgrey'}}>
@@ -212,7 +217,7 @@ class InfoPage extends React.Component {
                   variant="h6"
                   noWrap
                 >
-                  Data for {this.renderAddress(this.state.address)}
+                  Data for {displayAddress}
                 </Typography>
               </Toolbar>
             </AppBar>
