@@ -150,10 +150,6 @@ class HomePage extends Component {
 
   handleMapClick = e => {
     e.preventDefault()
-    // Add other logic to close popup
-    // this.setState({
-    //   selectedAddress: null
-    // })
   }
 
   handleSeeMoreClick = complaint => {
@@ -233,7 +229,6 @@ class HomePage extends Component {
       selectedDotImage,
       data,
       neighborhoodComplaints,
-      mouse,
       searchError
     } = this.state
 

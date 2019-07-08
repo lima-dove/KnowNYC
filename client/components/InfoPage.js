@@ -1,3 +1,5 @@
+/* eslint-disable max-statements */
+/* eslint-disable complexity */
 import AppBar from '@material-ui/core/AppBar'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
@@ -96,8 +98,6 @@ class InfoPage extends React.Component {
       address: '',
       tabValue: 0
     }
-
-    const rawData = this.props.data
 
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
