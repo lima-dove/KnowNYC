@@ -81,6 +81,14 @@ body {
   -webkit-transform: rotateX(180deg) !important; /* Safari and Chrome */
 }
 
+button.mapboxgl-popup-close-button {
+  border-radius: 5px !important;
+  zoom: 2 !important;
+}
+.mapboxgl-popup-close-button:hover {
+  background-color: transparent !important;
+}
+
 /* a {
   text-decoration: none;
  }
