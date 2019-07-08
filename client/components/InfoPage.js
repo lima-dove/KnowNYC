@@ -96,9 +96,12 @@ class InfoPage extends React.Component {
       address: '',
       tabValue: 0
     }
-    const rowData = this.props.data
+
+    const rawData = this.props.data
+
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
+
   }
 
   componentDidMount() {
@@ -124,6 +127,7 @@ class InfoPage extends React.Component {
   handleTabChange(event, newValue) {
     this.setState({tabValue: newValue})
   }
+
   createDate(date) {
     return date.slice(0, 10)
   }
@@ -131,6 +135,7 @@ class InfoPage extends React.Component {
   handleChangeIndex(index) {
     this.setState({tabValue: index})
   }
+
   renderAddress(address) {
     let th = [0, 4, 5, 6, 7, 8, 9]
     let st = [1]
@@ -195,6 +200,7 @@ class InfoPage extends React.Component {
       }
     }
   }
+
   render() {
     const {classes} = this.props
 
@@ -287,15 +293,52 @@ class InfoPage extends React.Component {
                 </Table>
               </TabContainer>
               <TabContainer dir={classes.tabDirection.direction}>
-                Item Two
+                <Paper className={classes.paperTable}>
+                  <Table className={classes.tableTable}>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">Date of Complaint</TableCell>
+                        <TableCell align="center">Complaint Type</TableCell>
+                        <TableCell align="center">Description</TableCell>
+                        <TableCell align="center">Resolution</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {this.state.complaints
+                        .sort((a, b) => {
+                          return (
+                            new Date(b.created_date) - new Date(a.created_date)
+                          )
+                        })
+                        .map(complaint => {
+                          return (
+                            <TableRow key={complaint.id}>
+                              <TableCell component="th" scope="row">
+                                {this.createDate(complaint.created_date)}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.complaint_type}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.descriptor}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.resolution_description}
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })}
+                    </TableBody>
+                  </Table>
+                </Paper>
               </TabContainer>
               <TabContainer dir={classes.tabDirection.direction}>
-                Item Three
+                Coming soon to a build near you: User Complaints!
               </TabContainer>
             </SwipeableViews>
+            <br />
           </Paper>
         </Container>
-        <br />
       </div>
     )
   }
