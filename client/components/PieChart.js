@@ -3,7 +3,6 @@ import {arc, pie} from 'd3-shape'
 import React from 'react'
 import {scaleOrdinal} from 'd3-scale'
 
-
 const size = 500
 const radius = size / 2
 const colors = d3.scaleOrdinal(d3.schemeAccent)
