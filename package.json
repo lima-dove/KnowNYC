@@ -54,6 +54,7 @@
     "express-session": "^1.15.1",
     "file-loader": "^4.0.0",
     "firebase": "^6.2.3",
+    "gl-matrix": "^3.0.0",
     "history": "^4.9.0",
     "lodash": "^4.17.11",
     "lodash.debounce": "^4.0.8",

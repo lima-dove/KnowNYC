@@ -202,8 +202,9 @@ class HomePage extends Component {
   }
 
   mouseHandle() {
-    this.setState({mouse: true, width: '60vw'})
+    this.setState({mouse: true})
   }
+
   onCloseAddressPopup() {
     const dot = this.state.selectedDotImage
     dot.src = greenDot
