@@ -1,10 +1,5 @@
 import AppBar from '@material-ui/core/AppBar'
-import Button from '@material-ui/core/Button'
-import Card from '@material-ui/core/Card'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
 import Container from '@material-ui/core/Container'
-import Grid from '@material-ui/core/Grid'
 import InputBase from '@material-ui/core/InputBase'
 import Paper from '@material-ui/core/Paper'
 import {fade, withStyles} from '@material-ui/core/styles'
@@ -22,9 +17,6 @@ import axios from 'axios'
 import PropTypes from 'prop-types'
 import React from 'react'
 import SwipeableViews from 'react-swipeable-views'
-import LineGraph from './LineGraph'
-import PieChart from './PieChart'
-import BarGraph from './BarGraphTest'
 import FullWidthTabs from './GraphTabs'
 
 function TabContainer({children, dir}) {
@@ -260,10 +252,47 @@ class InfoPage extends React.Component {
               </Paper>
             </TabContainer>
             <TabContainer dir={classes.tabDirection.direction}>
-              Item Two
+              <Paper className={classes.paperTable}>
+                <Table className={classes.tableTable}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">Date of Complaint</TableCell>
+                      <TableCell align="center">Complaint Type</TableCell>
+                      <TableCell align="center">Description</TableCell>
+                      <TableCell align="center">Resolution</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {this.state.complaints
+                      .sort((a, b) => {
+                        return (
+                          new Date(b.created_date) - new Date(a.created_date)
+                        )
+                      })
+                      .map(complaint => {
+                        return (
+                          <TableRow key={complaint.id}>
+                            <TableCell component="th" scope="row">
+                              {this.createDate(complaint.created_date)}
+                            </TableCell>
+                            <TableCell align="center">
+                              {complaint.complaint_type}
+                            </TableCell>
+                            <TableCell align="center">
+                              {complaint.descriptor}
+                            </TableCell>
+                            <TableCell align="center">
+                              {complaint.resolution_description}
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })}
+                  </TableBody>
+                </Table>
+              </Paper>
             </TabContainer>
             <TabContainer dir={classes.tabDirection.direction}>
-              Item Three
+              Coming soon to a build near you: User Complaints!
             </TabContainer>
           </SwipeableViews>
         </Paper>

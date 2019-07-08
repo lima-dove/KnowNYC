@@ -4,13 +4,12 @@ import {withStyles} from '@material-ui/core/styles'
 import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {FlyToInterpolator, Marker, Popup} from 'react-map-gl'
+import greenDot from '../../markers/green-circle.png'
+import greenPointer from '../../markers/green-marker.png'
+import redDot from '../../markers/red-circle.png'
+import redPointer from '../../markers/red-marker.png'
 import BarGraph from './BarGraphTest'
 import InfoPage from './InfoPage'
-import redPointer from '../../markers/red-marker.png'
-import greenPointer from '../../markers/green-marker.png'
-import greenDot from '../../markers/green-circle.png'
-import redDot from '../../markers/red-circle.png'
-import {green} from '@material-ui/core/colors'
 import SearchBar from './SearchBar'
 import Sidebar from './Sidebar'
 
@@ -366,17 +365,17 @@ class HomePage extends Component {
             </Popup>
           ) : null}
 
-          { /*ADDRESS POPUP */}
+          {/*ADDRESS POPUP */}
           {selectedAddress ? (
-              <Popup
-                closeOnClick={false}
-                latitude={this.state.viewport.latitude}
-                longitude={this.state.viewport.longitude}
-                onClose={this.onCloseAddressPopup}
-                className="popup"
-              >
-                 <InfoPage data={selectedAddress} />
-              </Popup>
+            <Popup
+              closeOnClick={false}
+              latitude={this.state.viewport.latitude}
+              longitude={this.state.viewport.longitude}
+              onClose={this.onCloseAddressPopup}
+              className="popup"
+            >
+              <InfoPage data={selectedAddress} />
+            </Popup>
           ) : null}
         </MapGL>
       </div>
