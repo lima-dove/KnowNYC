@@ -7,14 +7,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import FullWidthTabs from './GraphTabs'
 
-function TabContainer({children, dir}) {
-  return (
-    <Typography component="div" dir={dir} style={{padding: 8 * 3}}>
-      {children}
-    </Typography>
-  )
-}
-
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -81,8 +73,7 @@ const styles = theme => ({
 
 class InfoPage extends React.Component {
   render() {
-    const {classes, theme} = this.props
-    const {data} = this.props
+    const {classes, data} = this.props
 
     return (
       <div style={{backgroundColor: 'lightgrey'}}>

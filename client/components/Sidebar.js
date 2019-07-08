@@ -32,6 +32,7 @@ export default class Sidebar extends React.Component {
             You can also use the <b>search bar</b> and the <b>filters</b> below
             to make a custom search.
           </p>
+          <p>Filters coming soon!</p>
         </div>
       </div>
     )

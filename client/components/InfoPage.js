@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import AppBar from '@material-ui/core/AppBar'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
@@ -97,11 +98,8 @@ class InfoPage extends React.Component {
       tabValue: 0
     }
 
-    const rawData = this.props.data
-
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
-
   }
 
   componentDidMount() {
@@ -136,6 +134,7 @@ class InfoPage extends React.Component {
     this.setState({tabValue: index})
   }
 
+  // eslint-disable-next-line complexity
   renderAddress(address) {
     let th = [0, 4, 5, 6, 7, 8, 9]
     let st = [1]
@@ -203,7 +202,6 @@ class InfoPage extends React.Component {
 
   render() {
     const {classes} = this.props
-
     return (
       <div style={{backgroundColor: 'lightgrey'}}>
         <br />

@@ -33,7 +33,3 @@ export default class GraphTest extends Component {
     )
   }
 }
-
-// want an array (set) of unique complaint types (ex: if barData.includes(el[complaint_type]) then increment el[complaint_type])
-// if (barData.some(el => el.type === complaint.complaint_type)) {
-// }
