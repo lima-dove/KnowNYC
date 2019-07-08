@@ -133,7 +133,6 @@ router.get('/getAddress/:location', async (req, res, next) => {
       aggrArr.push(dataObj)
     }
 
-    console.log('COMPLAINTS=======', complaints[0])
     const addressObj = {
       incident_address: complaints[0].incident_address,
       latitude: complaints[0].latitude,
