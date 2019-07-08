@@ -100,21 +100,19 @@ class InfoPage extends React.Component {
       tabValue: 0,
       inputAddress: ''
     }
-    const rowData = this.props.data
-    console.log('PROPS', this.props)
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
-  
+
   componentDidMount() {
     this.setState({
       complaints: this.props.data.complaints,
       address: this.props.data.incident_address
     })
   }
-  
+
   componentDidUpdate(prevProps) {
     if (
       prevProps.data.complaints[0].incident_address !==
@@ -127,12 +125,13 @@ class InfoPage extends React.Component {
     }
     this.swipeableActions.updateHeight()
   }
-  
+
   handleTabChange(event, newValue) {
     this.setState({tabValue: newValue})
   }
-  
-  async handleKeyDown(event) { //LINKED TO SEARCH FN - DELETE
+
+  async handleKeyDown(event) {
+    //LINKED TO SEARCH FN - DELETE
     if (event.key === 'Enter') {
       try {
         const {data} = await axios.get(
@@ -146,19 +145,20 @@ class InfoPage extends React.Component {
       }
     }
   }
-  
-  async handleChange(event) { //ALSO LINKED TO SEARCH FN
+
+  async handleChange(event) {
+    //ALSO LINKED TO SEARCH FN
     await this.setState({inputAddress: event.target.value})
   }
-  
+
   createDate(date) {
     return date.slice(0, 10)
   }
-  
+
   handleChangeIndex(index) {
     this.setState({tabValue: index})
   }
-  
+
   render() {
     const {classes, theme} = this.props
 
@@ -195,7 +195,7 @@ class InfoPage extends React.Component {
           <div style={{display: 'flex', justifyContent: 'center'}}>
             <FullWidthTabs data={this.props.data.aggregate_data} />
           </div>
-          <br /> // CONFLICT STARTS HERE
+          <br />
           <Paper className={classes.root}>
             <AppBar position="static" color="default">
               <Tabs
@@ -260,54 +260,54 @@ class InfoPage extends React.Component {
                       })}
                   </TableBody>
                 </Table>
-              </Paper>
-            </TabContainer>
-            <TabContainer dir={classes.tabDirection.direction}>
-              <Paper className={classes.paperTable}>
-                <Table className={classes.tableTable}>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell align="center">Date of Complaint</TableCell>
-                      <TableCell align="center">Complaint Type</TableCell>
-                      <TableCell align="center">Description</TableCell>
-                      <TableCell align="center">Resolution</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {this.state.complaints
-                      .sort((a, b) => {
-                        return (
-                          new Date(b.created_date) - new Date(a.created_date)
-                        )
-                      })
-                      .map(complaint => {
-                        return (
-                          <TableRow key={complaint.id}>
-                            <TableCell component="th" scope="row">
-                              {this.createDate(complaint.created_date)}
-                            </TableCell>
-                            <TableCell align="center">
-                              {complaint.complaint_type}
-                            </TableCell>
-                            <TableCell align="center">
-                              {complaint.descriptor}
-                            </TableCell>
-                            <TableCell align="center">
-                              {complaint.resolution_description}
-                            </TableCell>
-                          </TableRow>
-                        )
-                      })}
-                  </TableBody>
-                </Table>
-              </Paper>
-            </TabContainer>
-            <TabContainer dir={classes.tabDirection.direction}>
-              Coming soon to a build near you: User Complaints!
-            </TabContainer>
-          </SwipeableViews>
-        </Paper>
-        <br />
+              </TabContainer>
+              <TabContainer dir={classes.tabDirection.direction}>
+                <Paper className={classes.paperTable}>
+                  <Table className={classes.tableTable}>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">Date of Complaint</TableCell>
+                        <TableCell align="center">Complaint Type</TableCell>
+                        <TableCell align="center">Description</TableCell>
+                        <TableCell align="center">Resolution</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {this.state.complaints
+                        .sort((a, b) => {
+                          return (
+                            new Date(b.created_date) - new Date(a.created_date)
+                          )
+                        })
+                        .map(complaint => {
+                          return (
+                            <TableRow key={complaint.id}>
+                              <TableCell component="th" scope="row">
+                                {this.createDate(complaint.created_date)}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.complaint_type}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.descriptor}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.resolution_description}
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })}
+                    </TableBody>
+                  </Table>
+                </Paper>
+              </TabContainer>
+              <TabContainer dir={classes.tabDirection.direction}>
+                Coming soon to a build near you: User Complaints!
+              </TabContainer>
+            </SwipeableViews>
+            <br />
+          </Paper>
+        </Container>
       </div>
     )
   }

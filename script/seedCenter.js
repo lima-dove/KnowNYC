@@ -128,10 +128,6 @@ const createAggregates = async () => {
         }
       ]
     })
-    console.log(
-      'what does the last+1 index of arrayhoodobjects equal?',
-      arrayOfHoodObjects[arrayOfHoodObjects.length]
-    )
 
     for await (const row of neighborhoodAggregateRowCreateIterator) {
       // console.log({row})

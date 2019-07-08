@@ -82,7 +82,6 @@ export default class BarGraphTest extends Component {
 
     // Specify where to put label of text
     const text = d3.select('.hoverText')
-    console.log('bars', this.state.bars)
     text
       .select('text')
       .style('font-size', '16px')
@@ -94,7 +93,6 @@ export default class BarGraphTest extends Component {
 
   handleMouseLeave = () => {
     const text = d3.select('.hoverText')
-    console.log('exit')
     text
       .select('text')
       .style('font-size', '16px')
