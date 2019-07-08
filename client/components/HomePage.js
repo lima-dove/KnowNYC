@@ -11,6 +11,7 @@ import greenDot from '../../markers/green-circle.png'
 import redDot from '../../markers/red-circle.png'
 import {green} from '@material-ui/core/colors'
 import SearchBar from './SearchBar'
+import Sidebar from './Sidebar'
 
 const styles = theme => ({
   button: {
@@ -76,7 +77,6 @@ class HomePage extends Component {
     this.setState({boundaryAddresses: data})
   }
 
-
   async handleAddressMarkerClick(event, address) {
     let dot
     if (this.state.selectedDotImage) {
@@ -103,7 +103,6 @@ class HomePage extends Component {
     })
   }
 
-
   handleNeighborhoodMarkerClick = (event, neighborhoodAggregate) => {
     console.log(neighborhoodAggregate)
     //Popup Logic requires selectedAddress
@@ -126,6 +125,7 @@ class HomePage extends Component {
     this.setState({
       selectedNeighborhood: {
         incident_address: neighborhoodAggregate.name,
+        total: neighborhoodAggregate.total,
         location: {
           coordinates: [
             neighborhoodAggregate.latitude,
@@ -234,11 +234,15 @@ class HomePage extends Component {
           }
         >
           <div style={{display: 'flex'}}>
-            <SearchBar
-              handleSearchSubmit={this.handleSearchSubmit}
-              captureClick={true}
-              error={searchError}
-            />
+            <div id="sideSearch">
+              <SearchBar
+                handleSearchSubmit={this.handleSearchSubmit}
+                captureClick={true}
+                error={searchError}
+              />
+              <Sidebar viewport={viewport.zoom} />
+            </div>
+
             {selectedAddress ? (
               <Marker
                 latitude={selectedAddress.latitude}
@@ -255,6 +259,7 @@ class HomePage extends Component {
                 />
               </Marker>
             ) : null}
+
             {this.state.viewport.zoom > 15.5 ? (
               <div>
                 <div style={{display: 'flex'}}>
@@ -281,7 +286,7 @@ class HomePage extends Component {
                             src={greenDot}
                             onClick={event =>
                               this.handleAddressMarkerClick(event, address)
-                            } // THIS FUNCTION NEEDS TO BE WRITTEN
+                            }
                           />
                         </Marker>
                       )
@@ -291,12 +296,12 @@ class HomePage extends Component {
             ) : (
               <div>
                 {neighborhoodComplaints
-                  ? neighborhoodComplaints.map(complaint => {
+                  ? neighborhoodComplaints.map(neighborhoodAggregate => {
                       return (
                         <Marker
-                          key={complaint.id}
-                          latitude={complaint.latitude}
-                          longitude={complaint.longitude}
+                          key={neighborhoodAggregate.id}
+                          latitude={neighborhoodAggregate.latitude}
+                          longitude={neighborhoodAggregate.longitude}
                           offsetLeft={-20}
                           offsetTop={-10}
                         >
@@ -305,7 +310,7 @@ class HomePage extends Component {
                             onClick={event =>
                               this.handleNeighborhoodMarkerClick(
                                 event,
-                                complaint
+                                neighborhoodAggregate
                               )
                             }
                           />
@@ -316,6 +321,7 @@ class HomePage extends Component {
               </div>
             )}
           </div>
+          {/* NEIGHBORHOOD POPUP */}
           {selectedNeighborhood ? (
             <Popup
               latitude={this.state.viewport.latitude}
@@ -332,14 +338,17 @@ class HomePage extends Component {
               className="popup"
             >
               <div>
+                <h1>{selectedNeighborhood.incident_address}</h1>
                 <BarGraph rawData={data} />
-                <h1>
-                  Total Complaints for {selectedNeighborhood.incident_address}:
-                </h1>
+                <h2>
+                  Total Complaints for {selectedNeighborhood.incident_address}:{' '}
+                  <span> {selectedNeighborhood.total}</span>
+                </h2>
               </div>
             </Popup>
           ) : null}
-          {/* SelectedAddress logic: Click a marker neighborhood ONLY */}
+
+          {/* ADDRESS POPUP */}
           {selectedAddress ? (
             <Popup
               latitude={this.state.viewport.latitude}
@@ -356,10 +365,11 @@ class HomePage extends Component {
               className="popup"
             >
               <div>
+                <h1>{selectedAddress.incident_address}</h1>
                 <BarGraph rawData={selectedAddress.aggregate_data} />
-                <h1>
+                <h2>
                   Total Complaints for {selectedAddress.incident_address}:
-                </h1>
+                </h2>
                 <h3>Complaint Type: {selectedAddress.complaint_type}</h3>
                 <p>Description: {selectedAddress.descriptor}</p>
                 <button
