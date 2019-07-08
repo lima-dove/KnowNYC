@@ -5,7 +5,7 @@ import React, {Component} from 'react'
 
 const width = 650
 const height = 500
-const margin = {top: 20, right: 5, bottom: 170, left: 50}
+const margin = {top: 20, right: 5, bottom: 170, left: 75}
 const red = '#eb6a5b'
 const green = '#b6e86f'
 const blue = '#52b6ca'
@@ -34,25 +34,6 @@ export default class BarGraphTest extends Component {
     const {rawData} = nextProps
     const {xScale, yScale, colorScale} = prevState
 
-    // Receive data from map pop-up click and calculate frequency/frequency of each complaint type:
-    // if (SPECIFY CONDITIONAL) {
-    //   let complaintObj = {}
-    //   rawData.forEach(el => {
-    //     if (complaintObj[el.complaint_type] >= 1) {
-    //       complaintObj[el.complaint_type] = ++complaintObj[el.complaint_type]
-    //     } else {
-    //       complaintObj[el.complaint_type] = 1
-    //     }
-    //   })
-
-    //   let data = []
-
-    //   // eslint-disable-next-line guard-for-in
-    //   for (let key in complaintObj) {
-    //     data.push({type: key, frequency: complaintObj[key]})
-    //   }
-    // }
-    // SPECIFICALLY FOR AGGREGATE DATA
     let data = rawData
 
     // Set axes domain variables using data
@@ -62,12 +43,11 @@ export default class BarGraphTest extends Component {
     yScale.domain([0, frequencyMax])
 
     // Set bar size values
-    // let length = data.length
     const bars = data.map(d => {
       return {
         x: xScale(d.type),
         y: yScale(d.frequency),
-        width: xScale.bandwidth(), //length > 3 ? width / (2 * length) : 50
+        width: xScale.bandwidth(),
         height: height - margin.bottom - yScale(d.frequency),
         fill: "url('#myGradient')"
       }
@@ -88,7 +68,37 @@ export default class BarGraphTest extends Component {
       .attr('dx', '-.8em')
       .attr('dy', '.15em')
       .attr('transform', 'rotate(-65)')
-    d3.select(this.refs.yAxis).call(this.yAxis)
+      .style('font-size', '15px')
+    d3
+      .select(this.refs.yAxis)
+      .call(this.yAxis)
+      .selectAll('text')
+      .style('font-size', '15px')
+  }
+
+  // Create Event Handlers for mouse
+  handleMouseEnter = event => {
+    const yValue = this.state.yScale.invert(event.target.y.animVal.value)
+
+    // Specify where to put label of text
+    const text = d3.select('.hoverText')
+    console.log('bars', this.state.bars)
+    text
+      .select('text')
+      .style('font-size', '16px')
+      .style('textAnchor', 'middle')
+      .attr('x', event.target.x.animVal.value + 10)
+      .attr('dy', event.target.y.animVal.value - 5)
+      .text(Math.floor(yValue))
+  }
+
+  handleMouseLeave = () => {
+    const text = d3.select('.hoverText')
+    console.log('exit')
+    text
+      .select('text')
+      .style('font-size', '16px')
+      .text(``)
   }
 
   componentDidUpdate() {
@@ -100,13 +110,13 @@ export default class BarGraphTest extends Component {
   }
 
   render() {
-    const {yScale} = this.state
+    const {yScale, xScale} = this.state
 
     return (
       //width={width} height={height}</linearGradient>
-      <svg className="svg-container" viewBox="0 0 500 500">
+      <svg ref="svg" className="svg-container" viewBox="0 0 500 500">
         {this.state.bars.map((d, i) => (
-          <svg key={i}>
+          <svg ref={element => (this.svg = d3.select(element))} key={i}>
             <defs>
               <linearGradient id="myGradient1" gradientTransform="rotate(90)">
                 <stop offset="5%" stopColor="red" />
@@ -123,20 +133,26 @@ export default class BarGraphTest extends Component {
                 <stop offset="95%" stopColor="green" />
               </linearGradient>
             </defs>
-
-            <rect
-              x={d.x}
-              y={d.y}
-              width={d.width}
-              height={d.height}
-              fill={
-                yScale.invert(d.y) > 10
-                  ? "url('#myGradient1')"
-                  : 5 < yScale.invert(d.y) && yScale.invert(d.y) <= 10
-                    ? "url('#myGradient2')"
-                    : "url('#myGradient3')"
-              }
-            />
+            <g className="hoverText">
+              <rect
+                ref={element => (this.rect = d3.select(element))}
+                onMouseEnter={this.handleMouseEnter}
+                onMouseLeave={this.handleMouseLeave}
+                x={d.x}
+                y={d.y}
+                width={d.width}
+                height={d.height}
+                fill={
+                  yScale.invert(d.y) > 10
+                    ? "url('#myGradient1')"
+                    : 5 < yScale.invert(d.y) && yScale.invert(d.y) <= 10
+                      ? "url('#myGradient2')"
+                      : "url('#myGradient3')"
+                }
+                value={{x: d.x, y: d.y}}
+              />
+              <text x={d.x} dy={d.y} />
+            </g>
           </svg>
         ))}
         <g>
@@ -146,6 +162,30 @@ export default class BarGraphTest extends Component {
           />
           <g ref="yAxis" transform={`translate(${margin.left}, 0)`} />
         </g>
+        <text
+          transform={`translate(${width / 2}, ${height - margin.bottom / 9})`}
+          style={{
+            textAnchor: 'middle',
+            fontSize: '18px',
+            fontFamily: 'sans-serif',
+            fontWeight: 'bold'
+          }}
+        >
+          Incident Types
+        </text>
+        <text
+          y={margin.left / 4}
+          x={0 - height / 3}
+          transform="rotate(-90)"
+          style={{
+            textAnchor: 'middle',
+            fontSize: '18px',
+            fontFamily: 'sans-serif',
+            fontWeight: 'bold'
+          }}
+        >
+          Number of Incident Calls
+        </text>
       </svg>
     )
   }
