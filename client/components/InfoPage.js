@@ -23,6 +23,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import LineGraph from './LineGraph'
+import PieChart from './PieChart'
+import BarGraph from './BarGraphTest'
+import FullWidthTabs from './GraphTabs'
 
 function TabContainer({children, dir}) {
   return (
@@ -34,7 +37,8 @@ function TabContainer({children, dir}) {
 
 const styles = theme => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
+    width: '100%'
   },
   title: {
     flexGrow: 1,
@@ -104,16 +108,29 @@ class InfoPage extends React.Component {
       tabValue: 0,
       inputAddress: ''
     }
+    const rowData = this.props.data
+    console.log('PROPS', this.props)
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
-  async componentDidMount() {
-    const {data} = await axios.get(
-      'https://data.cityofnewyork.us/resource/fhrw-4uyv.json?incident_address=219%20EAST%20196TH%20STREET'
-    )
-    this.setState({complaints: data})
+  componentDidMount() {
+    this.setState({
+      complaints: this.props.data.complaints,
+      address: this.props.data.incident_address
+    })
+  }
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.data.complaints[0].incident_address !==
+      this.props.data.complaints[0].incident_address
+    ) {
+      this.setState({
+        address: this.props.data.complaints[0].incident_address,
+        complaints: this.props.data.complaints
+      })
+    }
   }
   handleTabChange(event, newValue) {
     this.setState({tabValue: newValue})
@@ -134,6 +151,9 @@ class InfoPage extends React.Component {
   }
   async handleChange(event) {
     await this.setState({inputAddress: event.target.value})
+  }
+  createDate(date) {
+    return date.slice(0, 10)
   }
   handleChangeIndex(index) {
     this.setState({tabValue: index})
@@ -171,89 +191,57 @@ class InfoPage extends React.Component {
             </AppBar>
           </div>
           <br />
-          <Grid container spacing={3}>
-            <Grid item xs={6}>
-              <Card>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    Complaint Frequency
-                  </Typography>
-                  <LineGraph />
-                </CardContent>
-                <CardActions>
-                  <Button size="small" color="primary">
-                    Share
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-            <Grid item xs={6}>
-              <Card>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    Complaints over time
-                  </Typography>
-                  <LineGraph />
-                </CardContent>
-                <CardActions>
-                  <Button size="small" color="primary">
-                    Share
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          </Grid>
-          <br />
-          <Paper className={classes.root}>
+          <div style={{display: 'flex', justifyContent: 'center'}}>
+            <FullWidthTabs data={this.props.data.aggregate_data} />
+          </div>
+        </Container>
+        <br />
+        <Paper className={classes.root}>
+          <AppBar position="static" color="default">
             <Tabs
               value={this.state.tabValue}
               onChange={this.handleTabChange}
               indicatorColor="primary"
               textColor="primary"
+              variant="standard"
+              scrollButtons="on"
               centered
             >
               <Tab label="All Complaints" />
               <Tab label="311 Complaints" />
               <Tab label="User Complaints" />
             </Tabs>
-
-            <SwipeableViews
-              axis={
-                classes.tabDirection.direction === 'rtl' ? 'x-reverse' : 'x'
-              }
-              index={this.state.tabValue}
-              onChangeIndex={this.handleChangeIndex}
-            >
-              <TabContainer dir={classes.tabDirection.direction}>
-                <Paper className={classes.paperTable}>
-                  <Table className={classes.tableTable}>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell align="center">Address</TableCell>
-                        <TableCell align="center">Complaint Type</TableCell>
-                        <TableCell align="center">Description</TableCell>
-                        <TableCell align="center">Resolution</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {this.state.complaints.map(complaint => {
+          </AppBar>
+          <SwipeableViews
+            enableMouseEvents
+            animateHeight={true}
+            axis={classes.tabDirection.direction === 'rtl' ? 'x-reverse' : 'x'}
+            index={this.state.tabValue}
+            onChangeIndex={this.handleChangeIndex}
+          >
+            <TabContainer dir={classes.tabDirection.direction}>
+              <Paper className={classes.paperTable}>
+                <Table className={classes.tableTable}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">Date of Complaint</TableCell>
+                      <TableCell align="center">Complaint Type</TableCell>
+                      <TableCell align="center">Description</TableCell>
+                      <TableCell align="center">Resolution</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {this.state.complaints
+                      .sort((a, b) => {
                         return (
-                          // <Paper
-                          //   key={complaint.unique_key}
-                          //   className={classes.paperTable}
-                          // >
-                          //   <Table className={classes.tableTable}>
-                          //     <TableHead>
-                          //       <TableRow>
-                          //         <TableCell>Address</TableCell>
-                          //         <TableCell align="right">Complaint Type</TableCell>
-                          //         <TableCell align="right">Description</TableCell>
-                          //         <TableCell align="right">Resolution</TableCell>
-                          //       </TableRow>
-                          //     </TableHead>
-                          <TableRow key={complaint.unique_key}>
+                          new Date(b.created_date) - new Date(a.created_date)
+                        )
+                      })
+                      .map(complaint => {
+                        return (
+                          <TableRow key={complaint.id}>
                             <TableCell component="th" scope="row">
-                              {complaint.incident_address}
+                              {this.createDate(complaint.created_date)}
                             </TableCell>
                             <TableCell align="center">
                               {complaint.complaint_type}
@@ -267,19 +255,18 @@ class InfoPage extends React.Component {
                           </TableRow>
                         )
                       })}
-                    </TableBody>
-                  </Table>
-                </Paper>
-              </TabContainer>
-              <TabContainer dir={classes.tabDirection.direction}>
-                Item Two
-              </TabContainer>
-              <TabContainer dir={classes.tabDirection.direction}>
-                Item Three
-              </TabContainer>
-            </SwipeableViews>
-          </Paper>
-        </Container>
+                  </TableBody>
+                </Table>
+              </Paper>
+            </TabContainer>
+            <TabContainer dir={classes.tabDirection.direction}>
+              Item Two
+            </TabContainer>
+            <TabContainer dir={classes.tabDirection.direction}>
+              Item Three
+            </TabContainer>
+          </SwipeableViews>
+        </Paper>
         <br />
       </div>
     )

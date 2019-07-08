@@ -5,6 +5,7 @@ import axios from 'axios'
 import React, {Component} from 'react'
 import MapGL, {FlyToInterpolator, Marker, Popup} from 'react-map-gl'
 import BarGraph from './BarGraphTest'
+import InfoPage from './InfoPage'
 import redPointer from '../../markers/red-marker.png'
 import greenPointer from '../../markers/green-marker.png'
 import greenDot from '../../markers/green-circle.png'
@@ -44,7 +45,8 @@ class HomePage extends Component {
         zoom: 12,
         bearing: 0,
         pitch: 0
-      }
+      },
+      mouse: false
     }
     this.handleSearchClick = this.handleSearchClick.bind(this)
     this.handleMapClick = this.handleMapClick.bind(this)
@@ -54,6 +56,8 @@ class HomePage extends Component {
     this.handleSeeMoreClick = this.handleSeeMoreClick.bind(this)
     this.handleSearchSubmit = this.handleSearchSubmit.bind(this)
     this.handleAddressMarkerClick = this.handleAddressMarkerClick.bind(this)
+    this.mouseHandle = this.mouseHandle.bind(this)
+    this.onCloseAddressPopup = this.onCloseAddressPopup.bind(this)
     this.mapRef = React.createRef()
   }
 
@@ -87,7 +91,7 @@ class HomePage extends Component {
     this.setState({
       selectedDotImage: event.target
     })
-    console.log('ADDRESS========', address)
+
     let response
     if (address.incident_address) {
       response = await axios.get(
@@ -197,6 +201,19 @@ class HomePage extends Component {
     }
   }
 
+  mouseHandle() {
+    this.setState({mouse: true, width: '60vw'})
+  }
+  onCloseAddressPopup() {
+    const dot = this.state.selectedDotImage
+    dot.src = greenDot
+    this.setState({
+      selectedDotImage: null,
+      selectedAddress: null,
+      mouse: false
+    })
+  }
+
   render() {
     const {classes} = this.props
 
@@ -209,6 +226,7 @@ class HomePage extends Component {
       selectedDotImage,
       data,
       neighborhoodComplaints,
+      mouse,
       searchError
     } = this.state
 
@@ -267,6 +285,7 @@ class HomePage extends Component {
                     onClick={this.handleSearchClick}
                     variant="contained"
                     className={classes.button}
+                    style={{zIndex: '10'}}
                   >
                     Search this area
                   </Button>
@@ -326,7 +345,6 @@ class HomePage extends Component {
             <Popup
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
-              style={{maxWidth: '200px'}}
               onClose={() => {
                 const marker = this.state.selectedMarkerImage
                 marker.src = greenPointer
@@ -348,38 +366,17 @@ class HomePage extends Component {
             </Popup>
           ) : null}
 
-          {/* ADDRESS POPUP */}
+          { /*ADDRESS POPUP */}
           {selectedAddress ? (
-            <Popup
-              latitude={this.state.viewport.latitude}
-              longitude={this.state.viewport.longitude}
-              style={{maxWidth: '200px'}}
-              onClose={() => {
-                const dot = this.state.selectedDotImage
-                dot.src = greenDot
-                this.setState({
-                  selectedDotImage: null,
-                  selectedAddress: null
-                })
-              }}
-              className="popup"
-            >
-              <div>
-                <h1>{selectedAddress.incident_address}</h1>
-                <BarGraph rawData={selectedAddress.aggregate_data} />
-                <h2>
-                  Total Complaints for {selectedAddress.incident_address}:
-                </h2>
-                <h3>Complaint Type: {selectedAddress.complaint_type}</h3>
-                <p>Description: {selectedAddress.descriptor}</p>
-                <button
-                  type="button"
-                  onClick={() => this.handleSeeMoreClick(selectedAddress)}
-                >
-                  See More...
-                </button>
-              </div>
-            </Popup>
+              <Popup
+                closeOnClick={false}
+                latitude={this.state.viewport.latitude}
+                longitude={this.state.viewport.longitude}
+                onClose={this.onCloseAddressPopup}
+                className="popup"
+              >
+                 <InfoPage data={selectedAddress} />
+              </Popup>
           ) : null}
         </MapGL>
       </div>
@@ -388,7 +385,3 @@ class HomePage extends Component {
 }
 
 export default withStyles(styles)(HomePage)
-// Function maybe:
-/* Get neighborhood:
-
-*/

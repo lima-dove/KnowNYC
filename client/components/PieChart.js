@@ -3,57 +3,64 @@ import {arc, pie} from 'd3-shape'
 import React from 'react'
 import {scaleOrdinal} from 'd3-scale'
 
-const size = 300
+const size = 500
 const radius = size / 2
 const colors = d3.scaleOrdinal(d3.schemeAccent)
 
 const dataArc = arc()
-  .outerRadius(radius - 10)
-  .innerRadius(0)
+  .outerRadius(radius - 40)
+  .innerRadius(50)
 
 const labelArc = arc()
-  .outerRadius(radius - 40)
-  .innerRadius(radius - 40)
+  .outerRadius(radius - 100)
+  .innerRadius(radius - 100)
 
 const chart = pie()
   .sort(null)
-  .value(d => d.quantity)
+  .value(d => d.frequency)
 
-const width = 300
-const height = 300
+const width = 470
+const height = 470
 
 const PieChart = props => {
-  const rawData = props.rowData
-  let complaintObj = {}
-  rawData.forEach(el => {
-    if (complaintObj[el.complaint_type] >= 1) {
-      complaintObj[el.complaint_type] = ++complaintObj[el.complaint_type]
-    } else {
-      complaintObj[el.complaint_type] = 1
-    }
-  })
+  const data = props.data
+  // let complaintObj = {}
+  // data.forEach(el => {
+  //   if (complaintObj[el.type] >= 1) {
+  //     complaintObj[el.type] = ++complaintObj[el.type]
+  //   } else {
+  //     complaintObj[el.type] = 1
+  //   }
+  // })
 
-  let data = []
+  // let data = []
 
   // eslint-disable-next-line guard-for-in
-  for (let key in complaintObj) {
-    data.push({type: key, quantity: complaintObj[key]})
-  }
+  // for (let key in complaintObj) {
+  //   data.push({type: key, quantity: complaintObj[key]})
+  // }
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${size} ${size}`}>
-      <g transform={`translate(${radius}, ${radius})`}>
-        {chart(data).map((d, i) => (
-          <g key={i} className="arc">
-            <path d={dataArc(d)} fill={colors(d.data.type)} />
+    <div id="chart">
+      <svg
+        width={width}
+        height={height}
+        viewBox={`0 0 ${size} ${size}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <g transform={`translate(${radius}, ${radius})`}>
+          {chart(data).map((d, i) => (
+            <g key={i} className="arc">
+              <path d={dataArc(d)} fill={colors(d.data.type)} />
 
-            <text dy=".35em" transform={`translate(${labelArc.centroid(d)})`}>
-              {d.data.type}
-            </text>
-          </g>
-        ))}
-      </g>
-    </svg>
+              <text dy=".35em" transform={`translate(${labelArc.centroid(d)})`}>
+                {d.data.type}
+              </text>
+            </g>
+          ))}
+        </g>
+      </svg>
+    </div>
   )
 }
 
