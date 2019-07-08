@@ -115,12 +115,14 @@ class InfoPage extends React.Component {
     this.handleKeyDown = this.handleKeyDown.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
+  
   componentDidMount() {
     this.setState({
       complaints: this.props.data.complaints,
       address: this.props.data.incident_address
     })
   }
+  
   componentDidUpdate(prevProps) {
     if (
       prevProps.data.complaints[0].incident_address !==
@@ -133,10 +135,12 @@ class InfoPage extends React.Component {
     }
     this.swipeableActions.updateHeight()
   }
+  
   handleTabChange(event, newValue) {
     this.setState({tabValue: newValue})
   }
-  async handleKeyDown(event) {
+  
+  async handleKeyDown(event) { //LINKED TO SEARCH FN - DELETE
     if (event.key === 'Enter') {
       try {
         const {data} = await axios.get(
@@ -150,15 +154,19 @@ class InfoPage extends React.Component {
       }
     }
   }
-  async handleChange(event) {
+  
+  async handleChange(event) { //ALSO LINKED TO SEARCH FN
     await this.setState({inputAddress: event.target.value})
   }
+  
   createDate(date) {
     return date.slice(0, 10)
   }
+  
   handleChangeIndex(index) {
     this.setState({tabValue: index})
   }
+  
   render() {
     const {classes, theme} = this.props
 
@@ -195,7 +203,7 @@ class InfoPage extends React.Component {
           <div style={{display: 'flex', justifyContent: 'center'}}>
             <FullWidthTabs data={this.props.data.aggregate_data} />
           </div>
-          <br />
+          <br /> // CONFLICT STARTS HERE
           <Paper className={classes.root}>
             <AppBar position="static" color="default">
               <Tabs

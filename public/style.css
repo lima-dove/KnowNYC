@@ -3,7 +3,7 @@
 }
 
 .arc text {
-  font: 10px sans-serif;
+  font: 15px sans-serif;
   text-anchor: middle;
 }
 
@@ -16,15 +16,39 @@ body {
   margin: 0;
 }
 
+.sidebar {
+  background-color: #3f51b5;
+  height: 100vh !important;
+  width: 33vh;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  z-index: 1;
+  color: #ffffff;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-weight: 500;
+  border-radius: 4px;
+  letter-spacing: 0.02857em;
+}
+
+.sideText {
+  padding: 5%;
+}
+
 .mapboxgl-popup-content {
+  transition: transform 1s;
   height: 75vh;
   width: 45vw;
   position: fixed;
-  margin-right: calc(50vw-250px);
-  margin-bottom: calc(50vh-250px);
+  margin-right: calc(50vw-10px);
+  margin-bottom: calc(50vh-10px);
   background-color: transparent;
   overflow-y: scroll !important;
   overflow-x: scroll !important;
+  background: rgba(256, 256, 256, 0.75) !important;
+}
+.mapboxgl-popup-content:hover {
+  transform: scale(1.15, 1.15);
 }
 
 .mapboxgl-popup-anchor-top .mapboxgl-popup-tip,
@@ -59,20 +83,20 @@ body {
 
 /* a {
   text-decoration: none;
-}
+ }
 
-label {
+ label {
   display: block;
-}
+ }
 
-nav a {
+ nav a {
   display: inline-block;
   margin: 1em;
-}
+ }
 
 
-/*
-form div {
+ /*
+ form div {
   margin: 1em;
   display: inline-block;
-} */
+ } */
