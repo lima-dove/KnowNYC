@@ -16,6 +16,11 @@ body {
   margin: 0;
 }
 
+.fas {
+  margin-left: 40%;
+  transform: scale(2);
+}
+
 .sidebar {
   background-color: #3f51b5;
   height: 100vh !important;

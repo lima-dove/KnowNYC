@@ -13,19 +13,32 @@ export default class Sidebar extends React.Component {
           <p>
             With KnowNYC you can see all 311 incidents filed within the borough
             of Manhattan since 2017.
+            <br />
           </p>
           {viewport < 15.5 ? (
             <div>
-              You are currently in <b>Neighborhood view</b>. Click on a marker
-              to see the top five 311 incident calls of a neighborhood. Zoom in
-              to see Address view.
+              <div className="viewIcon">
+                <i className="fas fa-city" />
+              </div>
+              <br />
+              <div>
+                You are currently in <b>Neighborhood view</b>. Click on a marker
+                to see the top five 311 incident calls of a neighborhood. Zoom
+                in to see Address view.{' '}
+              </div>
             </div>
           ) : (
             <div>
-              You are currently in <b>Address view</b>. Click on the Search This
-              Area button to populate addresses with 311 incident calls, then
-              click on markers to see that address' information. Zoom out to see
-              Neighborhood view.
+              <div className="viewIcon">
+                <i className="fas fa-building" />
+              </div>
+              <br />
+              <div>
+                You are currently in <b>Address view</b>. Click on the Search
+                This Area button to populate addresses with 311 incident calls,
+                then click on markers to see that address' information. Zoom out
+                to see Neighborhood view.
+              </div>
             </div>
           )}
           <p>
