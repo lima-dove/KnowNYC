@@ -2,6 +2,10 @@ const Sequelize = require('sequelize')
 const db = require('../db')
 
 const UserComplaint = db.define('user_complaint', {
+  created_date: {
+    type: Sequelize.DATE,
+    allowNull: false
+  },
   incident_address: Sequelize.STRING,
   complaint_type: {
     type: Sequelize.STRING,
