@@ -13,13 +13,17 @@ export default class Sidebar extends React.Component {
           <p>
             With KnowNYC you can see all 311 incidents filed within the borough
             of Manhattan since 2017.
-            <br />
           </p>
+          <br />
+          <br />
+          <br />
           {viewport < 15.5 ? (
             <div>
               <div className="viewIcon">
                 <i className="fas fa-city" />
               </div>
+              <br />
+              <br />
               <br />
               <div>
                 You are currently in <b>Neighborhood view</b>. Click on a marker
@@ -32,6 +36,8 @@ export default class Sidebar extends React.Component {
               <div className="viewIcon">
                 <i className="fas fa-building" />
               </div>
+              <br />
+              <br />
               <br />
               <div>
                 You are currently in <b>Address view</b>. Click on the Search
