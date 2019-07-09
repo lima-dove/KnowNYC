@@ -87,7 +87,8 @@ const styles = theme => ({
     overflowX: 'auto'
   },
   tableTable: {
-    minWidth: 650
+    minWidth: 650,
+    overflowX: 'auto'
   },
   tabDirection: {
     direction: theme.direction
