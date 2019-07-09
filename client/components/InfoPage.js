@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
+import {Button} from '@material-ui/core'
 import AppBar from '@material-ui/core/AppBar'
 import Container from '@material-ui/core/Container'
 import Fab from '@material-ui/core/Fab'
@@ -15,6 +16,7 @@ import Tabs from '@material-ui/core/Tabs'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import AddIcon from '@material-ui/icons/Add'
+import RemoveIcon from '@material-ui/icons/Remove'
 import axios from 'axios'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -153,13 +155,13 @@ class InfoPage extends React.Component {
   }
 
   async handleSubmitComplaint(info) {
-    const {complaints, userComplaints} = this.state
+    const {allComplaints, userComplaints} = this.state
     if (info.resolution_description !== '') {
       info.resolved = true
     }
     const {data} = await axios.post('/api/user-complaint', info)
     this.setState({
-      complaints: [...complaints, data],
+      allComplaints: [...allComplaints, data],
       userComplaints: [...userComplaints, data],
       addComplaints: false
     })
@@ -233,6 +235,7 @@ class InfoPage extends React.Component {
 
   render() {
     const {classes, data} = this.props
+    const {addComplaints} = this.state
     const displayAddress = this.state.address
       ? this.renderAddress(this.state.address)
       : `[${data.latitude}, ${data.longitude}]`
@@ -267,9 +270,8 @@ class InfoPage extends React.Component {
                 onChange={this.handleTabChange}
                 indicatorColor="primary"
                 textColor="primary"
-                variant="standard"
+                variant="fullWidth"
                 scrollButtons="on"
-                centered
               >
                 <Tab label="All Complaints" />
                 <Tab label="311 Complaints" />
@@ -322,7 +324,18 @@ class InfoPage extends React.Component {
                                 {complaint.descriptor}
                               </TableCell>
                               <TableCell align="center">
-                                {complaint.resolution_description}
+                                {complaint.resolution_description ? (
+                                  complaint.resolution_description
+                                ) : (
+                                  <Button
+                                    onClick={this.handleSearchClick}
+                                    variant="contained"
+                                    className={classes.button}
+                                    style={{zIndex: '10'}}
+                                  >
+                                    Resolve This Complaint
+                                  </Button>
+                                )}
                               </TableCell>
                             </TableRow>
                           )
@@ -377,12 +390,13 @@ class InfoPage extends React.Component {
               </TabContainer>
               <TabContainer dir={classes.tabDirection.direction}>
                 <Fab
-                  color="primary"
+                  color={addComplaints ? 'secondary' : 'primary'}
+                  style={{marginBottom: '10px'}}
                   aria-label="Add"
                   className={classes.fab}
-                  onClick={() => this.setState({addComplaints: true})}
+                  onClick={() => this.setState({addComplaints: !addComplaints})}
                 >
-                  <AddIcon />
+                  {addComplaints ? <RemoveIcon /> : <AddIcon />}
                 </Fab>
                 {this.state.addComplaints ? (
                   <UserComplaintForm
@@ -424,7 +438,18 @@ class InfoPage extends React.Component {
                                 {complaint.descriptor}
                               </TableCell>
                               <TableCell align="center">
-                                {complaint.resolution_description}
+                                {complaint.resolution_description ? (
+                                  complaint.resolution_description
+                                ) : (
+                                  <Button
+                                    onClick={this.handleSearchClick}
+                                    variant="contained"
+                                    className={classes.button}
+                                    style={{zIndex: '10'}}
+                                  >
+                                    Resolve This Complaint
+                                  </Button>
+                                )}
                               </TableCell>
                             </TableRow>
                           )
