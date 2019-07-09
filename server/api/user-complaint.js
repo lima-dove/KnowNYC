@@ -1,6 +1,5 @@
 const router = require('express').Router()
 const {User, UserComplaint} = require('../db/models/index')
-const Sequelize = require('sequelize')
 module.exports = router
 
 router.get('/:address', async (req, res, next) => {

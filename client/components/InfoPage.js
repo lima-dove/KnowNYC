@@ -15,7 +15,6 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import PropTypes from 'prop-types'
 import React from 'react'
-import {connect} from 'react-redux'
 import SwipeableViews from 'react-swipeable-views'
 import FullWidthTabs from './GraphTabs'
 import {UserComplaintForm} from './index'
@@ -23,6 +22,8 @@ import axios from 'axios'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
 import Button from '@material-ui/core/Button'
+import {connect} from 'react-redux'
+import {subscribe} from '../store'
 
 function TabContainer({children, dir}) {
   return (
@@ -220,7 +221,11 @@ class InfoPage extends React.Component {
   }
 
   handleSubscribeClick = async event => {
-    // if ()
+    console.log('user: ', this.props.user)
+    console.log('isloggedin: ', this.props.isLoggedIn)
+    if (this.props.isLoggedIn) {
+      this.props.subscribe(address, lat, lon)
+    }
   }
 
   render() {
@@ -404,4 +409,13 @@ const mapStateToProps = state => ({
   isLoggedIn: !!state.user.id,
   user: state.user
 })
-export default connect(mapStateToProps, null)(withStyles(styles)(InfoPage))
+
+const mapDispatchToProps = dispatch => {
+  return {
+    subscribe: (id, addr, lat, lon) => dispatch(subscribe(id, addr, lat, lon))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+  withStyles(styles)(InfoPage)
+)

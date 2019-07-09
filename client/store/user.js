@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import axios from 'axios'
 import history from '../history'
 
@@ -64,6 +65,26 @@ export const logout = () => async dispatch => {
     await axios.post('/auth/logout')
     dispatch(removeUser())
     history.push('/login')
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+export const subscribe = (
+  id,
+  subscription_address,
+  subscription_latitude,
+  subscription_longitude
+) => async dispatch => {
+  try {
+    const {data} = await axios.put('/api/subscribe', {
+      id,
+      subscription_address,
+      subscription_latitude,
+      subscription_longitude
+    })
+    console.log({data})
+    dispatch(getUser(data))
   } catch (err) {
     console.error(err)
   }
