@@ -149,6 +149,11 @@ class InfoPage extends React.Component {
 
   renderAddress(address) {
     address = address.replace(/ +(?= )/g, '')
+    address = address
+      .toLowerCase()
+      .split(' ')
+      .map(s => s.charAt(0).toUpperCase() + s.substring(1))
+      .join(' ')
     let th = [0, 4, 5, 6, 7, 8, 9]
     let st = [1]
     let nd = [2]
@@ -210,12 +215,42 @@ class InfoPage extends React.Component {
       } else {
         return address
       }
+    } else if (splitAddress.length === 2) {
+      if (Number(splitAddress[0])) {
+        if (th.includes(Number(splitAddress[0][splitAddress[0].length - 1]))) {
+          let newSecond = splitAddress[0] + 'th'
+          splitAddress[0] = newSecond
+          return splitAddress.join(' ')
+        } else if (
+          st.includes(Number(splitAddress[0][splitAddress[0].length - 1]))
+        ) {
+          let newSecond = splitAddress[0] + 'st'
+          splitAddress[0] = newSecond
+          return splitAddress.join(' ')
+        } else if (
+          nd.includes(Number(splitAddress[0][splitAddress[0].length - 1]))
+        ) {
+          let newSecond = splitAddress[0] + 'nd'
+          splitAddress[0] = newSecond
+          return splitAddress.join(' ')
+        } else if (
+          rd.includes(Number(splitAddress[0][splitAddress[0].length - 1]))
+        ) {
+          let newSecond = splitAddress[0] + 'rd'
+          splitAddress[0] = newSecond
+          return splitAddress.join(' ')
+        }
+      } else {
+        return address
+      }
+    } else {
+      return address
     }
   }
 
   render() {
+    console.log(this.state.address)
     const {classes, data} = this.props
-    console.log(data)
     const displayAddress = this.state.address
       ? this.renderAddress(this.state.address)
       : `[${data.latitude}, ${data.longitude}]`

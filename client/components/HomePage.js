@@ -52,6 +52,7 @@ class HomePage extends Component {
     this.handleNeighborhoodMarkerClick = this.handleNeighborhoodMarkerClick.bind(
       this
     )
+    this.handleEscape = this.handleEscape.bind(this)
     this.handleSeeMoreClick = this.handleSeeMoreClick.bind(this)
     this.handleSearchSubmit = this.handleSearchSubmit.bind(this)
     this.handleAddressMarkerClick = this.handleAddressMarkerClick.bind(this)
@@ -207,6 +208,14 @@ class HomePage extends Component {
     this.setState({mouse: true})
   }
 
+  handleEscape(event) {
+    console.log('hi')
+    if (event.keyCode === 27) {
+      console.log('in escape code')
+      this.setState({selectedAddress: null, selectedNeighborhood: null})
+    }
+  }
+
   onCloseAddressPopup() {
     const dot = this.state.selectedDotImage
     dot.src = greenDot
@@ -218,6 +227,7 @@ class HomePage extends Component {
   }
 
   render() {
+    console.log(this.refs.hi)
     const {classes} = this.props
 
     const {
@@ -235,7 +245,7 @@ class HomePage extends Component {
     const scrollZoom = !selectedMarkerImage && !selectedDotImage
 
     return (
-      <div>
+      <div onKeyUp={this.handleEscape}>
         <MapGL
           id="mapGl"
           scrollZoom={scrollZoom}
@@ -346,6 +356,7 @@ class HomePage extends Component {
           {/* NEIGHBORHOOD POPUP */}
           {selectedNeighborhood ? (
             <Popup
+              ref="hi"
               closeOnClick={false}
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
