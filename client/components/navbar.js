@@ -70,7 +70,6 @@ const Navbar = ({handleClick, isLoggedIn, user}) => {
                 size="large"
                 to="/home"
                 component={RouterLink}
-                onClick={flyToSubscribed}
               >
                 Home Address
               </Button>
