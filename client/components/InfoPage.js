@@ -220,11 +220,21 @@ class InfoPage extends React.Component {
     }
   }
 
-  handleSubscribeClick = async event => {
-    console.log('user: ', this.props.user)
-    console.log('isloggedin: ', this.props.isLoggedIn)
+  handleSubscribeClick = () => {
+    console.log(
+      'sending: ',
+      this.props.user.id,
+      this.state.address,
+      this.props.data.latitude,
+      this.props.data.longitude
+    )
     if (this.props.isLoggedIn) {
-      this.props.subscribe(address, lat, lon)
+      this.props.subscribe(
+        this.props.user.id,
+        this.state.address,
+        this.props.data.latitude,
+        this.props.data.longitude
+      )
     }
   }
 
