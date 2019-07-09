@@ -4,7 +4,6 @@ const {User} = require('../db/models/index')
 module.exports = router
 
 router.put('/', async (req, res, next) => {
-  console.log('req.body in subscribe: ', req.body)
   const {
     id,
     subscription_address,

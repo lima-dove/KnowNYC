@@ -83,7 +83,6 @@ export const subscribe = (
       subscription_latitude,
       subscription_longitude
     })
-    console.log({data})
     dispatch(getUser(data))
   } catch (err) {
     console.error(err)

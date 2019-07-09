@@ -108,7 +108,9 @@ class InfoPage extends React.Component {
       complaints: [],
       address: '',
       tabValue: 0,
-      addComplaints: false
+      addComplaints: false,
+      isLoggedIn: true,
+      subscribedAddress: null
     }
 
     this.handleTabChange = this.handleTabChange.bind(this)
@@ -221,13 +223,6 @@ class InfoPage extends React.Component {
   }
 
   handleSubscribeClick = () => {
-    console.log(
-      'sending: ',
-      this.props.user.id,
-      this.state.address,
-      this.props.data.latitude,
-      this.props.data.longitude
-    )
     if (this.props.isLoggedIn) {
       this.props.subscribe(
         this.props.user.id,
@@ -235,6 +230,10 @@ class InfoPage extends React.Component {
         this.props.data.latitude,
         this.props.data.longitude
       )
+      this.setState({subscribedAddress: this.state.address})
+      console.log('subscribed click ', this.state.subscribedAddress)
+    } else {
+      this.setState({isLoggedIn: this.props.isLoggedIn})
     }
   }
 
@@ -266,7 +265,23 @@ class InfoPage extends React.Component {
                         className={classes.button}
                         style={{zIndex: '10'}}
                       >
-                        Subscribe to this address
+                        <div>
+                          <p style={{marginBottom: '1px', marginTop: '1px'}}>
+                            Subscribe to this address
+                          </p>
+                          {!this.state.isLoggedIn ? (
+                            <small style={{color: 'red', margin: '0'}}>
+                              You must be logged in to use this feature
+                            </small>
+                          ) : null}
+                          {this.state.subscribedAddress ? (
+                            <small style={{color: 'red', margin: '0'}}>
+                              {`You are now subscribed to ${this.renderAddress(
+                                this.state.subscribedAddress
+                              )}`}
+                            </small>
+                          ) : null}
+                        </div>
                       </Button>
                     </div>
                   </div>
