@@ -35,21 +35,7 @@ class UserComplaintForm extends Component {
     this.setState({[name]: event.target.value})
   }
   async handleSubmit(e) {
-    e.preventDefault()
-    const {
-      address,
-      created_date,
-      descriptor,
-      resolution_description
-    } = this.state
-    await axios.post('....', {
-      address,
-      created_date,
-      complaint_type,
-      descriptor,
-      resolution_description
-    })
-
+    await this.props.handleSubmit(this.state)
     this.setState({
       created_date: null,
       complaint_type: '',

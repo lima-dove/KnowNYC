@@ -18,6 +18,9 @@ import React from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import FullWidthTabs from './GraphTabs'
 import {UserComplaintForm} from './index'
+import axios from 'axios'
+import Fab from '@material-ui/core/Fab'
+import AddIcon from '@material-ui/icons/Add'
 
 function TabContainer({children, dir}) {
   return (
@@ -97,11 +100,13 @@ class InfoPage extends React.Component {
     this.state = {
       complaints: [],
       address: '',
-      tabValue: 0
+      tabValue: 0,
+      addComplaints: false
     }
 
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
+    this.handleSubmitComplaint = this.handleSubmitComplaint.bind(this)
   }
 
   componentDidMount() {
@@ -134,6 +139,12 @@ class InfoPage extends React.Component {
 
   handleChangeIndex(index) {
     this.setState({tabValue: index})
+  }
+
+  async handleSubmitComplaint(info) {
+    const complaints = this.state.complaints
+    const {data} = await axios.post('/api/user/complaint', info)
+    this.stateState({complaints: [...complaints, data], addComplaints: false})
   }
 
   renderAddress(address) {
@@ -340,7 +351,20 @@ class InfoPage extends React.Component {
                 </Paper>
               </TabContainer>
               <TabContainer dir={classes.tabDirection.direction}>
-                <UserComplaintForm address={this.state.address} />
+                <Fab
+                  color="primary"
+                  aria-label="Add"
+                  className={classes.fab}
+                  onClick={() => this.setState({addComplaints: true})}
+                >
+                  <AddIcon />
+                </Fab>
+                {this.state.addComplaints ? (
+                  <UserComplaintForm
+                    address={this.state.address}
+                    handleSubmitComplaint={this.handleSubmitComplaint}
+                  />
+                ) : null}
               </TabContainer>
             </SwipeableViews>
             <br />
