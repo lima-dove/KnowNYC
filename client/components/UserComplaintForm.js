@@ -22,7 +22,7 @@ class UserComplaintForm extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      address: this.props.address,
+      incident_address: this.props.address,
       created_date: null,
       complaint_type: '',
       descriptor: '',
@@ -35,13 +35,13 @@ class UserComplaintForm extends Component {
     this.setState({[name]: event.target.value})
   }
   async handleSubmit(e) {
-    await this.props.handleSubmit(this.state)
-    this.setState({
-      created_date: null,
-      complaint_type: '',
-      descriptor: '',
-      resolution_description: ''
-    })
+    await this.props.handleSubmitComplaint(this.state)
+    // this.setState({
+    //   created_date: null,
+    //   complaint_type: '',
+    //   descriptor: '',
+    //   resolution_description: ''
+    // })
   }
   render() {
     const {classes} = this.props

@@ -143,8 +143,8 @@ class InfoPage extends React.Component {
 
   async handleSubmitComplaint(info) {
     const complaints = this.state.complaints
-    const {data} = await axios.post('/api/user/complaint', info)
-    this.stateState({complaints: [...complaints, data], addComplaints: false})
+    const {data} = await axios.post('/api/user-complaint', info)
+    this.setState({complaints: [...complaints, data], addComplaints: false})
   }
 
   renderAddress(address) {
