@@ -34,6 +34,7 @@ class HomePage extends Component {
       boundaryAddresses: null,
       selectedNeighborhood: null,
       selectedAddress: null,
+      addressUserComplaints: null,
       data: null,
       searchError: false,
       selectedMarkerImage: null,
@@ -91,18 +92,26 @@ class HomePage extends Component {
       selectedDotImage: event.target
     })
 
-    let response
+    let response311
+    let responseUser
     if (address.incident_address) {
-      response = await axios.get(
+      response311 = await axios.get(
         `api/map/getAddress/A${address.incident_address}`
       )
+      responseUser = await axios.get(
+        `api/user-complaint/A${address.incident_address}`
+      )
     } else {
-      response = await axios.get(
+      response311 = await axios.get(
         `api/map/getAddress/C${address.latitude},${address.longitude}`
+      )
+      responseUser = await axios.get(
+        `api/user-complaint/C${address.latitude},${address.longitude}`
       )
     }
     await this.setState({
-      selectedAddress: response.data
+      selectedAddress: response311.data,
+      addressUserComplaints: responseUser.data
     })
   }
 
@@ -176,12 +185,14 @@ class HomePage extends Component {
 
   async handleSearchSubmit(address) {
     try {
-      const {data} = await axios.get(`api/map/getAddress/A${address}`)
+      const response311 = await axios.get(`api/map/getAddress/A${address}`)
+      const responseUser = await axios.get(`api/user-complaint/A${address}`)
       this.setState({
-        selectedAddress: data,
+        selectedAddress: response311.data,
+        addressUserComplaints: responseUser.data,
         viewport: {
-          latitude: data.latitude,
-          longitude: data.longitude,
+          latitude: response311.data.latitude,
+          longitude: response311.data.longitude,
           zoom: 18,
           bearing: 0,
           pitch: 0
@@ -229,7 +240,8 @@ class HomePage extends Component {
       selectedDotImage,
       data,
       neighborhoodComplaints,
-      searchError
+      searchError,
+      addressUserComplaints
     } = this.state
 
     const scrollZoom = !selectedMarkerImage && !selectedDotImage
@@ -372,7 +384,10 @@ class HomePage extends Component {
               onClose={this.onCloseAddressPopup}
               className="popup"
             >
-              <InfoPage data={selectedAddress} />
+              <InfoPage
+                data={selectedAddress}
+                userData={addressUserComplaints}
+              />
             </Popup>
           ) : null}
         </MapGL>

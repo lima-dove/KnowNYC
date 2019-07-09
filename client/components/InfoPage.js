@@ -2,6 +2,7 @@
 /* eslint-disable complexity */
 import AppBar from '@material-ui/core/AppBar'
 import Container from '@material-ui/core/Container'
+import Fab from '@material-ui/core/Fab'
 import Paper from '@material-ui/core/Paper'
 import {fade, withStyles} from '@material-ui/core/styles'
 import Tab from '@material-ui/core/Tab'
@@ -13,14 +14,13 @@ import TableRow from '@material-ui/core/TableRow'
 import Tabs from '@material-ui/core/Tabs'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
+import AddIcon from '@material-ui/icons/Add'
+import axios from 'axios'
 import PropTypes from 'prop-types'
 import React from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import FullWidthTabs from './GraphTabs'
 import {UserComplaintForm} from './index'
-import axios from 'axios'
-import Fab from '@material-ui/core/Fab'
-import AddIcon from '@material-ui/icons/Add'
 
 function TabContainer({children, dir}) {
   return (
@@ -99,6 +99,8 @@ class InfoPage extends React.Component {
     super(props)
     this.state = {
       complaints: [],
+      userComplaints: [],
+      allComplaints: [],
       address: '',
       tabValue: 0,
       addComplaints: false
@@ -110,9 +112,18 @@ class InfoPage extends React.Component {
   }
 
   componentDidMount() {
+    const {data, userData} = this.props
+
+    const allComplaints = data.complaints.concat(userData)
+
+    console.log('All Complaints: ', allComplaints)
+    console.log('311 Complaints: ', data.complaints)
+    console.log('User Complaints: ', userData)
     this.setState({
-      complaints: this.props.data.complaints,
-      address: this.props.data.incident_address
+      complaints: data.complaints,
+      address: data.incident_address,
+      userComplaints: userData,
+      allComplaints
     })
   }
 
@@ -142,9 +153,16 @@ class InfoPage extends React.Component {
   }
 
   async handleSubmitComplaint(info) {
-    const complaints = this.state.complaints
+    const {complaints, userComplaints} = this.state
+    if (info.resolution_description !== '') {
+      info.resolved = true
+    }
     const {data} = await axios.post('/api/user-complaint', info)
-    this.setState({complaints: [...complaints, data], addComplaints: false})
+    this.setState({
+      complaints: [...complaints, data],
+      userComplaints: [...userComplaints, data],
+      addComplaints: false
+    })
   }
 
   renderAddress(address) {
@@ -215,7 +233,6 @@ class InfoPage extends React.Component {
 
   render() {
     const {classes, data} = this.props
-    console.log(data)
     const displayAddress = this.state.address
       ? this.renderAddress(this.state.address)
       : `[${data.latitude}, ${data.longitude}]`
@@ -282,7 +299,7 @@ class InfoPage extends React.Component {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {this.state.complaints
+                      {this.state.allComplaints
                         .sort((a, b) => {
                           return (
                             new Date(b.created_date) - new Date(a.created_date)
@@ -291,7 +308,11 @@ class InfoPage extends React.Component {
                         .map(complaint => {
                           return (
                             <TableRow key={complaint.id}>
-                              <TableCell component="th" scope="row">
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                align="center"
+                              >
                                 {this.createDate(complaint.created_date)}
                               </TableCell>
                               <TableCell align="center">
@@ -331,7 +352,11 @@ class InfoPage extends React.Component {
                         .map(complaint => {
                           return (
                             <TableRow key={complaint.id}>
-                              <TableCell component="th" scope="row">
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                align="center"
+                              >
                                 {this.createDate(complaint.created_date)}
                               </TableCell>
                               <TableCell align="center">
@@ -365,6 +390,48 @@ class InfoPage extends React.Component {
                     handleSubmitComplaint={this.handleSubmitComplaint}
                   />
                 ) : null}
+                <Paper className={classes.paperTable}>
+                  <Table className={classes.tableTable}>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">Date of Complaint</TableCell>
+                        <TableCell align="center">Complaint Type</TableCell>
+                        <TableCell align="center">Description</TableCell>
+                        <TableCell align="center">Resolution</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {this.state.userComplaints
+                        .sort((a, b) => {
+                          return (
+                            new Date(b.created_date) - new Date(a.created_date)
+                          )
+                        })
+                        .map(complaint => {
+                          return (
+                            <TableRow key={complaint.id}>
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                align="center"
+                              >
+                                {this.createDate(complaint.created_date)}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.complaint_type}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.descriptor}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.resolution_description}
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })}
+                    </TableBody>
+                  </Table>
+                </Paper>
               </TabContainer>
             </SwipeableViews>
             <br />
