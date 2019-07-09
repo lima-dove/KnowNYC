@@ -1,7 +1,9 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
+import {Button} from '@material-ui/core'
 import AppBar from '@material-ui/core/AppBar'
 import Container from '@material-ui/core/Container'
+import Fab from '@material-ui/core/Fab'
 import Paper from '@material-ui/core/Paper'
 import {fade, withStyles} from '@material-ui/core/styles'
 import Tab from '@material-ui/core/Tab'
@@ -13,14 +15,15 @@ import TableRow from '@material-ui/core/TableRow'
 import Tabs from '@material-ui/core/Tabs'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
+import AddIcon from '@material-ui/icons/Add'
+import RemoveIcon from '@material-ui/icons/Remove'
+import axios from 'axios'
 import PropTypes from 'prop-types'
 import React from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import FullWidthTabs from './GraphTabs'
 import {UserComplaintForm} from './index'
-import axios from 'axios'
-import Fab from '@material-ui/core/Fab'
-import AddIcon from '@material-ui/icons/Add'
+import UserResolutionForm from './UserResolutionForm'
 
 function TabContainer({children, dir}) {
   return (
@@ -100,20 +103,30 @@ class InfoPage extends React.Component {
     super(props)
     this.state = {
       complaints: [],
+      userComplaints: [],
+      allComplaints: [],
       address: '',
       tabValue: 0,
-      addComplaints: false
+      addComplaints: false,
+      resolveComplaint: null
     }
 
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
     this.handleSubmitComplaint = this.handleSubmitComplaint.bind(this)
+    this.handleResolveComplaint = this.handleResolveComplaint.bind(this)
   }
 
   componentDidMount() {
+    const {data, userData} = this.props
+
+    const allComplaints = data.complaints.concat(userData)
+
     this.setState({
-      complaints: this.props.data.complaints,
-      address: this.props.data.incident_address
+      complaints: data.complaints,
+      address: data.incident_address,
+      userComplaints: userData,
+      allComplaints
     })
   }
 
@@ -143,9 +156,38 @@ class InfoPage extends React.Component {
   }
 
   async handleSubmitComplaint(info) {
-    const complaints = this.state.complaints
+    const {allComplaints, userComplaints} = this.state
+    if (info.resolution_description !== '') {
+      info.resolved = true
+    }
     const {data} = await axios.post('/api/user-complaint', info)
-    this.setState({complaints: [...complaints, data], addComplaints: false})
+
+    this.setState({
+      allComplaints: [...allComplaints, data],
+      userComplaints: [...userComplaints, data],
+      addComplaints: false
+    })
+  }
+
+  async handleResolveComplaint(info) {
+    const {allComplaints, userComplaints, resolveComplaint} = this.state
+
+    info.id = resolveComplaint.id
+
+    const {data} = await axios.put('/api/user-complaint', info)
+
+    const allComplaintsCopy = allComplaints.filter(
+      el => el.id !== resolveComplaint.id
+    )
+    const userComplaintsCopy = userComplaints.filter(
+      el => el.id !== resolveComplaint.id
+    )
+
+    this.setState({
+      allComplaints: [...allComplaintsCopy, data[0]],
+      userComplaints: [...userComplaintsCopy, data[0]],
+      resolveComplaint: null
+    })
   }
 
   renderAddress(address) {
@@ -252,6 +294,7 @@ class InfoPage extends React.Component {
   render() {
     console.log(this.state.address)
     const {classes, data} = this.props
+    const {addComplaints, resolveComplaint} = this.state
     const displayAddress = this.state.address
       ? this.renderAddress(this.state.address)
       : `[${data.latitude}, ${data.longitude}]`
@@ -286,9 +329,8 @@ class InfoPage extends React.Component {
                 onChange={this.handleTabChange}
                 indicatorColor="primary"
                 textColor="primary"
-                variant="standard"
+                variant="fullWidth"
                 scrollButtons="on"
-                centered
               >
                 <Tab label="All Complaints" />
                 <Tab label="311 Complaints" />
@@ -307,6 +349,22 @@ class InfoPage extends React.Component {
               onChangeIndex={this.handleChangeIndex}
             >
               <TabContainer dir={classes.tabDirection.direction}>
+                {resolveComplaint ? (
+                  <div>
+                    <Fab
+                      color="secondary"
+                      style={{marginBottom: '10px'}}
+                      aria-label="Add"
+                      className={classes.fab}
+                      onClick={() => this.setState({resolveComplaint: null})}
+                    >
+                      <RemoveIcon />
+                    </Fab>
+                    <UserResolutionForm
+                      handleResolveComplaint={this.handleResolveComplaint}
+                    />
+                  </div>
+                ) : null}
                 <Paper className={classes.paperTable}>
                   <Table className={classes.tableTable}>
                     <TableHead>
@@ -318,7 +376,7 @@ class InfoPage extends React.Component {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {this.state.complaints
+                      {this.state.allComplaints
                         .sort((a, b) => {
                           return (
                             new Date(b.created_date) - new Date(a.created_date)
@@ -327,7 +385,11 @@ class InfoPage extends React.Component {
                         .map(complaint => {
                           return (
                             <TableRow key={complaint.id}>
-                              <TableCell component="th" scope="row">
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                align="center"
+                              >
                                 {this.createDate(complaint.created_date)}
                               </TableCell>
                               <TableCell align="center">
@@ -337,7 +399,22 @@ class InfoPage extends React.Component {
                                 {complaint.descriptor}
                               </TableCell>
                               <TableCell align="center">
-                                {complaint.resolution_description}
+                                {complaint.resolution_description ? (
+                                  complaint.resolution_description
+                                ) : (
+                                  <Button
+                                    onClick={() =>
+                                      this.setState({
+                                        resolveComplaint: complaint
+                                      })
+                                    }
+                                    variant="contained"
+                                    className={classes.button}
+                                    style={{zIndex: '10'}}
+                                  >
+                                    Resolve This Complaint
+                                  </Button>
+                                )}
                               </TableCell>
                             </TableRow>
                           )
@@ -367,7 +444,11 @@ class InfoPage extends React.Component {
                         .map(complaint => {
                           return (
                             <TableRow key={complaint.id}>
-                              <TableCell component="th" scope="row">
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                align="center"
+                              >
                                 {this.createDate(complaint.created_date)}
                               </TableCell>
                               <TableCell align="center">
@@ -387,20 +468,98 @@ class InfoPage extends React.Component {
                 </Paper>
               </TabContainer>
               <TabContainer dir={classes.tabDirection.direction}>
-                <Fab
-                  color="primary"
-                  aria-label="Add"
-                  className={classes.fab}
-                  onClick={() => this.setState({addComplaints: true})}
-                >
-                  <AddIcon />
-                </Fab>
+                {!resolveComplaint ? (
+                  <Fab
+                    color={addComplaints ? 'secondary' : 'primary'}
+                    style={{marginBottom: '10px'}}
+                    aria-label="Add"
+                    className={classes.fab}
+                    onClick={() =>
+                      this.setState({addComplaints: !addComplaints})
+                    }
+                  >
+                    {addComplaints ? <RemoveIcon /> : <AddIcon />}
+                  </Fab>
+                ) : null}
                 {this.state.addComplaints ? (
                   <UserComplaintForm
                     address={this.state.address}
                     handleSubmitComplaint={this.handleSubmitComplaint}
                   />
                 ) : null}
+                {resolveComplaint ? (
+                  <div>
+                    <Fab
+                      color="secondary"
+                      style={{marginBottom: '10px'}}
+                      aria-label="Add"
+                      className={classes.fab}
+                      onClick={() => this.setState({resolveComplaint: null})}
+                    >
+                      <RemoveIcon />
+                    </Fab>
+                    <UserResolutionForm
+                      handleResolveComplaint={this.handleResolveComplaint}
+                    />
+                  </div>
+                ) : null}
+                <Paper className={classes.paperTable}>
+                  <Table className={classes.tableTable}>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">Date of Complaint</TableCell>
+                        <TableCell align="center">Complaint Type</TableCell>
+                        <TableCell align="center">Description</TableCell>
+                        <TableCell align="center">Resolution</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {this.state.userComplaints
+                        .sort((a, b) => {
+                          return (
+                            new Date(b.created_date) - new Date(a.created_date)
+                          )
+                        })
+                        .map(complaint => {
+                          return (
+                            <TableRow key={complaint.id}>
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                align="center"
+                              >
+                                {this.createDate(complaint.created_date)}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.complaint_type}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.descriptor}
+                              </TableCell>
+                              <TableCell align="center">
+                                {complaint.resolution_description ? (
+                                  complaint.resolution_description
+                                ) : (
+                                  <Button
+                                    onClick={() =>
+                                      this.setState({
+                                        resolveComplaint: complaint
+                                      })
+                                    }
+                                    variant="contained"
+                                    className={classes.button}
+                                    style={{zIndex: '10'}}
+                                  >
+                                    Resolve This Complaint
+                                  </Button>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })}
+                    </TableBody>
+                  </Table>
+                </Paper>
               </TabContainer>
             </SwipeableViews>
             <br />
