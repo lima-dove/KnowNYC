@@ -431,15 +431,19 @@ class InfoPage extends React.Component {
                 </Paper>
               </TabContainer>
               <TabContainer dir={classes.tabDirection.direction}>
-                <Fab
-                  color={addComplaints ? 'secondary' : 'primary'}
-                  style={{marginBottom: '10px'}}
-                  aria-label="Add"
-                  className={classes.fab}
-                  onClick={() => this.setState({addComplaints: !addComplaints})}
-                >
-                  {addComplaints ? <RemoveIcon /> : <AddIcon />}
-                </Fab>
+                {!resolveComplaint ? (
+                  <Fab
+                    color={addComplaints ? 'secondary' : 'primary'}
+                    style={{marginBottom: '10px'}}
+                    aria-label="Add"
+                    className={classes.fab}
+                    onClick={() =>
+                      this.setState({addComplaints: !addComplaints})
+                    }
+                  >
+                    {addComplaints ? <RemoveIcon /> : <AddIcon />}
+                  </Fab>
+                ) : null}
                 {this.state.addComplaints ? (
                   <UserComplaintForm
                     address={this.state.address}
