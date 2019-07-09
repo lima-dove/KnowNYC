@@ -15,6 +15,7 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import PropTypes from 'prop-types'
 import React from 'react'
+import {connect} from 'react-redux'
 import SwipeableViews from 'react-swipeable-views'
 import FullWidthTabs from './GraphTabs'
 import {UserComplaintForm} from './index'
@@ -218,6 +219,10 @@ class InfoPage extends React.Component {
     }
   }
 
+  handleSubscribeClick = async event => {
+    // if ()
+  }
+
   render() {
     const {classes, data} = this.props
     const displayAddress = this.state.address
@@ -395,4 +400,8 @@ InfoPage.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-export default withStyles(styles)(InfoPage)
+const mapStateToProps = state => ({
+  isLoggedIn: !!state.user.id,
+  user: state.user
+})
+export default connect(mapStateToProps, null)(withStyles(styles)(InfoPage))

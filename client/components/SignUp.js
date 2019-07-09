@@ -102,6 +102,17 @@ const Signup = props => {
                 variant="outlined"
                 required
                 fullWidth
+                id="username"
+                label="Username"
+                name="username"
+                autoComplete="username"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
                 id="email"
                 label="Email Address"
                 name="email"
@@ -181,9 +192,13 @@ const mapDispatch = dispatch => {
     handleSubmit(evt) {
       evt.preventDefault()
       const formName = evt.target.name
+      const first_name = evt.target.firstName.value
+      const last_name = evt.target.lastName.value
+      const username = evt.target.username.value
       const email = evt.target.email.value
       const password = evt.target.password.value
-      dispatch(auth(email, password, formName))
+      console.log({email, password, first_name, last_name, username})
+      dispatch(auth(email, password, first_name, last_name, username, formName))
     }
   }
 }

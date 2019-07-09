@@ -30,15 +30,30 @@ export const me = () => async dispatch => {
   }
 }
 
-export const auth = (email, password, method) => async dispatch => {
+export const auth = (
+  email,
+  password,
+  first_name,
+  last_name,
+  username,
+  method
+) => async dispatch => {
   let res
+  console.log({method})
   try {
-    res = await axios.post(`/auth/${method}`, {email, password})
+    res = await axios.post(`/auth/${method}`, {
+      email,
+      password,
+      first_name,
+      last_name,
+      username
+    })
   } catch (authError) {
     return dispatch(getUser({error: authError}))
   }
 
   try {
+    console.log('return data from thunk being sent to getUser action', res.data)
     dispatch(getUser(res.data))
     history.push('/home')
   } catch (dispatchOrHistoryErr) {
