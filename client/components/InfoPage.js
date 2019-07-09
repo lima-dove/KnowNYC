@@ -17,6 +17,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import FullWidthTabs from './GraphTabs'
+import {UserComplaintForm} from './index'
 
 function TabContainer({children, dir}) {
   return (
@@ -339,7 +340,7 @@ class InfoPage extends React.Component {
                 </Paper>
               </TabContainer>
               <TabContainer dir={classes.tabDirection.direction}>
-                Coming soon to a build near you: User Complaints!
+                <UserComplaintForm address={this.state.address} />
               </TabContainer>
             </SwipeableViews>
             <br />
