@@ -340,7 +340,7 @@ class HomePage extends Component {
             ) : null}
           </div>
           <div>
-            {neighborhoodComplaints
+            {!boundaryAddresses && neighborhoodComplaints
               ? neighborhoodComplaints.map(neighborhoodAggregate => {
                   return (
                     <Marker
