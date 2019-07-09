@@ -23,6 +23,7 @@ import React from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import FullWidthTabs from './GraphTabs'
 import {UserComplaintForm} from './index'
+import UserResolutionForm from './UserResolutionForm'
 
 function TabContainer({children, dir}) {
   return (
@@ -105,12 +106,14 @@ class InfoPage extends React.Component {
       allComplaints: [],
       address: '',
       tabValue: 0,
-      addComplaints: false
+      addComplaints: false,
+      resolveComplaint: null
     }
 
     this.handleTabChange = this.handleTabChange.bind(this)
     this.handleChangeIndex = this.handleChangeIndex.bind(this)
     this.handleSubmitComplaint = this.handleSubmitComplaint.bind(this)
+    this.handleResolveComplaint = this.handleResolveComplaint.bind(this)
   }
 
   componentDidMount() {
@@ -118,9 +121,6 @@ class InfoPage extends React.Component {
 
     const allComplaints = data.complaints.concat(userData)
 
-    console.log('All Complaints: ', allComplaints)
-    console.log('311 Complaints: ', data.complaints)
-    console.log('User Complaints: ', userData)
     this.setState({
       complaints: data.complaints,
       address: data.incident_address,
@@ -160,10 +160,32 @@ class InfoPage extends React.Component {
       info.resolved = true
     }
     const {data} = await axios.post('/api/user-complaint', info)
+
     this.setState({
       allComplaints: [...allComplaints, data],
       userComplaints: [...userComplaints, data],
       addComplaints: false
+    })
+  }
+
+  async handleResolveComplaint(info) {
+    const {allComplaints, userComplaints, resolveComplaint} = this.state
+
+    info.id = resolveComplaint.id
+
+    const {data} = await axios.put('/api/user-complaint', info)
+
+    const allComplaintsCopy = allComplaints.filter(
+      el => el.id !== resolveComplaint.id
+    )
+    const userComplaintsCopy = userComplaints.filter(
+      el => el.id !== resolveComplaint.id
+    )
+
+    this.setState({
+      allComplaints: [...allComplaintsCopy, data[0]],
+      userComplaints: [...userComplaintsCopy, data[0]],
+      resolveComplaint: null
     })
   }
 
@@ -235,7 +257,7 @@ class InfoPage extends React.Component {
 
   render() {
     const {classes, data} = this.props
-    const {addComplaints} = this.state
+    const {addComplaints, resolveComplaint} = this.state
     const displayAddress = this.state.address
       ? this.renderAddress(this.state.address)
       : `[${data.latitude}, ${data.longitude}]`
@@ -290,6 +312,11 @@ class InfoPage extends React.Component {
               onChangeIndex={this.handleChangeIndex}
             >
               <TabContainer dir={classes.tabDirection.direction}>
+                {resolveComplaint ? (
+                  <UserResolutionForm
+                    handleResolveComplaint={this.handleResolveComplaint}
+                  />
+                ) : null}
                 <Paper className={classes.paperTable}>
                   <Table className={classes.tableTable}>
                     <TableHead>
@@ -328,7 +355,11 @@ class InfoPage extends React.Component {
                                   complaint.resolution_description
                                 ) : (
                                   <Button
-                                    onClick={this.handleSearchClick}
+                                    onClick={() =>
+                                      this.setState({
+                                        resolveComplaint: complaint
+                                      })
+                                    }
                                     variant="contained"
                                     className={classes.button}
                                     style={{zIndex: '10'}}
@@ -404,6 +435,11 @@ class InfoPage extends React.Component {
                     handleSubmitComplaint={this.handleSubmitComplaint}
                   />
                 ) : null}
+                {resolveComplaint ? (
+                  <UserResolutionForm
+                    handleResolveComplaint={this.handleResolveComplaint}
+                  />
+                ) : null}
                 <Paper className={classes.paperTable}>
                   <Table className={classes.tableTable}>
                     <TableHead>
@@ -442,7 +478,11 @@ class InfoPage extends React.Component {
                                   complaint.resolution_description
                                 ) : (
                                   <Button
-                                    onClick={this.handleSearchClick}
+                                    onClick={() =>
+                                      this.setState({
+                                        resolveComplaint: complaint
+                                      })
+                                    }
                                     variant="contained"
                                     className={classes.button}
                                     style={{zIndex: '10'}}

@@ -37,9 +37,9 @@ class UserComplaintForm extends Component {
   async handleSubmit(e) {
     await this.props.handleSubmitComplaint(this.state)
   }
+
   render() {
     const {classes} = this.props
-    console.log('STATE', this.state)
 
     return (
       <form className={classes.container} noValidate>
