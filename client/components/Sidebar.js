@@ -48,8 +48,7 @@ export default class Sidebar extends React.Component {
             </div>
           )}
           <p>
-            You can also use the <b>search bar</b> and the <b>filters</b> below
-            to make a custom search.
+            You can also use the <b>search bar</b> to make a custom search.
           </p>
         </div>
       </div>

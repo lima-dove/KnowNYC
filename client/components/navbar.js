@@ -18,7 +18,7 @@ const style = {
   }
 }
 
-const Navbar = ({handleClick, isLoggedIn}) => {
+const Navbar = ({handleClick, isLoggedIn, user}) => {
   return (
     <Box boxShadow={2}>
       <AppBar position="static">
@@ -64,14 +64,15 @@ const Navbar = ({handleClick, isLoggedIn}) => {
           </Typography>
 
           {isLoggedIn ? (
-            <div style={{marginLeft: 'auto'}}>
+            <div className="flyToSubscribed" style={{marginLeft: 'auto'}}>
               <Button
                 style={style.button}
                 size="large"
                 to="/home"
                 component={RouterLink}
+                onClick={flyToSubscribed}
               >
-                Make a complaint
+                Home Address
               </Button>
               <Button
                 style={style.button}
@@ -114,7 +115,8 @@ const Navbar = ({handleClick, isLoggedIn}) => {
  */
 const mapState = state => {
   return {
-    isLoggedIn: !!state.user.id
+    isLoggedIn: !!state.user.id,
+    user: state.user
   }
 }
 
