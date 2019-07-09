@@ -52,7 +52,6 @@ export const auth = (
   }
 
   try {
-    console.log('return data from thunk being sent to getUser action', res.data)
     dispatch(getUser(res.data))
     history.push('/home')
   } catch (dispatchOrHistoryErr) {
