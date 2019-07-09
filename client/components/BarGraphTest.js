@@ -88,7 +88,7 @@ export default class BarGraphTest extends Component {
       .style('textAnchor', 'middle')
       .attr('x', event.target.x.animVal.value + 10)
       .attr('dy', event.target.y.animVal.value - 5)
-      .text(Math.floor(yValue))
+      .text(Math.ceil(yValue))
   }
 
   handleMouseLeave = () => {
