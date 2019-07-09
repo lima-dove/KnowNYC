@@ -21,6 +21,7 @@ import {UserComplaintForm} from './index'
 import axios from 'axios'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
+import Button from '@material-ui/core/Button'
 
 function TabContainer({children, dir}) {
   return (
@@ -91,6 +92,10 @@ const styles = theme => ({
   },
   tabDirection: {
     direction: theme.direction
+  },
+  button: {
+    margin: theme.spacing(1),
+    justifySelf: 'center'
   }
 })
 
@@ -215,7 +220,6 @@ class InfoPage extends React.Component {
 
   render() {
     const {classes, data} = this.props
-    console.log(data)
     const displayAddress = this.state.address
       ? this.renderAddress(this.state.address)
       : `[${data.latitude}, ${data.longitude}]`
@@ -233,7 +237,19 @@ class InfoPage extends React.Component {
                   variant="h6"
                   noWrap
                 >
-                  Data for {displayAddress}
+                  <div style={{display: 'flex', flexDirection: 'column'}}>
+                    <div>Data for {displayAddress}</div>
+                    <div>
+                      <Button
+                        onClick={this.handleSubscribeClick}
+                        variant="contained"
+                        className={classes.button}
+                        style={{zIndex: '10'}}
+                      >
+                        Subscribe to this address
+                      </Button>
+                    </div>
+                  </div>
                 </Typography>
               </Toolbar>
             </AppBar>
