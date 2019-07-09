@@ -20,7 +20,8 @@ class UserResolutionForm extends Component {
   constructor() {
     super()
     this.state = {
-      resolution_description: ''
+      resolution_description: '',
+      error: false
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -33,12 +34,23 @@ class UserResolutionForm extends Component {
 
   async handleSubmit() {
     const {handleResolveComplaint} = this.props
+    const {resolution_description} = this.state
 
-    await handleResolveComplaint(this.state)
+    if (resolution_description === '') {
+      this.setState({
+        error: true
+      })
+    } else {
+      await handleResolveComplaint(this.state)
+      this.setState({
+        error: false
+      })
+    }
   }
 
   render() {
     const {classes} = this.props
+    const {error} = this.state
 
     return (
       <form className={classes.container} noValidate>
@@ -46,12 +58,17 @@ class UserResolutionForm extends Component {
           id="Complaint Resolution"
           label={
             <Typography variant="headline" component="h2">
-              Complaint Resolution
+              Resolution Description
             </Typography>
           }
           style={{margin: 8}}
+          error={error}
           placeholder="Resolution here"
-          helperText="If complaint has been resolved, please explain here"
+          helperText={
+            error
+              ? 'Resolution description is required to resolve complaint'
+              : 'If complaint has been resolved, please explain here'
+          }
           fullWidth
           margin="normal"
           variant="outlined"

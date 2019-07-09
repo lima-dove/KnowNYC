@@ -313,9 +313,20 @@ class InfoPage extends React.Component {
             >
               <TabContainer dir={classes.tabDirection.direction}>
                 {resolveComplaint ? (
-                  <UserResolutionForm
-                    handleResolveComplaint={this.handleResolveComplaint}
-                  />
+                  <div>
+                    <Fab
+                      color="secondary"
+                      style={{marginBottom: '10px'}}
+                      aria-label="Add"
+                      className={classes.fab}
+                      onClick={() => this.setState({resolveComplaint: null})}
+                    >
+                      <RemoveIcon />
+                    </Fab>
+                    <UserResolutionForm
+                      handleResolveComplaint={this.handleResolveComplaint}
+                    />
+                  </div>
                 ) : null}
                 <Paper className={classes.paperTable}>
                   <Table className={classes.tableTable}>
@@ -436,9 +447,20 @@ class InfoPage extends React.Component {
                   />
                 ) : null}
                 {resolveComplaint ? (
-                  <UserResolutionForm
-                    handleResolveComplaint={this.handleResolveComplaint}
-                  />
+                  <div>
+                    <Fab
+                      color="secondary"
+                      style={{marginBottom: '10px'}}
+                      aria-label="Add"
+                      className={classes.fab}
+                      onClick={() => this.setState({resolveComplaint: null})}
+                    >
+                      <RemoveIcon />
+                    </Fab>
+                    <UserResolutionForm
+                      handleResolveComplaint={this.handleResolveComplaint}
+                    />
+                  </div>
                 ) : null}
                 <Paper className={classes.paperTable}>
                   <Table className={classes.tableTable}>
