@@ -209,10 +209,23 @@ class HomePage extends Component {
   }
 
   handleEscape(event) {
-    console.log('hi')
     if (event.keyCode === 27) {
-      console.log('in escape code')
-      this.setState({selectedAddress: null, selectedNeighborhood: null})
+      if (this.state.selectedNeighborhood) {
+        const marker = this.state.selectedMarkerImage
+        marker.src = greenPointer
+        this.setState({
+          selectedNeighborhood: null,
+          selectedMarkerImage: null
+        })
+      } else if (this.state.selectedAddress) {
+        const dot = this.state.selectedDotImage
+        dot.src = greenDot
+        this.setState({
+          selectedDotImage: null,
+          selectedAddress: null,
+          mouse: false
+        })
+      }
     }
   }
 
@@ -227,7 +240,6 @@ class HomePage extends Component {
   }
 
   render() {
-    console.log(this.refs.hi)
     const {classes} = this.props
 
     const {
@@ -265,7 +277,7 @@ class HomePage extends Component {
           }
         >
           <div style={{display: 'flex'}}>
-            <div id="sideSearch">
+            <div style={{zIndex: 5}} id="sideSearch">
               <SearchBar
                 handleSearchSubmit={this.handleSearchSubmit}
                 captureClick={true}
@@ -325,38 +337,36 @@ class HomePage extends Component {
                     })
                   : null}
               </div>
-            ) : (
-              <div>
-                {neighborhoodComplaints
-                  ? neighborhoodComplaints.map(neighborhoodAggregate => {
-                      return (
-                        <Marker
-                          key={neighborhoodAggregate.id}
-                          latitude={neighborhoodAggregate.latitude}
-                          longitude={neighborhoodAggregate.longitude}
-                          offsetLeft={-20}
-                          offsetTop={-10}
-                        >
-                          <img
-                            src={greenPointer}
-                            onClick={event =>
-                              this.handleNeighborhoodMarkerClick(
-                                event,
-                                neighborhoodAggregate
-                              )
-                            }
-                          />
-                        </Marker>
-                      )
-                    })
-                  : null}
-              </div>
-            )}
+            ) : null}
+          </div>
+          <div>
+            {neighborhoodComplaints
+              ? neighborhoodComplaints.map(neighborhoodAggregate => {
+                  return (
+                    <Marker
+                      key={neighborhoodAggregate.id}
+                      latitude={neighborhoodAggregate.latitude}
+                      longitude={neighborhoodAggregate.longitude}
+                      offsetLeft={-20}
+                      offsetTop={-10}
+                    >
+                      <img
+                        src={greenPointer}
+                        onClick={event =>
+                          this.handleNeighborhoodMarkerClick(
+                            event,
+                            neighborhoodAggregate
+                          )
+                        }
+                      />
+                    </Marker>
+                  )
+                })
+              : null}
           </div>
           {/* NEIGHBORHOOD POPUP */}
           {selectedNeighborhood ? (
             <Popup
-              ref="hi"
               closeOnClick={false}
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
@@ -373,7 +383,6 @@ class HomePage extends Component {
               <NeighborhoodInfoPage data={data} />
             </Popup>
           ) : null}
-
           {/*ADDRESS POPUP */}
           {selectedAddress ? (
             <Popup
