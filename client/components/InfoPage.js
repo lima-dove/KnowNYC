@@ -23,6 +23,8 @@ import React from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import FullWidthTabs from './GraphTabs'
 import {UserComplaintForm} from './index'
+import {connect} from 'react-redux'
+import {subscribe} from '../store'
 import UserResolutionForm from './UserResolutionForm'
 
 function TabContainer({children, dir}) {
@@ -95,6 +97,10 @@ const styles = theme => ({
   },
   tabDirection: {
     direction: theme.direction
+  },
+  button: {
+    margin: theme.spacing(1),
+    justifySelf: 'center'
   }
 })
 
@@ -108,6 +114,8 @@ class InfoPage extends React.Component {
       address: '',
       tabValue: 0,
       addComplaints: false,
+      isLoggedIn: true,
+      subscribedAddress: null,
       resolveComplaint: null
     }
 
@@ -291,6 +299,21 @@ class InfoPage extends React.Component {
     }
   }
 
+  handleSubscribeClick = () => {
+    if (this.props.isLoggedIn) {
+      this.props.subscribe(
+        this.props.user.id,
+        this.state.address,
+        this.props.data.latitude,
+        this.props.data.longitude
+      )
+      this.setState({subscribedAddress: this.state.address})
+      console.log('subscribed click ', this.state.subscribedAddress)
+    } else {
+      this.setState({isLoggedIn: this.props.isLoggedIn})
+    }
+  }
+
   render() {
     const {classes, data} = this.props
     const {addComplaints, resolveComplaint} = this.state
@@ -311,7 +334,35 @@ class InfoPage extends React.Component {
                   variant="h6"
                   noWrap
                 >
-                  Data for {displayAddress}
+                  <div style={{display: 'flex', flexDirection: 'column'}}>
+                    <div>Data for {displayAddress}</div>
+                    <div>
+                      <Button
+                        onClick={this.handleSubscribeClick}
+                        variant="contained"
+                        className={classes.button}
+                        style={{zIndex: '10'}}
+                      >
+                        <div>
+                          <p style={{marginBottom: '1px', marginTop: '1px'}}>
+                            Subscribe to this address
+                          </p>
+                          {!this.state.isLoggedIn ? (
+                            <small style={{color: 'red', margin: '0'}}>
+                              You must be logged in to use this feature
+                            </small>
+                          ) : null}
+                          {this.state.subscribedAddress ? (
+                            <small style={{color: 'red', margin: '0'}}>
+                              {`You are now subscribed to ${this.renderAddress(
+                                this.state.subscribedAddress
+                              )}`}
+                            </small>
+                          ) : null}
+                        </div>
+                      </Button>
+                    </div>
+                  </div>
                 </Typography>
               </Toolbar>
             </AppBar>
@@ -573,4 +624,17 @@ InfoPage.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-export default withStyles(styles)(InfoPage)
+const mapStateToProps = state => ({
+  isLoggedIn: !!state.user.id,
+  user: state.user
+})
+
+const mapDispatchToProps = dispatch => {
+  return {
+    subscribe: (id, addr, lat, lon) => dispatch(subscribe(id, addr, lat, lon))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+  withStyles(styles)(InfoPage)
+)
