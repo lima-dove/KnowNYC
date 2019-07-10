@@ -275,7 +275,7 @@ class InfoPage extends React.Component {
                             </small>
                           ) : null}
                           {this.state.subscribedAddress ? (
-                            <small style={{color: 'red', margin: '0'}}>
+                            <small style={{color: 'green', margin: '0'}}>
                               {`You are now subscribed to ${this.renderAddress(
                                 this.state.subscribedAddress
                               )}`}

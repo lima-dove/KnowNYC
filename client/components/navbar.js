@@ -119,13 +119,9 @@ const mapState = state => {
   }
 }
 
-const mapDispatch = dispatch => {
-  return {
-    handleClick() {
-      dispatch(logout())
-    }
-  }
-}
+const mapDispatch = dispatch => ({
+  handleClick: () => dispatch(logout())
+})
 
 export default connect(mapState, mapDispatch)(Navbar)
 
