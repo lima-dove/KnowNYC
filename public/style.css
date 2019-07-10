@@ -108,22 +108,11 @@ mapboxgl-popup-content {
   width: 100vw !important;
 }
 
-/* a {
-  text-decoration: none;
- }
+#formTop {
+  display: flex;
+  justify-content: space-around;
+}
 
- label {
-  display: block;
- }
-
- nav a {
-  display: inline-block;
-  margin: 1em;
- }
-
-
- /*
- form div {
-  margin: 1em;
-  display: inline-block;
- } */
+.MuiFab-extended.MuiFab-sizeSmall {
+  width: 50% !important;
+}

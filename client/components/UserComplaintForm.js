@@ -4,15 +4,45 @@ import {withStyles} from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import React, {Component} from 'react'
 
+const complaintTypes = [
+  'Blocked Driveway',
+  'Damaged Tree',
+  'Food Safety',
+  'Garbage Disposal',
+  'Heat/Hot Water',
+  'Homeless Person Assistance',
+  'Illegal Parking',
+  'Large Item Collection',
+  'Noise Complaint',
+  'Pests',
+  'Rodent',
+  'Sidewalk Condition',
+  'Street Condition',
+  'Taxi Complaint',
+  'Wild Animal',
+  'Other'
+]
+
 const styles = theme => ({
   container: {
     display: 'flex',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    flexDirection: 'column',
+    alignItems: 'stretch'
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: 200
+  },
+  formTop: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'flex-end'
+  },
+  button: {
+    marginTop: '10px',
+    alignSelf: 'center'
   }
 })
 
@@ -43,8 +73,10 @@ class UserComplaintForm extends Component {
 
     return (
       <form className={classes.container} noValidate>
-        <div>
+        <div className={classes.formTop}>
           <TextField
+            variant="outlined"
+            style={{marginBottom: '16px'}}
             onChange={this.handleChange('created_date')}
             id="date"
             label={
@@ -57,10 +89,12 @@ class UserComplaintForm extends Component {
             InputLabelProps={{
               shrink: true
             }}
+            helperText="Enter the date the incident occured"
           />
           <TextField
             id="Complaint Type"
             select
+            style={{marginBottom: '16px'}}
             label={
               <Typography variant="headline" component="h2">
                 Complaint Type
@@ -79,8 +113,7 @@ class UserComplaintForm extends Component {
             margin="normal"
             variant="outlined"
           >
-            <option value={1}>Option 1</option>
-            <option value={2}>Option 2</option>
+            {complaintTypes.map(type => <option value={type}>{type}</option>)}
           </TextField>
         </div>
         <TextField
@@ -126,7 +159,7 @@ class UserComplaintForm extends Component {
           size="small"
           color="primary"
           aria-label="Add"
-          className={classes.margin}
+          className={classes.button}
           onClick={this.handleSubmit}
         >
           Add Complaint

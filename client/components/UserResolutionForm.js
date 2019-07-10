@@ -7,12 +7,18 @@ import React, {Component} from 'react'
 const styles = theme => ({
   container: {
     display: 'flex',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    flexDirection: 'column',
+    alignItems: 'stretch'
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: 200
+  },
+  button: {
+    marginTop: '10px',
+    alignSelf: 'center'
   }
 })
 
@@ -83,7 +89,7 @@ class UserResolutionForm extends Component {
           size="small"
           color="primary"
           aria-label="Add"
-          className={classes.margin}
+          className={classes.button}
           onClick={this.handleSubmit}
         >
           Resolve Complaint
