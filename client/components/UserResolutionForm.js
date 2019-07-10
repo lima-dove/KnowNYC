@@ -7,7 +7,8 @@ import React, {Component} from 'react'
 const styles = theme => ({
   container: {
     display: 'flex',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    padding: '24px'
   },
   textField: {
     marginLeft: theme.spacing(1),

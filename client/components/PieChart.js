@@ -41,7 +41,7 @@ const PieChart = props => {
       style={{display: 'block', margin: 'auto'}}
       width={width}
       height={height}
-      viewBox={`0 0 ${size} ${size}`}
+      viewBox={`0 -30 ${size} ${size}`}
       preserveAspectRatio="xMidYMid meet"
     >
       <g transform={`translate(${radius}, ${radius})`}>

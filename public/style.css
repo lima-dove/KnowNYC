@@ -35,6 +35,17 @@ body {
   border-radius: 4px;
   letter-spacing: 0.02857em;
 }
+.tableBody {
+  padding: 0px !important;
+}
+
+div.MuiTypography-root div.MuiTypography-body1 {
+  padding: 0px !important;
+}
+
+TableBody {
+  padding: 0px !important;
+}
 
 .sideText {
   padding: 5%;
@@ -42,7 +53,7 @@ body {
 
 .mapboxgl-popup-content {
   height: 75vh;
-  width: 45vw;
+  width: 50vw;
   position: fixed;
   margin-right: calc(50vw-10px);
   margin-bottom: calc(50vh-10px);

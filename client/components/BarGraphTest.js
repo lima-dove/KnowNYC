@@ -116,7 +116,7 @@ export default class BarGraphTest extends Component {
         ref="svg"
         preserveAspectRatio="xMidYMin"
         className="svg-container"
-        viewBox="0 0 620 600"
+        viewBox="0 -50 620 600"
       >
         {this.state.bars.map((d, i) => (
           <svg ref={element => (this.svg = d3.select(element))} key={i}>

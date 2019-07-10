@@ -29,7 +29,7 @@ import UserResolutionForm from './UserResolutionForm'
 
 function TabContainer({children, dir}) {
   return (
-    <Typography component="div" dir={dir} style={{padding: 8 * 3}}>
+    <Typography component="div" dir={dir} style={{padding: '0px'}}>
       {children}
     </Typography>
   )
@@ -101,6 +101,12 @@ const styles = theme => ({
   button: {
     margin: theme.spacing(1),
     justifySelf: 'center'
+  },
+  tableBody: {
+    padding: '0px'
+  },
+  fab: {
+    padding: '24px'
   }
 })
 
@@ -425,7 +431,7 @@ class InfoPage extends React.Component {
                         <TableCell align="center">Resolution</TableCell>
                       </TableRow>
                     </TableHead>
-                    <TableBody>
+                    <TableBody className={classes.tableBody}>
                       {this.state.allComplaints
                         .sort((a, b) => {
                           return (
@@ -484,7 +490,7 @@ class InfoPage extends React.Component {
                         <TableCell align="center">Resolution</TableCell>
                       </TableRow>
                     </TableHead>
-                    <TableBody>
+                    <TableBody className={classes.tableBody}>
                       {this.state.complaints
                         .sort((a, b) => {
                           return (
@@ -563,7 +569,7 @@ class InfoPage extends React.Component {
                         <TableCell align="center">Resolution</TableCell>
                       </TableRow>
                     </TableHead>
-                    <TableBody>
+                    <TableBody className={classes.tableBody}>
                       {this.state.userComplaints
                         .sort((a, b) => {
                           return (
