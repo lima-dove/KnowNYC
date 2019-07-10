@@ -120,6 +120,11 @@ router.get('/getAddress/:location', async (req, res, next) => {
       dataObj.type = key
       aggrArr.push(dataObj)
     }
+    aggrArr = aggrArr
+      .sort((a, b) => {
+        return b.frequency - a.frequency
+      })
+      .slice(0, 10)
 
     const addressObj = {
       incident_address: complaints[0].incident_address,
@@ -128,7 +133,7 @@ router.get('/getAddress/:location', async (req, res, next) => {
       aggregate_data: aggrArr,
       complaints: complaints
     }
-
+    console.log(addressObj)
     res.send(addressObj)
   } catch (error) {
     next(error)
