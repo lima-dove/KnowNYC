@@ -292,7 +292,6 @@ class InfoPage extends React.Component {
   }
 
   render() {
-    console.log(this.state.address)
     const {classes, data} = this.props
     const {addComplaints, resolveComplaint} = this.state
     const displayAddress = this.state.address
