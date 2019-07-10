@@ -166,7 +166,7 @@ export default class BarGraphTest extends Component {
           <g ref="yAxis" transform={`translate(${margin.left}, 0)`} />
         </g>
         <text
-          transform={`translate(${width / 2}, ${height - margin.bottom * 5})`}
+          transform={`translate(${width / 2}, ${height - margin.bottom / 9})`}
           style={{
             textAnchor: 'middle',
             fontSize: '18px',
