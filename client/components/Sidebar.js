@@ -14,7 +14,7 @@ class SidebarClass extends React.Component {
       const address = this.props.user.subscription_address
       this.props.handleSearchSubmit(address)
     } else {
-      this.setState({isLoggedIn: this.props.isLoggedIn})
+      this.setState({isLoggedIn: !this.state.isLoggedIn})
     }
   }
 
@@ -72,14 +72,14 @@ class SidebarClass extends React.Component {
           <br />
           <br />
           {this.state.isLoggedIn ? null : (
-            <p>
+            <small style={{color: 'red'}}>
               You must be logged in and subscribed to an address to use this
               feature.
-            </p>
+            </small>
           )}
-          <small style={{color: 'red'}}>
+          <p>
             Click on the <b>airplane</b> to fly to your home address.
-          </small>
+          </p>
         </div>
       </div>
     )
