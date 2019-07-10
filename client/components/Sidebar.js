@@ -73,12 +73,12 @@ class SidebarClass extends React.Component {
           <br />
           {this.state.isLoggedIn ? null : (
             <small style={{color: 'red'}}>
-              You must be logged in and subscribed to an address to use this
+              You must be logged in and have selected a home address to use this
               feature.
             </small>
           )}
           <p>
-            Click on the <b>airplane</b> to fly to your home address.
+            Click on the <b>airplane</b> to fly to your <b>home address</b>.
           </p>
         </div>
       </div>
