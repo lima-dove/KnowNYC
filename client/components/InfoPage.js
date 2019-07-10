@@ -309,7 +309,6 @@ class InfoPage extends React.Component {
         this.props.data.longitude
       )
       this.setState({subscribedAddress: this.state.address})
-      console.log('subscribed click ', this.state.subscribedAddress)
     } else {
       this.setState({isLoggedIn: this.props.isLoggedIn})
     }
@@ -346,7 +345,7 @@ class InfoPage extends React.Component {
                       >
                         <div>
                           <p style={{marginBottom: '1px', marginTop: '1px'}}>
-                            Subscribe to this address
+                            Make this your home address
                           </p>
                           {!this.state.isLoggedIn ? (
                             <small style={{color: 'red', margin: '0'}}>
@@ -355,9 +354,9 @@ class InfoPage extends React.Component {
                           ) : null}
                           {this.state.subscribedAddress ? (
                             <small style={{color: 'green', margin: '0'}}>
-                              {`You are now subscribed to ${this.renderAddress(
+                              {`${this.renderAddress(
                                 this.state.subscribedAddress
-                              )}`}
+                              )} is now your home address`}
                             </small>
                           ) : null}
                         </div>

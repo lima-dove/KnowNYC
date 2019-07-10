@@ -1,9 +1,23 @@
 import React from 'react'
+import {connect} from 'react-redux'
 
-export default class Sidebar extends React.Component {
+class SidebarClass extends React.Component {
   constructor(props) {
-    super()
+    super(props)
+    this.state = {
+      isLoggedIn: true
+    }
   }
+
+  handleFlyToClick = () => {
+    if (this.props.isLoggedIn && this.props.user.subscription_address) {
+      const address = this.props.user.subscription_address
+      this.props.handleSearchSubmit(address)
+    } else {
+      this.setState({isLoggedIn: !this.state.isLoggedIn})
+    }
+  }
+
   render() {
     const {viewport} = this.props
     return (
@@ -28,7 +42,7 @@ export default class Sidebar extends React.Component {
               <div>
                 You are currently in <b>Neighborhood view</b>. Click on a marker
                 to see the top five 311 incident calls of a neighborhood. Zoom
-                in to see Address view.{' '}
+                in to see Address view.
               </div>
             </div>
           ) : (
@@ -50,8 +64,35 @@ export default class Sidebar extends React.Component {
           <p>
             You can also use the <b>search bar</b> to make a custom search.
           </p>
+          <br />
+          <hr />
+          <br />
+          <br />
+          <br />
+          <br />
+          <i className="far fa-paper-plane" onClick={this.handleFlyToClick} />
+          <br />
+          <br />
+          <br />
+          {this.state.isLoggedIn ? null : (
+            <small style={{color: 'red'}}>
+              You must be logged in and have selected a home address to use this
+              feature.
+            </small>
+          )}
+          <p>
+            Click on the <b>airplane</b> to fly to your <b>home address</b>.
+          </p>
         </div>
       </div>
     )
   }
 }
+
+const mapStateToProps = state => ({
+  isLoggedIn: !!state.user.id,
+  user: state.user
+})
+
+const Sidebar = connect(mapStateToProps, null)(SidebarClass)
+export default Sidebar

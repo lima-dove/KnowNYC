@@ -8,7 +8,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {connect} from 'react-redux'
 import {Link as RouterLink} from 'react-router-dom'
-import history from '../history'
 import {logout} from '../store'
 
 const style = {
@@ -23,19 +22,6 @@ const Navbar = ({handleClick, isLoggedIn, user}) => {
     <Box boxShadow={2}>
       <AppBar position="static">
         <Toolbar style={{height: '80px'}}>
-          <IconButton
-            onClick={() => history.push('/home')}
-            aria-label="Open drawer"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="40"
-              height="40"
-              viewBox="0 0 24 24"
-            >
-              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-            </svg>
-          </IconButton>
           <Typography
             variant="h3"
             style={{
@@ -64,14 +50,14 @@ const Navbar = ({handleClick, isLoggedIn, user}) => {
             NYC
           </Typography>
           {isLoggedIn ? (
-            <div className="flyToSubscribed" style={{marginLeft: 'auto'}}>
-              <Button
-                style={style.button}
-                size="large"
-                to="/home"
-                component={RouterLink}
-              >
-                Home Address
+            <div style={{marginLeft: 'auto'}}>
+              <Button style={{color: 'white'}}>
+                <div>
+                  <b>Home Address</b>:
+                  {user.subscription_address
+                    ? ` ${user.subscription_address}`
+                    : ' none'}
+                </div>
               </Button>
               <Button
                 style={style.button}
@@ -119,13 +105,9 @@ const mapState = state => {
   }
 }
 
-const mapDispatch = dispatch => {
-  return {
-    handleClick() {
-      dispatch(logout())
-    }
-  }
-}
+const mapDispatch = dispatch => ({
+  handleClick: () => dispatch(logout())
+})
 
 export default connect(mapState, mapDispatch)(Navbar)
 

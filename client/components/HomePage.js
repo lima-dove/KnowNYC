@@ -375,7 +375,10 @@ class HomePage extends Component {
                 captureClick={true}
                 error={searchError}
               />
-              <Sidebar viewport={viewport.zoom} />
+              <Sidebar
+                viewport={viewport.zoom}
+                handleSearchSubmit={this.handleSearchSubmit}
+              />
             </div>
 
             {selectedAddress ? (
