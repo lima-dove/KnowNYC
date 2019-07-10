@@ -77,9 +77,9 @@ class SidebarClass extends React.Component {
               feature.
             </p>
           )}
-          <p>
+          <small style={{color: 'red'}}>
             Click on the <b>airplane</b> to fly to your home address.
-          </p>
+          </small>
         </div>
       </div>
     )
