@@ -39,6 +39,7 @@ class HomePage extends Component {
       searchError: false,
       selectedMarkerImage: null,
       selectedDotImage: null,
+      flyTo: false,
       viewport: {
         latitude: 40.7484,
         longitude: -73.9857,
@@ -48,6 +49,9 @@ class HomePage extends Component {
       },
       mouse: false
     }
+
+    this.searchDot = React.createRef()
+
     this.handleSearchClick = this.handleSearchClick.bind(this)
     this.handleMapClick = this.handleMapClick.bind(this)
     this.handleNeighborhoodMarkerClick = this.handleNeighborhoodMarkerClick.bind(
@@ -187,9 +191,24 @@ class HomePage extends Component {
     try {
       const response311 = await axios.get(`api/map/getAddress/A${address}`)
       const responseUser = await axios.get(`api/user-complaint/A${address}`)
+
+      if (this.state.selectedNeighborhood) {
+        this.onCloseNeighborhoodPopup()
+      } else if (this.state.selectedAddress) {
+        this.onCloseAddressPopup()
+      }
+
+      // let dot
+      // if (this.state.selectedDotImage) {
+      //   dot = this.state.selectedDotImage
+      //   dot.src = greenDot
+      // }
+
       this.setState({
         selectedAddress: response311.data,
+        selectedNeighborhood: null,
         addressUserComplaints: responseUser.data,
+        flyTo: true,
         viewport: {
           latitude: response311.data.latitude,
           longitude: response311.data.longitude,
@@ -197,6 +216,11 @@ class HomePage extends Component {
           bearing: 0,
           pitch: 0
         }
+      })
+      this.searchDot.current.src = redDot
+      this.setState({
+        flyTo: false,
+        selectedDotImage: this.searchDot.current
       })
     } catch (error) {
       if (error.response.status === 500) {
@@ -228,6 +252,15 @@ class HomePage extends Component {
     })
   }
 
+  onCloseNeighborhoodPopup() {
+    const marker = this.state.selectedMarkerImage
+    marker.src = greenPointer
+    this.setState({
+      selectedNeighborhood: null,
+      selectedMarkerImage: null
+    })
+  }
+
   render() {
     const {classes} = this.props
 
@@ -241,7 +274,8 @@ class HomePage extends Component {
       data,
       neighborhoodComplaints,
       searchError,
-      addressUserComplaints
+      addressUserComplaints,
+      flyTo
     } = this.state
 
     const scrollZoom = !selectedMarkerImage && !selectedDotImage
@@ -261,10 +295,8 @@ class HomePage extends Component {
           ref={map => (this.mapRef = map)}
           mapboxApiAccessToken={token}
           onClick={this.handleMapClick}
-          transitionDuration={selectedAddress ? 2000 : 0}
-          transitionInterpolator={
-            selectedAddress ? new FlyToInterpolator() : null
-          }
+          transitionDuration={flyTo ? 2000 : 0}
+          transitionInterpolator={flyTo ? new FlyToInterpolator() : null}
         >
           <div style={{display: 'flex'}}>
             <div id="sideSearch">
@@ -284,6 +316,7 @@ class HomePage extends Component {
                 offsetTop={-10}
               >
                 <img
+                  ref={this.searchDot}
                   style={dotStyle}
                   src={greenDot}
                   onClick={() =>
@@ -361,14 +394,7 @@ class HomePage extends Component {
               closeOnClick={false}
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
-              onClose={() => {
-                const marker = this.state.selectedMarkerImage
-                marker.src = greenPointer
-                this.setState({
-                  selectedNeighborhood: null,
-                  selectedMarkerImage: null
-                })
-              }}
+              onClose={this.onCloseNeighborhoodPopup}
               className="popup"
             >
               <NeighborhoodInfoPage data={data} />
