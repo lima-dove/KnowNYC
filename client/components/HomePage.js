@@ -62,6 +62,7 @@ class HomePage extends Component {
     this.handleAddressMarkerClick = this.handleAddressMarkerClick.bind(this)
     this.mouseHandle = this.mouseHandle.bind(this)
     this.onCloseAddressPopup = this.onCloseAddressPopup.bind(this)
+    this.onCloseNeighborhoodPopup = this.onCloseNeighborhoodPopup.bind(this)
     this.mapRef = React.createRef()
   }
 
