@@ -98,8 +98,18 @@ router.get('/getAddress/:location', async (req, res, next) => {
       let coordinatesArr = location.slice(1).split(',')
       complaints = await Complaint.findAll({
         where: {
-          latitude: Number(coordinatesArr[0]),
-          longitude: Number(coordinatesArr[1])
+          latitude: {
+            [Op.between]: [
+              Number(coordinatesArr[0]) - 0.00000000000005,
+              Number(coordinatesArr[0]) + 0.00000000000004
+            ]
+          },
+          longitude: {
+            [Op.between]: [
+              Number(coordinatesArr[1]) - 0.00000000000004,
+              Number(coordinatesArr[1]) + 0.00000000000005
+            ]
+          }
         }
       })
     }
