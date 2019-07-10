@@ -88,7 +88,7 @@ export default class BarGraphTest extends Component {
       .style('textAnchor', 'middle')
       .attr('x', event.target.x.animVal.value + 10)
       .attr('dy', event.target.y.animVal.value - 5)
-      .text(Math.floor(yValue))
+      .text(Math.ceil(yValue))
   }
 
   handleMouseLeave = () => {
@@ -111,7 +111,13 @@ export default class BarGraphTest extends Component {
     const {yScale, xScale} = this.state
 
     return (
-      <svg ref="svg" className="svg-container" viewBox="0 0 500 500">
+      <svg
+        style={{display: 'block', margin: 'auto'}}
+        ref="svg"
+        preserveAspectRatio="xMidYMin"
+        className="svg-container"
+        viewBox="0 0 620 600"
+      >
         {this.state.bars.map((d, i) => (
           <svg ref={element => (this.svg = d3.select(element))} key={i}>
             <defs>
