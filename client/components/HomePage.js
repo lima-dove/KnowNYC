@@ -3,7 +3,15 @@ import Button from '@material-ui/core/Button'
 import {withStyles} from '@material-ui/core/styles'
 import axios from 'axios'
 import React, {Component} from 'react'
-import MapGL, {FlyToInterpolator, Marker, Popup} from 'react-map-gl'
+import {render} from 'react-dom'
+import MapGL, {
+  FlyToInterpolator,
+  LinearInterpolator,
+  Marker,
+  Popup
+} from 'react-map-gl'
+import WebMercatorViewport from 'viewport-mercator-project'
+import bbox from '@turf/bbox'
 import greenDot from '../../markers/green-circle.png'
 import greenPointer from '../../markers/green-marker.png'
 import redDot from '../../markers/red-circle.png'
@@ -12,6 +20,7 @@ import InfoPage from './InfoPage'
 import NeighborhoodInfoPage from './NeighborhoodInfoPage'
 import SearchBar from './SearchBar'
 import Sidebar from './Sidebar'
+import MAP_STYLE from '../../public/MapStyle'
 
 const styles = theme => ({
   button: {
@@ -46,10 +55,11 @@ class HomePage extends Component {
         bearing: 0,
         pitch: 0
       },
-      mouse: false
+      mouse: false,
+      hoverInfo: null
     }
     this.handleSearchClick = this.handleSearchClick.bind(this)
-    this.handleMapClick = this.handleMapClick.bind(this)
+    // this.handleMapClick.bind(this)
     this.handleNeighborhoodMarkerClick = this.handleNeighborhoodMarkerClick.bind(
       this
     )
@@ -60,6 +70,8 @@ class HomePage extends Component {
     this.mouseHandle = this.mouseHandle.bind(this)
     this.onCloseAddressPopup = this.onCloseAddressPopup.bind(this)
     this.mapRef = React.createRef()
+    this._map = React.createRef()
+    this._onClick = this._onClick.bind(this)
   }
 
   async componentDidMount() {
@@ -67,6 +79,37 @@ class HomePage extends Component {
     this.setState({
       neighborhoodComplaints: data
     })
+  }
+
+  _onClick = event => {
+    console.log('clicked')
+    const feature = event.features[0]
+    console.log('FEATURE', feature)
+    if (feature) {
+      // calculate the bounding box of the feature
+      const [minLng, minLat, maxLng, maxLat] = bbox(feature)
+      // construct a viewport instance from the current state
+      const viewport = new WebMercatorViewport(this.state.viewport)
+      const {longitude, latitude, zoom} = viewport.fitBounds(
+        [[minLng, minLat], [maxLng, maxLat]],
+        {
+          padding: 40
+        }
+      )
+
+      this.setState({
+        viewport: {
+          ...this.state.viewport,
+          longitude,
+          latitude,
+          zoom,
+          transitionInterpolator: new LinearInterpolator({
+            around: [event.offsetCenter.x, event.offsetCenter.y]
+          }),
+          transitionDuration: 1000
+        }
+      })
+    }
   }
 
   async handleSearchClick() {
@@ -158,9 +201,9 @@ class HomePage extends Component {
     })
   }
 
-  handleMapClick = e => {
-    e.preventDefault()
-  }
+  // handleMapClick = e => {
+  //   e.preventDefault()
+  // }
 
   handleSeeMoreClick = complaint => {
     //Redirect to Info Page Logic
@@ -272,17 +315,21 @@ class HomePage extends Component {
       <div onKeyUp={this.handleEscape}>
         <MapGL
           id="mapGl"
+          ref={this._map}
           scrollZoom={scrollZoom}
           {...viewport}
           width="100vw"
           height="88vh"
           minZoom={11}
-          mapStyle="mapbox://styles/mapbox/streets-v9"
+          mapStyle={MAP_STYLE}
+          interactiveLayerIds={['nyc-neighborhoods-fill']}
+          // mapStyle="mapbox://styles/mapbox/streets-v9"
+          onClick={this._onClick}
           onViewportChange={v => this.handleViewChange(v)}
           preventStyleDiffing={false}
           ref={map => (this.mapRef = map)}
           mapboxApiAccessToken={token}
-          onClick={this.handleMapClick}
+          // onClick={this.handleMapClick}
           transitionDuration={selectedAddress ? 2000 : 0}
           transitionInterpolator={
             selectedAddress ? new FlyToInterpolator() : null
@@ -414,6 +461,10 @@ class HomePage extends Component {
       </div>
     )
   }
+}
+
+export function renderToDom(container) {
+  render(<HomePage />, container)
 }
 
 export default withStyles(styles)(HomePage)
