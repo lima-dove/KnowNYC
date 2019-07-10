@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import Button from '@material-ui/core/Button'
 import {withStyles} from '@material-ui/core/styles'
+import bbox from '@turf/bbox'
 import axios from 'axios'
 import React, {Component} from 'react'
 import {render} from 'react-dom'
@@ -11,16 +12,15 @@ import MapGL, {
   Popup
 } from 'react-map-gl'
 import WebMercatorViewport from 'viewport-mercator-project'
-import bbox from '@turf/bbox'
 import greenDot from '../../markers/green-circle.png'
 import greenPointer from '../../markers/green-marker.png'
 import redDot from '../../markers/red-circle.png'
 import redPointer from '../../markers/red-marker.png'
+import MAP_STYLE from '../../public/MapStyle'
 import InfoPage from './InfoPage'
 import NeighborhoodInfoPage from './NeighborhoodInfoPage'
 import SearchBar from './SearchBar'
 import Sidebar from './Sidebar'
-import MAP_STYLE from '../../public/MapStyle'
 
 const styles = theme => ({
   button: {
