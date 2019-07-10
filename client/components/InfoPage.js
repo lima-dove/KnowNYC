@@ -23,8 +23,6 @@ import React from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import FullWidthTabs from './GraphTabs'
 import {UserComplaintForm} from './index'
-import AddIcon from '@material-ui/icons/Add'
-import Button from '@material-ui/core/Button'
 import {connect} from 'react-redux'
 import {subscribe} from '../store'
 import UserResolutionForm from './UserResolutionForm'
@@ -117,7 +115,7 @@ class InfoPage extends React.Component {
       tabValue: 0,
       addComplaints: false,
       isLoggedIn: true,
-      subscribedAddress: null
+      subscribedAddress: null,
       resolveComplaint: null
     }
 
