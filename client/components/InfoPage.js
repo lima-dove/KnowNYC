@@ -20,11 +20,11 @@ import RemoveIcon from '@material-ui/icons/Remove'
 import axios from 'axios'
 import PropTypes from 'prop-types'
 import React from 'react'
+import {connect} from 'react-redux'
 import SwipeableViews from 'react-swipeable-views'
+import {subscribe} from '../store'
 import FullWidthTabs from './GraphTabs'
 import {UserComplaintForm} from './index'
-import {connect} from 'react-redux'
-import {subscribe} from '../store'
 import UserResolutionForm from './UserResolutionForm'
 
 function TabContainer({children, dir}) {
@@ -145,7 +145,8 @@ class InfoPage extends React.Component {
     ) {
       this.setState({
         address: this.props.data.complaints[0].incident_address,
-        complaints: this.props.data.complaints
+        complaints: this.props.data.complaints,
+        allComplaints: this.props.data.complaints.concat(this.props.userData)
       })
     }
     this.swipeableActions.updateHeight()
@@ -353,7 +354,7 @@ class InfoPage extends React.Component {
                             </small>
                           ) : null}
                           {this.state.subscribedAddress ? (
-                            <small style={{color: 'red', margin: '0'}}>
+                            <small style={{color: 'green', margin: '0'}}>
                               {`You are now subscribed to ${this.renderAddress(
                                 this.state.subscribedAddress
                               )}`}
@@ -451,7 +452,7 @@ class InfoPage extends React.Component {
                               <TableCell align="center">
                                 {complaint.resolution_description ? (
                                   complaint.resolution_description
-                                ) : (
+                                ) : !complaint.neighborhoodId ? (
                                   <Button
                                     onClick={() =>
                                       this.setState({
@@ -464,7 +465,7 @@ class InfoPage extends React.Component {
                                   >
                                     Resolve This Complaint
                                   </Button>
-                                )}
+                                ) : null}
                               </TableCell>
                             </TableRow>
                           )

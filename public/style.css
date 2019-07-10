@@ -105,25 +105,29 @@ mapboxgl-popup-content {
 }
 
 #charts {
-  width: 100vw !important;
+  /* width: 100vw !important; */
 }
 
-/* a {
-  text-decoration: none;
- }
+#formTop {
+  display: flex;
+  justify-content: space-around;
+}
 
- label {
-  display: block;
- }
+.MuiFab-extended.MuiFab-sizeSmall {
+  width: 50% !important;
+}
 
- nav a {
+#barGraphContainer {
   display: inline-block;
-  margin: 1em;
- }
-
-
- /*
- form div {
-  margin: 1em;
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  vertical-align: top;
+  overflow: hidden;
+}
+.svg-container {
   display: inline-block;
- } */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
