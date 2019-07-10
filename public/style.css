@@ -92,6 +92,7 @@ button.mapboxgl-popup-close-button {
   position: sticky;
   z-index: 100;
   margin-left: 13.5vw;
+  display: inline-block;
 }
 .mapboxgl-popup-close-button:hover {
   background-color: white !important;
@@ -103,10 +104,6 @@ mapboxgl-popup-content {
 
 .MuiTypography-body1 {
   overflow: scroll;
-}
-
-#charts {
-  /* width: 100vw !important; */
 }
 
 #formTop {
