@@ -65,6 +65,14 @@ const Navbar = ({handleClick, isLoggedIn, user}) => {
           </Typography>
           {isLoggedIn ? (
             <div style={{marginLeft: 'auto'}}>
+              <Button style={{color: 'white'}}>
+                <div>
+                  <b>Home Address</b>:
+                  {user.subscription_address
+                    ? ` ${user.subscription_address}`
+                    : ' none'}
+                </div>
+              </Button>
               <Button
                 style={style.button}
                 to="logout"

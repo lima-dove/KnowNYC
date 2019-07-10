@@ -119,7 +119,7 @@ export default class MapSearchBar extends Component {
         <Paper style={classes.root}>
           <InputBase
             style={classes.input}
-            placeholder="Search KnowNYC"
+            placeholder="Search for Address"
             inputProps={{'aria-label': 'Search KnowNYC'}}
             onChange={this.handleChange}
             value={searchInput}

@@ -65,6 +65,9 @@ class SidebarClass extends React.Component {
             You can also use the <b>search bar</b> to make a custom search.
           </p>
           <br />
+          <hr />
+          <br />
+          <br />
           <br />
           <br />
           <i className="far fa-paper-plane" onClick={this.handleFlyToClick} />
