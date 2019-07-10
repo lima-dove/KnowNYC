@@ -1,18 +1,48 @@
-import React, {Component} from 'react'
+import {Typography} from '@material-ui/core'
+import Fab from '@material-ui/core/Fab'
 import {withStyles} from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
-import Fab from '@material-ui/core/Fab'
-import axios from 'axios'
+import React, {Component} from 'react'
+
+const complaintTypes = [
+  'Blocked Driveway',
+  'Damaged Tree',
+  'Food Safety',
+  'Garbage Disposal',
+  'Heat/Hot Water',
+  'Homeless Person Assistance',
+  'Illegal Parking',
+  'Large Item Collection',
+  'Noise Complaint',
+  'Pests',
+  'Rodent',
+  'Sidewalk Condition',
+  'Street Condition',
+  'Taxi Complaint',
+  'Wild Animal',
+  'Other'
+]
 
 const styles = theme => ({
   container: {
     display: 'flex',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    flexDirection: 'column',
+    alignItems: 'stretch'
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: 200
+  },
+  formTop: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'flex-end'
+  },
+  button: {
+    marginTop: '10px',
+    alignSelf: 'center'
   }
 })
 
@@ -36,59 +66,70 @@ class UserComplaintForm extends Component {
   }
   async handleSubmit(e) {
     await this.props.handleSubmitComplaint(this.state)
-    // this.setState({
-    //   created_date: null,
-    //   complaint_type: '',
-    //   descriptor: '',
-    //   resolution_description: ''
-    // })
   }
+
   render() {
     const {classes} = this.props
-    console.log('STATE', this.state)
 
     return (
       <form className={classes.container} noValidate>
-        <TextField
-          onChange={this.handleChange('created_date')}
-          id="date"
-          label="Incident Date"
-          type="date"
-          // defaultValue={Date.now()}
-          className={classes.textField}
-          InputLabelProps={{
-            shrink: true
-          }}
-        />
-        <TextField
-          id="Complaint Type"
-          select
-          label="Complaint Type"
-          className={classes.textField}
-          value={this.state.type}
-          onChange={this.handleChange('complaint_type')}
-          SelectProps={{
-            native: true,
-            MenuProps: {
-              className: classes.menu
+        <div className={classes.formTop}>
+          <TextField
+            variant="outlined"
+            style={{marginBottom: '16px'}}
+            onChange={this.handleChange('created_date')}
+            id="date"
+            label={
+              <Typography variant="headline" component="h2">
+                Incident Date
+              </Typography>
             }
-          }}
-          helperText="Please select your complaint type"
-          margin="normal"
-          variant="outlined"
-        >
-          <option value={1}>Option 1</option>
-          <option value={2}>Option 2</option>
-        </TextField>
+            type="date"
+            className={classes.textField}
+            InputLabelProps={{
+              shrink: true
+            }}
+            helperText="Enter the date the incident occured"
+          />
+          <TextField
+            id="Complaint Type"
+            select
+            style={{marginBottom: '16px'}}
+            label={
+              <Typography variant="headline" component="h2">
+                Complaint Type
+              </Typography>
+            }
+            className={classes.textField}
+            value={this.state.type}
+            onChange={this.handleChange('complaint_type')}
+            SelectProps={{
+              native: true,
+              MenuProps: {
+                className: classes.menu
+              }
+            }}
+            helperText="Please select your complaint type"
+            margin="normal"
+            variant="outlined"
+          >
+            {complaintTypes.map(type => <option value={type}>{type}</option>)}
+          </TextField>
+        </div>
         <TextField
           id="Complaint Description"
-          label="Complaint Description"
+          label={
+            <Typography variant="headline" component="h2">
+              Complaint Description
+            </Typography>
+          }
           style={{margin: 8}}
           placeholder="Description here"
           helperText="Please write a description of your complaint here"
           fullWidth
           margin="normal"
           variant="outlined"
+          multiline={true}
           onChange={this.handleChange('descriptor')}
           InputLabelProps={{
             shrink: true
@@ -96,13 +137,18 @@ class UserComplaintForm extends Component {
         />
         <TextField
           id="Complaint Resolution"
-          label="Complaint Resolution"
+          label={
+            <Typography variant="headline" component="h2">
+              Complaint Resolution
+            </Typography>
+          }
           style={{margin: 8}}
           placeholder="Resolution here"
           helperText="If complaint has been resolved, please explain here"
           fullWidth
           margin="normal"
           variant="outlined"
+          multiline={true}
           onChange={this.handleChange('resolution_description')}
           InputLabelProps={{
             shrink: true
@@ -113,7 +159,7 @@ class UserComplaintForm extends Component {
           size="small"
           color="primary"
           aria-label="Add"
-          className={classes.margin}
+          className={classes.button}
           onClick={this.handleSubmit}
         >
           Add Complaint

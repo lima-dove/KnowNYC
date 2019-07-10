@@ -42,8 +42,6 @@ body {
 }
 
 .mapboxgl-popup-content {
-  transition: transform 1s;
-  transition-duration: 120s;
   height: 75vh;
   width: 45vw;
   position: fixed;
@@ -54,9 +52,9 @@ body {
   overflow-x: scroll !important;
   background: rgba(256, 256, 256, 0.75) !important;
 }
-.mapboxgl-popup-content:hover {
+/* .mapboxgl-popup-content:hover {
   transform: scale(1.15, 1.15);
-}
+} */
 
 .mapboxgl-popup-anchor-top .mapboxgl-popup-tip,
 .mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip,
@@ -106,22 +104,31 @@ mapboxgl-popup-content {
 .MuiTypography-body1 {
   overflow: scroll;
 }
-/* a {
-  text-decoration: none;
- }
 
- label {
-  display: block;
- }
+#charts {
+  /* width: 100vw !important; */
+}
 
- nav a {
+#formTop {
+  display: flex;
+  justify-content: space-around;
+}
+
+.MuiFab-extended.MuiFab-sizeSmall {
+  width: 50% !important;
+}
+
+#barGraphContainer {
   display: inline-block;
-  margin: 1em;
- }
-
-
- /*
- form div {
-  margin: 1em;
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  vertical-align: top;
+  overflow: hidden;
+}
+.svg-container {
   display: inline-block;
- } */
+  position: absolute;
+  top: 0;
+  left: 0;
+}

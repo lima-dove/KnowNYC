@@ -98,8 +98,18 @@ router.get('/getAddress/:location', async (req, res, next) => {
       let coordinatesArr = location.slice(1).split(',')
       complaints = await Complaint.findAll({
         where: {
-          latitude: Number(coordinatesArr[0]),
-          longitude: Number(coordinatesArr[1])
+          latitude: {
+            [Op.between]: [
+              Number(coordinatesArr[0]) - 0.00000000000005,
+              Number(coordinatesArr[0]) + 0.00000000000004
+            ]
+          },
+          longitude: {
+            [Op.between]: [
+              Number(coordinatesArr[1]) - 0.00000000000004,
+              Number(coordinatesArr[1]) + 0.00000000000005
+            ]
+          }
         }
       })
     }
@@ -120,6 +130,11 @@ router.get('/getAddress/:location', async (req, res, next) => {
       dataObj.type = key
       aggrArr.push(dataObj)
     }
+    aggrArr = aggrArr
+      .sort((a, b) => {
+        return b.frequency - a.frequency
+      })
+      .slice(0, 10)
 
     const addressObj = {
       incident_address: complaints[0].incident_address,
@@ -128,7 +143,7 @@ router.get('/getAddress/:location', async (req, res, next) => {
       aggregate_data: aggrArr,
       complaints: complaints
     }
-
+    console.log(addressObj)
     res.send(addressObj)
   } catch (error) {
     next(error)

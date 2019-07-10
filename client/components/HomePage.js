@@ -1,13 +1,22 @@
 /* eslint-disable complexity */
 import Button from '@material-ui/core/Button'
 import {withStyles} from '@material-ui/core/styles'
+import bbox from '@turf/bbox'
 import axios from 'axios'
 import React, {Component} from 'react'
-import MapGL, {FlyToInterpolator, Marker, Popup} from 'react-map-gl'
+import {render} from 'react-dom'
+import MapGL, {
+  FlyToInterpolator,
+  LinearInterpolator,
+  Marker,
+  Popup
+} from 'react-map-gl'
+import WebMercatorViewport from 'viewport-mercator-project'
 import greenDot from '../../markers/green-circle.png'
 import greenPointer from '../../markers/green-marker.png'
 import redDot from '../../markers/red-circle.png'
 import redPointer from '../../markers/red-marker.png'
+import MAP_STYLE from '../../public/MapStyle'
 import InfoPage from './InfoPage'
 import NeighborhoodInfoPage from './NeighborhoodInfoPage'
 import SearchBar from './SearchBar'
@@ -34,10 +43,12 @@ class HomePage extends Component {
       boundaryAddresses: null,
       selectedNeighborhood: null,
       selectedAddress: null,
+      addressUserComplaints: null,
       data: null,
       searchError: false,
       selectedMarkerImage: null,
       selectedDotImage: null,
+      flyTo: false,
       viewport: {
         latitude: 40.7484,
         longitude: -73.9857,
@@ -45,19 +56,27 @@ class HomePage extends Component {
         bearing: 0,
         pitch: 0
       },
-      mouse: false
+      mouse: false,
+      hoverInfo: null
     }
+
+    this.searchDot = React.createRef()
+
     this.handleSearchClick = this.handleSearchClick.bind(this)
-    this.handleMapClick = this.handleMapClick.bind(this)
+    // this.handleMapClick.bind(this)
     this.handleNeighborhoodMarkerClick = this.handleNeighborhoodMarkerClick.bind(
       this
     )
+    this.handleEscape = this.handleEscape.bind(this)
     this.handleSeeMoreClick = this.handleSeeMoreClick.bind(this)
     this.handleSearchSubmit = this.handleSearchSubmit.bind(this)
     this.handleAddressMarkerClick = this.handleAddressMarkerClick.bind(this)
     this.mouseHandle = this.mouseHandle.bind(this)
     this.onCloseAddressPopup = this.onCloseAddressPopup.bind(this)
+    this.onCloseNeighborhoodPopup = this.onCloseNeighborhoodPopup.bind(this)
     this.mapRef = React.createRef()
+    this._map = React.createRef()
+    this._onClick = this._onClick.bind(this)
   }
 
   async componentDidMount() {
@@ -65,6 +84,37 @@ class HomePage extends Component {
     this.setState({
       neighborhoodComplaints: data
     })
+  }
+
+  _onClick = event => {
+    console.log('clicked')
+    const feature = event.features[0]
+    console.log('FEATURE', feature)
+    if (feature) {
+      // calculate the bounding box of the feature
+      const [minLng, minLat, maxLng, maxLat] = bbox(feature)
+      // construct a viewport instance from the current state
+      const viewport = new WebMercatorViewport(this.state.viewport)
+      const {longitude, latitude, zoom} = viewport.fitBounds(
+        [[minLng, minLat], [maxLng, maxLat]],
+        {
+          padding: 40
+        }
+      )
+
+      this.setState({
+        viewport: {
+          ...this.state.viewport,
+          longitude,
+          latitude,
+          zoom,
+          transitionInterpolator: new LinearInterpolator({
+            around: [event.offsetCenter.x, event.offsetCenter.y]
+          }),
+          transitionDuration: 1000
+        }
+      })
+    }
   }
 
   async handleSearchClick() {
@@ -91,18 +141,26 @@ class HomePage extends Component {
       selectedDotImage: event.target
     })
 
-    let response
+    let response311
+    let responseUser
     if (address.incident_address) {
-      response = await axios.get(
+      response311 = await axios.get(
         `api/map/getAddress/A${address.incident_address}`
       )
+      responseUser = await axios.get(
+        `api/user-complaint/A${address.incident_address}`
+      )
     } else {
-      response = await axios.get(
+      response311 = await axios.get(
         `api/map/getAddress/C${address.latitude},${address.longitude}`
+      )
+      responseUser = await axios.get(
+        `api/user-complaint/C${address.latitude},${address.longitude}`
       )
     }
     await this.setState({
-      selectedAddress: response.data
+      selectedAddress: response311.data,
+      addressUserComplaints: responseUser.data
     })
   }
 
@@ -148,9 +206,9 @@ class HomePage extends Component {
     })
   }
 
-  handleMapClick = e => {
-    e.preventDefault()
-  }
+  // handleMapClick = e => {
+  //   e.preventDefault()
+  // }
 
   handleSeeMoreClick = complaint => {
     //Redirect to Info Page Logic
@@ -176,16 +234,38 @@ class HomePage extends Component {
 
   async handleSearchSubmit(address) {
     try {
-      const {data} = await axios.get(`api/map/getAddress/A${address}`)
+      const response311 = await axios.get(`api/map/getAddress/A${address}`)
+      const responseUser = await axios.get(`api/user-complaint/A${address}`)
+
+      if (this.state.selectedNeighborhood) {
+        this.onCloseNeighborhoodPopup()
+      } else if (this.state.selectedAddress) {
+        this.onCloseAddressPopup()
+      }
+
+      // let dot
+      // if (this.state.selectedDotImage) {
+      //   dot = this.state.selectedDotImage
+      //   dot.src = greenDot
+      // }
+
       this.setState({
-        selectedAddress: data,
+        selectedAddress: response311.data,
+        selectedNeighborhood: null,
+        addressUserComplaints: responseUser.data,
+        flyTo: true,
         viewport: {
-          latitude: data.latitude,
-          longitude: data.longitude,
+          latitude: response311.data.latitude,
+          longitude: response311.data.longitude,
           zoom: 18,
           bearing: 0,
           pitch: 0
         }
+      })
+      this.searchDot.current.src = redDot
+      this.setState({
+        flyTo: false,
+        selectedDotImage: this.searchDot.current
       })
     } catch (error) {
       if (error.response.status === 500) {
@@ -207,6 +287,27 @@ class HomePage extends Component {
     this.setState({mouse: true})
   }
 
+  handleEscape(event) {
+    if (event.keyCode === 27) {
+      if (this.state.selectedNeighborhood) {
+        const marker = this.state.selectedMarkerImage
+        marker.src = greenPointer
+        this.setState({
+          selectedNeighborhood: null,
+          selectedMarkerImage: null
+        })
+      } else if (this.state.selectedAddress) {
+        const dot = this.state.selectedDotImage
+        dot.src = greenDot
+        this.setState({
+          selectedDotImage: null,
+          selectedAddress: null,
+          mouse: false
+        })
+      }
+    }
+  }
+
   onCloseAddressPopup() {
     const dot = this.state.selectedDotImage
     dot.src = greenDot
@@ -214,6 +315,15 @@ class HomePage extends Component {
       selectedDotImage: null,
       selectedAddress: null,
       mouse: false
+    })
+  }
+
+  onCloseNeighborhoodPopup() {
+    const marker = this.state.selectedMarkerImage
+    marker.src = greenPointer
+    this.setState({
+      selectedNeighborhood: null,
+      selectedMarkerImage: null
     })
   }
 
@@ -229,33 +339,37 @@ class HomePage extends Component {
       selectedDotImage,
       data,
       neighborhoodComplaints,
-      searchError
+      searchError,
+      addressUserComplaints,
+      flyTo
     } = this.state
 
     const scrollZoom = !selectedMarkerImage && !selectedDotImage
 
     return (
-      <div>
+      <div onKeyUp={this.handleEscape}>
         <MapGL
           id="mapGl"
+          ref={this._map}
           scrollZoom={scrollZoom}
           {...viewport}
           width="100vw"
           height="88vh"
           minZoom={11}
-          mapStyle="mapbox://styles/mapbox/streets-v9"
+          mapStyle={MAP_STYLE}
+          interactiveLayerIds={['nyc-neighborhoods-fill']}
+          // mapStyle="mapbox://styles/mapbox/streets-v9"
+          onClick={this._onClick}
           onViewportChange={v => this.handleViewChange(v)}
           preventStyleDiffing={false}
           ref={map => (this.mapRef = map)}
           mapboxApiAccessToken={token}
           onClick={this.handleMapClick}
-          transitionDuration={selectedAddress ? 2000 : 0}
-          transitionInterpolator={
-            selectedAddress ? new FlyToInterpolator() : null
-          }
+          transitionDuration={flyTo ? 2000 : 0}
+          transitionInterpolator={flyTo ? new FlyToInterpolator() : null}
         >
           <div style={{display: 'flex'}}>
-            <div id="sideSearch">
+            <div style={{zIndex: 5}} id="sideSearch">
               <SearchBar
                 handleSearchSubmit={this.handleSearchSubmit}
                 captureClick={true}
@@ -275,6 +389,7 @@ class HomePage extends Component {
                 offsetTop={-10}
               >
                 <img
+                  ref={this.searchDot}
                   style={dotStyle}
                   src={greenDot}
                   onClick={() =>
@@ -318,33 +433,32 @@ class HomePage extends Component {
                     })
                   : null}
               </div>
-            ) : (
-              <div>
-                {neighborhoodComplaints
-                  ? neighborhoodComplaints.map(neighborhoodAggregate => {
-                      return (
-                        <Marker
-                          key={neighborhoodAggregate.id}
-                          latitude={neighborhoodAggregate.latitude}
-                          longitude={neighborhoodAggregate.longitude}
-                          offsetLeft={-20}
-                          offsetTop={-10}
-                        >
-                          <img
-                            src={greenPointer}
-                            onClick={event =>
-                              this.handleNeighborhoodMarkerClick(
-                                event,
-                                neighborhoodAggregate
-                              )
-                            }
-                          />
-                        </Marker>
-                      )
-                    })
-                  : null}
-              </div>
-            )}
+            ) : null}
+          </div>
+          <div>
+            {!boundaryAddresses && neighborhoodComplaints
+              ? neighborhoodComplaints.map(neighborhoodAggregate => {
+                  return (
+                    <Marker
+                      key={neighborhoodAggregate.id}
+                      latitude={neighborhoodAggregate.latitude}
+                      longitude={neighborhoodAggregate.longitude}
+                      offsetLeft={-20}
+                      offsetTop={-10}
+                    >
+                      <img
+                        src={greenPointer}
+                        onClick={event =>
+                          this.handleNeighborhoodMarkerClick(
+                            event,
+                            neighborhoodAggregate
+                          )
+                        }
+                      />
+                    </Marker>
+                  )
+                })
+              : null}
           </div>
           {/* NEIGHBORHOOD POPUP */}
           {selectedNeighborhood ? (
@@ -352,20 +466,12 @@ class HomePage extends Component {
               closeOnClick={false}
               latitude={this.state.viewport.latitude}
               longitude={this.state.viewport.longitude}
-              onClose={() => {
-                const marker = this.state.selectedMarkerImage
-                marker.src = greenPointer
-                this.setState({
-                  selectedNeighborhood: null,
-                  selectedMarkerImage: null
-                })
-              }}
+              onClose={this.onCloseNeighborhoodPopup}
               className="popup"
             >
               <NeighborhoodInfoPage data={data} />
             </Popup>
           ) : null}
-
           {/*ADDRESS POPUP */}
           {selectedAddress ? (
             <Popup
@@ -375,13 +481,20 @@ class HomePage extends Component {
               onClose={this.onCloseAddressPopup}
               className="popup"
             >
-              <InfoPage data={selectedAddress} />
+              <InfoPage
+                data={selectedAddress}
+                userData={addressUserComplaints}
+              />
             </Popup>
           ) : null}
         </MapGL>
       </div>
     )
   }
+}
+
+export function renderToDom(container) {
+  render(<HomePage />, container)
 }
 
 export default withStyles(styles)(HomePage)

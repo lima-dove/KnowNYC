@@ -12,7 +12,7 @@ const dataArc = arc()
   .innerRadius(60)
 
 const labelArc = arc()
-  .outerRadius(radius - 100)
+  .outerRadius(radius - 150)
   .innerRadius(radius - 100)
 
 const chart = pie()
@@ -37,40 +37,36 @@ const fullCircle = d => {
 const PieChart = props => {
   const data = props.data
   return (
-    <div id="chart">
-      <svg
-        width={width}
-        height={height}
-        viewBox={`0 0 ${size} ${size}`}
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <g transform={`translate(${radius}, ${radius})`}>
-          {chart(data).map((d, i) => (
-            <g key={i} className="arc">
-              <path d={dataArc(d)} fill={colors(d.data.type)} />
-              {fullCircle(d) ? (
-                <text
-                  dy=".35em"
-                  transform={`translate(${labelArc.centroid(d)}`}
-                >
-                  {d.data.type}
-                </text>
-              ) : (
-                <text
-                  dy=".35em"
-                  alignmentBaseline="middle"
-                  transform={`translate(${labelArc.centroid(
-                    d
-                  )}), rotate(${midAngle(d)})`}
-                >
-                  {d.data.type}
-                </text>
-              )}
-            </g>
-          ))}
-        </g>
-      </svg>
-    </div>
+    <svg
+      style={{display: 'block', margin: 'auto'}}
+      width={width}
+      height={height}
+      viewBox={`0 0 ${size} ${size}`}
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <g transform={`translate(${radius}, ${radius})`}>
+        {chart(data).map((d, i) => (
+          <g key={i} className="arc">
+            <path d={dataArc(d)} fill={colors(d.data.type)} />
+            {fullCircle(d) ? (
+              <text dy=".35em" transform={`translate(${labelArc.centroid(d)}`}>
+                {d.data.type}
+              </text>
+            ) : (
+              <text
+                dy=".35em"
+                alignmentBaseline="middle"
+                transform={`translate(${labelArc.centroid(
+                  d
+                )}), rotate(${midAngle(d)})`}
+              >
+                {d.data.type}
+              </text>
+            )}
+          </g>
+        ))}
+      </g>
+    </svg>
   )
 }
 export default PieChart

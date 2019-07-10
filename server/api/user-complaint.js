@@ -2,19 +2,26 @@ const router = require('express').Router()
 const {User, UserComplaint} = require('../db/models/index')
 module.exports = router
 
-router.get('/:address', async (req, res, next) => {
+router.get('/:location', async (req, res, next) => {
   try {
-    const complaints = await UserComplaint.findAll({
-      where: {
-        incident_address: req.params.address
-      },
-      include: [
-        {
-          model: User,
-          attributes: ['username']
+    let complaints
+    let location = req.params.location
+    if (location[0] === 'A') {
+      const address = location.slice(1)
+      complaints = await UserComplaint.findAll({
+        where: {
+          incident_address: address
         }
-      ]
-    })
+      })
+    } else {
+      let coordinatesArr = location.slice(1).split(',')
+      complaints = await UserComplaint.findAll({
+        where: {
+          latitude: Number(coordinatesArr[0]),
+          longitude: Number(coordinatesArr[1])
+        }
+      })
+    }
     res.send(complaints)
   } catch (error) {
     next(error)

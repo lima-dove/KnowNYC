@@ -26,7 +26,13 @@ const UserComplaint = db.define('user_complaint', {
   resolution_description: {
     type: Sequelize.TEXT
   },
-  imageURL: {
+  complaint_image: {
+    type: Sequelize.STRING,
+    validate: {
+      isUrl: true
+    }
+  },
+  resolution_image: {
     type: Sequelize.STRING,
     validate: {
       isUrl: true

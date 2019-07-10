@@ -54,6 +54,7 @@ const Navbar = ({handleClick, isLoggedIn, user}) => {
             variant="h3"
             style={{
               margin: 'auto',
+              marginRight: '1px',
               marginLeft: '1px',
               font: "400 48px/1.5 'Pacifico', Helvetica, sans-serif",
               textShadow:
@@ -62,7 +63,6 @@ const Navbar = ({handleClick, isLoggedIn, user}) => {
           >
             NYC
           </Typography>
-
           {isLoggedIn ? (
             <div style={{marginLeft: 'auto'}}>
               <Button
