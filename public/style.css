@@ -103,6 +103,11 @@ mapboxgl-popup-content {
 .MuiTypography-body1 {
   overflow: scroll;
 }
+
+#charts {
+  width: 100vw !important;
+}
+
 /* a {
   text-decoration: none;
  }

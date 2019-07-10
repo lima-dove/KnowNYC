@@ -43,7 +43,7 @@ export default function FullWidthTabs(props) {
   }
 
   return (
-    <div className={classes.root}>
+    <div id="charts" className={classes.root}>
       <AppBar position="static" color="default">
         <Tabs
           value={value}

@@ -43,6 +43,7 @@ class HomePage extends Component {
       boundaryAddresses: null,
       selectedNeighborhood: null,
       selectedAddress: null,
+      addressUserComplaints: null,
       data: null,
       searchError: false,
       selectedMarkerImage: null,
@@ -62,6 +63,7 @@ class HomePage extends Component {
     this.handleNeighborhoodMarkerClick = this.handleNeighborhoodMarkerClick.bind(
       this
     )
+    this.handleEscape = this.handleEscape.bind(this)
     this.handleSeeMoreClick = this.handleSeeMoreClick.bind(this)
     this.handleSearchSubmit = this.handleSearchSubmit.bind(this)
     this.handleAddressMarkerClick = this.handleAddressMarkerClick.bind(this)
@@ -134,18 +136,26 @@ class HomePage extends Component {
       selectedDotImage: event.target
     })
 
-    let response
+    let response311
+    let responseUser
     if (address.incident_address) {
-      response = await axios.get(
+      response311 = await axios.get(
         `api/map/getAddress/A${address.incident_address}`
       )
+      responseUser = await axios.get(
+        `api/user-complaint/A${address.incident_address}`
+      )
     } else {
-      response = await axios.get(
+      response311 = await axios.get(
         `api/map/getAddress/C${address.latitude},${address.longitude}`
+      )
+      responseUser = await axios.get(
+        `api/user-complaint/C${address.latitude},${address.longitude}`
       )
     }
     await this.setState({
-      selectedAddress: response.data
+      selectedAddress: response311.data,
+      addressUserComplaints: responseUser.data
     })
   }
 
@@ -219,12 +229,14 @@ class HomePage extends Component {
 
   async handleSearchSubmit(address) {
     try {
-      const {data} = await axios.get(`api/map/getAddress/A${address}`)
+      const response311 = await axios.get(`api/map/getAddress/A${address}`)
+      const responseUser = await axios.get(`api/user-complaint/A${address}`)
       this.setState({
-        selectedAddress: data,
+        selectedAddress: response311.data,
+        addressUserComplaints: responseUser.data,
         viewport: {
-          latitude: data.latitude,
-          longitude: data.longitude,
+          latitude: response311.data.latitude,
+          longitude: response311.data.longitude,
           zoom: 18,
           bearing: 0,
           pitch: 0
@@ -250,6 +262,27 @@ class HomePage extends Component {
     this.setState({mouse: true})
   }
 
+  handleEscape(event) {
+    if (event.keyCode === 27) {
+      if (this.state.selectedNeighborhood) {
+        const marker = this.state.selectedMarkerImage
+        marker.src = greenPointer
+        this.setState({
+          selectedNeighborhood: null,
+          selectedMarkerImage: null
+        })
+      } else if (this.state.selectedAddress) {
+        const dot = this.state.selectedDotImage
+        dot.src = greenDot
+        this.setState({
+          selectedDotImage: null,
+          selectedAddress: null,
+          mouse: false
+        })
+      }
+    }
+  }
+
   onCloseAddressPopup() {
     const dot = this.state.selectedDotImage
     dot.src = greenDot
@@ -272,13 +305,14 @@ class HomePage extends Component {
       selectedDotImage,
       data,
       neighborhoodComplaints,
-      searchError
+      searchError,
+      addressUserComplaints
     } = this.state
 
     const scrollZoom = !selectedMarkerImage && !selectedDotImage
 
     return (
-      <div>
+      <div onKeyUp={this.handleEscape}>
         <MapGL
           id="mapGl"
           ref={this._map}
@@ -302,7 +336,7 @@ class HomePage extends Component {
           }
         >
           <div style={{display: 'flex'}}>
-            <div id="sideSearch">
+            <div style={{zIndex: 5}} id="sideSearch">
               <SearchBar
                 handleSearchSubmit={this.handleSearchSubmit}
                 captureClick={true}
@@ -362,33 +396,32 @@ class HomePage extends Component {
                     })
                   : null}
               </div>
-            ) : (
-              <div>
-                {neighborhoodComplaints
-                  ? neighborhoodComplaints.map(neighborhoodAggregate => {
-                      return (
-                        <Marker
-                          key={neighborhoodAggregate.id}
-                          latitude={neighborhoodAggregate.latitude}
-                          longitude={neighborhoodAggregate.longitude}
-                          offsetLeft={-20}
-                          offsetTop={-10}
-                        >
-                          <img
-                            src={greenPointer}
-                            onClick={event =>
-                              this.handleNeighborhoodMarkerClick(
-                                event,
-                                neighborhoodAggregate
-                              )
-                            }
-                          />
-                        </Marker>
-                      )
-                    })
-                  : null}
-              </div>
-            )}
+            ) : null}
+          </div>
+          <div>
+            {!boundaryAddresses && neighborhoodComplaints
+              ? neighborhoodComplaints.map(neighborhoodAggregate => {
+                  return (
+                    <Marker
+                      key={neighborhoodAggregate.id}
+                      latitude={neighborhoodAggregate.latitude}
+                      longitude={neighborhoodAggregate.longitude}
+                      offsetLeft={-20}
+                      offsetTop={-10}
+                    >
+                      <img
+                        src={greenPointer}
+                        onClick={event =>
+                          this.handleNeighborhoodMarkerClick(
+                            event,
+                            neighborhoodAggregate
+                          )
+                        }
+                      />
+                    </Marker>
+                  )
+                })
+              : null}
           </div>
           {/* NEIGHBORHOOD POPUP */}
           {selectedNeighborhood ? (
@@ -409,7 +442,6 @@ class HomePage extends Component {
               <NeighborhoodInfoPage data={data} />
             </Popup>
           ) : null}
-
           {/*ADDRESS POPUP */}
           {selectedAddress ? (
             <Popup
@@ -419,7 +451,10 @@ class HomePage extends Component {
               onClose={this.onCloseAddressPopup}
               className="popup"
             >
-              <InfoPage data={selectedAddress} />
+              <InfoPage
+                data={selectedAddress}
+                userData={addressUserComplaints}
+              />
             </Popup>
           ) : null}
         </MapGL>
