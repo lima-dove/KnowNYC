@@ -41,8 +41,6 @@ body {
 }
 
 .mapboxgl-popup-content {
-  transition: transform 1s;
-  transition-duration: 120s;
   height: 75vh;
   width: 45vw;
   position: fixed;
@@ -53,9 +51,9 @@ body {
   overflow-x: scroll !important;
   background: rgba(256, 256, 256, 0.75) !important;
 }
-.mapboxgl-popup-content:hover {
+/* .mapboxgl-popup-content:hover {
   transform: scale(1.15, 1.15);
-}
+} */
 
 .mapboxgl-popup-anchor-top .mapboxgl-popup-tip,
 .mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip,

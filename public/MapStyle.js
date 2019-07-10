@@ -1,5 +1,5 @@
 // import MAP_STYLE from '../../map-style-basic-v8.json'
-import MAP_STYLE from '../map-style-basic-v8.json'
+import MAP_STYLE from '../map-style-basic-v9.json'
 import NYC_NEIGHBORHOODS from './mapdata.json'
 
 const mapStyle = {
@@ -17,6 +17,7 @@ mapStyle.layers.push(
     id: 'nyc-neighborhoods-fill',
     source: 'nyc-neighborhoods',
     type: 'fill',
+    interactive: true,
     paint: {
       'fill-outline-color': '#0040c8',
       'fill-color': '#fff',

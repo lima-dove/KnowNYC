@@ -54,7 +54,8 @@ class HomePage extends Component {
         bearing: 0,
         pitch: 0
       },
-      mouse: false
+      mouse: false,
+      hoverInfo: null
     }
     this.handleSearchClick = this.handleSearchClick.bind(this)
     // this.handleMapClick.bind(this)
@@ -78,12 +79,10 @@ class HomePage extends Component {
     })
   }
 
-  _updateViewport = viewport => {
-    this.setState({viewport})
-  }
-
   _onClick = event => {
-    const feature = event.features[1]
+    console.log('clicked')
+    const feature = event.features[0]
+    console.log('FEATURE', feature)
     if (feature) {
       // calculate the bounding box of the feature
       const [minLng, minLat, maxLng, maxLat] = bbox(feature)
@@ -287,13 +286,12 @@ class HomePage extends Component {
           {...viewport}
           width="100vw"
           height="88vh"
-          // minZoom={11}
+          minZoom={11}
           mapStyle={MAP_STYLE}
           interactiveLayerIds={['nyc-neighborhoods-fill']}
           // mapStyle="mapbox://styles/mapbox/streets-v9"
           onClick={this._onClick}
-          onViewportChange={this._updateViewport}
-          // onViewportChange={v => this.handleViewChange(v)}
+          onViewportChange={v => this.handleViewChange(v)}
           preventStyleDiffing={false}
           ref={map => (this.mapRef = map)}
           mapboxApiAccessToken={token}
