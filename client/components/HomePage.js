@@ -225,7 +225,7 @@ class HomePage extends Component {
   }
 
   handleViewChange = viewport => {
-    if (viewport.zoom < 15.5) {
+    if (viewport.zoom < 16.3) {
       this.setState({viewport: viewport, boundaryAddresses: null})
     } else {
       this.setState({viewport: viewport})
@@ -399,7 +399,7 @@ class HomePage extends Component {
               </Marker>
             ) : null}
 
-            {this.state.viewport.zoom > 15.5 ? (
+            {this.state.viewport.zoom > 16.3 ? (
               <div>
                 <div style={{display: 'flex'}}>
                   <Button
