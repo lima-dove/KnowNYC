@@ -64,15 +64,7 @@ const Navbar = ({handleClick, isLoggedIn, user}) => {
           </Typography>
 
           {isLoggedIn ? (
-            <div className="flyToSubscribed" style={{marginLeft: 'auto'}}>
-              <Button
-                style={style.button}
-                size="large"
-                to="/home"
-                component={RouterLink}
-              >
-                Home Address
-              </Button>
+            <div style={{marginLeft: 'auto'}}>
               <Button
                 style={style.button}
                 to="logout"
