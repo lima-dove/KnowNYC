@@ -13,13 +13,17 @@ export default class Sidebar extends React.Component {
           <p>
             With KnowNYC you can see all 311 incidents filed within the borough
             of Manhattan since 2017.
-            <br />
           </p>
+          <br />
+          <br />
+          <br />
           {viewport < 15.5 ? (
             <div>
               <div className="viewIcon">
                 <i className="fas fa-city" />
               </div>
+              <br />
+              <br />
               <br />
               <div>
                 You are currently in <b>Neighborhood view</b>. Click on a marker
@@ -33,6 +37,8 @@ export default class Sidebar extends React.Component {
                 <i className="fas fa-building" />
               </div>
               <br />
+              <br />
+              <br />
               <div>
                 You are currently in <b>Address view</b>. Click on the Search
                 This Area button to populate addresses with 311 incident calls,
@@ -42,8 +48,7 @@ export default class Sidebar extends React.Component {
             </div>
           )}
           <p>
-            You can also use the <b>search bar</b> and the <b>filters</b> below
-            to make a custom search.
+            You can also use the <b>search bar</b> to make a custom search.
           </p>
         </div>
       </div>
