@@ -105,7 +105,7 @@ mapboxgl-popup-content {
 }
 
 #charts {
-  width: 100vw !important;
+  /* width: 100vw !important; */
 }
 
 #formTop {
@@ -115,4 +115,19 @@ mapboxgl-popup-content {
 
 .MuiFab-extended.MuiFab-sizeSmall {
   width: 50% !important;
+}
+
+#barGraphContainer {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  vertical-align: top;
+  overflow: hidden;
+}
+.svg-container {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
 }

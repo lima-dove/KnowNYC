@@ -354,7 +354,7 @@ class InfoPage extends React.Component {
                             </small>
                           ) : null}
                           {this.state.subscribedAddress ? (
-                            <small style={{color: 'red', margin: '0'}}>
+                            <small style={{color: 'green', margin: '0'}}>
                               {`You are now subscribed to ${this.renderAddress(
                                 this.state.subscribedAddress
                               )}`}
@@ -452,7 +452,7 @@ class InfoPage extends React.Component {
                               <TableCell align="center">
                                 {complaint.resolution_description ? (
                                   complaint.resolution_description
-                                ) : (
+                                ) : !complaint.neighborhoodId ? (
                                   <Button
                                     onClick={() =>
                                       this.setState({
@@ -465,7 +465,7 @@ class InfoPage extends React.Component {
                                   >
                                     Resolve This Complaint
                                   </Button>
-                                )}
+                                ) : null}
                               </TableCell>
                             </TableRow>
                           )

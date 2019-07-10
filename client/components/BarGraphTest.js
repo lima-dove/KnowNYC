@@ -111,85 +111,76 @@ export default class BarGraphTest extends Component {
     const {yScale, xScale} = this.state
 
     return (
-      <svg
-        style={{display: 'block', margin: 'auto'}}
-        ref="svg"
-        preserveAspectRatio="xMidYMin"
-        className="svg-container"
-        viewBox="0 0 620 600"
-      >
-        {this.state.bars.map((d, i) => (
-          <svg ref={element => (this.svg = d3.select(element))} key={i}>
-            <defs>
-              <linearGradient id="myGradient1" gradientTransform="rotate(90)">
-                <stop offset="5%" stopColor="red" />
-                <stop offset="50%" stopColor="gold" />
-                <stop offset="95%" stopColor="green" />
-              </linearGradient>
-
-              <linearGradient id="myGradient2" gradientTransform="rotate(90)">
-                <stop offset="5%" stopColor="gold" />
-                <stop offset="95%" stopColor="green" />
-              </linearGradient>
-
-              <linearGradient id="myGradient3" gradientTransform="rotate(90)">
-                <stop offset="95%" stopColor="green" />
-              </linearGradient>
-            </defs>
-            <g className="hoverText">
-              <rect
-                ref={element => (this.rect = d3.select(element))}
-                onMouseEnter={this.handleMouseEnter}
-                onMouseLeave={this.handleMouseLeave}
-                x={d.x}
-                y={d.y}
-                width={d.width}
-                height={d.height}
-                fill={
-                  yScale.invert(d.y) > 10
-                    ? "url('#myGradient1')"
-                    : 5 < yScale.invert(d.y) && yScale.invert(d.y) <= 10
-                      ? "url('#myGradient2')"
-                      : "url('#myGradient3')"
-                }
-                value={{x: d.x, y: d.y}}
-              />
-              <text x={d.x} dy={d.y} />
-            </g>
-          </svg>
-        ))}
-        <g>
-          <g
-            ref="xAxis"
-            transform={`translate(0, ${height - margin.bottom})`}
-          />
-          <g ref="yAxis" transform={`translate(${margin.left}, 0)`} />
-        </g>
-        <text
-          transform={`translate(${width / 2}, ${height - margin.bottom / 9})`}
-          style={{
-            textAnchor: 'middle',
-            fontSize: '18px',
-            fontFamily: 'sans-serif',
-            fontWeight: 'bold'
-          }}
+      <div id="barGraphContainer">
+        <svg
+          style={{display: 'inline-block', margin: '10px'}}
+          ref="svg"
+          preserveAspectRatio="xMinYMin meet"
+          className="svg-container"
+          viewBox="0 0 620 600"
         >
-          Incident Types
-        </text>
-        <text
-          y={margin.left / 4}
-          x={0 - height / 3}
-          transform="rotate(-90)"
-          style={{
-            textAnchor: 'middle',
-            fontSize: '18px',
-            fontFamily: 'sans-serif',
-            fontWeight: 'bold'
-          }}
-        >
-          Number of Incident Calls
-        </text>
-      </svg>
+          {this.state.bars.map((d, i) => (
+            <svg ref={element => (this.svg = d3.select(element))} key={i}>
+              <defs>
+                <linearGradient id="myGradient1" gradientTransform="rotate(90)">
+                  <stop offset="5%" stopColor="red" />
+                  <stop offset="50%" stopColor="gold" />
+                  <stop offset="95%" stopColor="green" />
+                </linearGradient>
+
+                <linearGradient id="myGradient2" gradientTransform="rotate(90)">
+                  <stop offset="5%" stopColor="gold" />
+                  <stop offset="95%" stopColor="green" />
+                </linearGradient>
+
+                <linearGradient id="myGradient3" gradientTransform="rotate(90)">
+                  <stop offset="95%" stopColor="green" />
+                </linearGradient>
+              </defs>
+              <g className="hoverText">
+                <rect
+                  ref={element => (this.rect = d3.select(element))}
+                  onMouseEnter={this.handleMouseEnter}
+                  onMouseLeave={this.handleMouseLeave}
+                  x={d.x}
+                  y={d.y}
+                  width={d.width}
+                  height={d.height}
+                  fill={
+                    yScale.invert(d.y) > 10
+                      ? "url('#myGradient1')"
+                      : 5 < yScale.invert(d.y) && yScale.invert(d.y) <= 10
+                        ? "url('#myGradient2')"
+                        : "url('#myGradient3')"
+                  }
+                  value={{x: d.x, y: d.y}}
+                />
+                <text x={d.x} dy={d.y} />
+              </g>
+            </svg>
+          ))}
+          <g>
+            <g
+              ref="xAxis"
+              transform={`translate(0, ${height - margin.bottom})`}
+            />
+            <g ref="yAxis" transform={`translate(${margin.left}, 0)`} />
+          </g>
+          <text
+            y={margin.left / 4}
+            x={0 - height / 3}
+            transform="rotate(-90)"
+            style={{
+              textAnchor: 'middle',
+              fontSize: '18px',
+              fontFamily: 'sans-serif',
+              fontWeight: 'bold'
+            }}
+          >
+            Number of Incident Calls
+          </text>
+        </svg>
+      </div>
     )
   }
 }
