@@ -8,10 +8,21 @@ const User = db.define('user', {
     unique: true,
     allowNull: false
   },
+  first_name: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  last_name: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
   email: {
     type: Sequelize.STRING,
     unique: true,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      isEmail: true
+    }
   },
   password: {
     type: Sequelize.STRING,
@@ -31,6 +42,15 @@ const User = db.define('user', {
   },
   googleId: {
     type: Sequelize.STRING
+  },
+  subscription_address: {
+    type: Sequelize.STRING
+  },
+  subscription_latitude: {
+    type: Sequelize.FLOAT
+  },
+  subscription_longitude: {
+    type: Sequelize.FLOAT
   }
 })
 

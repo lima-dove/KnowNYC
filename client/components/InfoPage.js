@@ -23,6 +23,8 @@ import React from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import FullWidthTabs from './GraphTabs'
 import {UserComplaintForm} from './index'
+import {connect} from 'react-redux'
+import {subscribe} from '../store'
 import UserResolutionForm from './UserResolutionForm'
 
 function TabContainer({children, dir}) {
@@ -90,10 +92,15 @@ const styles = theme => ({
     overflowX: 'auto'
   },
   tableTable: {
-    minWidth: 650
+    minWidth: 650,
+    overflowX: 'auto'
   },
   tabDirection: {
     direction: theme.direction
+  },
+  button: {
+    margin: theme.spacing(1),
+    justifySelf: 'center'
   }
 })
 
@@ -107,6 +114,8 @@ class InfoPage extends React.Component {
       address: '',
       tabValue: 0,
       addComplaints: false,
+      isLoggedIn: true,
+      subscribedAddress: null,
       resolveComplaint: null
     }
 
@@ -191,6 +200,11 @@ class InfoPage extends React.Component {
 
   renderAddress(address) {
     address = address.replace(/ +(?= )/g, '')
+    address = address
+      .toLowerCase()
+      .split(' ')
+      .map(s => s.charAt(0).toUpperCase() + s.substring(1))
+      .join(' ')
     let th = [0, 4, 5, 6, 7, 8, 9]
     let st = [1]
     let nd = [2]
@@ -252,6 +266,51 @@ class InfoPage extends React.Component {
       } else {
         return address
       }
+    } else if (splitAddress.length === 2) {
+      if (Number(splitAddress[0])) {
+        if (th.includes(Number(splitAddress[0][splitAddress[0].length - 1]))) {
+          let newSecond = splitAddress[0] + 'th'
+          splitAddress[0] = newSecond
+          return splitAddress.join(' ')
+        } else if (
+          st.includes(Number(splitAddress[0][splitAddress[0].length - 1]))
+        ) {
+          let newSecond = splitAddress[0] + 'st'
+          splitAddress[0] = newSecond
+          return splitAddress.join(' ')
+        } else if (
+          nd.includes(Number(splitAddress[0][splitAddress[0].length - 1]))
+        ) {
+          let newSecond = splitAddress[0] + 'nd'
+          splitAddress[0] = newSecond
+          return splitAddress.join(' ')
+        } else if (
+          rd.includes(Number(splitAddress[0][splitAddress[0].length - 1]))
+        ) {
+          let newSecond = splitAddress[0] + 'rd'
+          splitAddress[0] = newSecond
+          return splitAddress.join(' ')
+        }
+      } else {
+        return address
+      }
+    } else {
+      return address
+    }
+  }
+
+  handleSubscribeClick = () => {
+    if (this.props.isLoggedIn) {
+      this.props.subscribe(
+        this.props.user.id,
+        this.state.address,
+        this.props.data.latitude,
+        this.props.data.longitude
+      )
+      this.setState({subscribedAddress: this.state.address})
+      console.log('subscribed click ', this.state.subscribedAddress)
+    } else {
+      this.setState({isLoggedIn: this.props.isLoggedIn})
     }
   }
 
@@ -275,7 +334,35 @@ class InfoPage extends React.Component {
                   variant="h6"
                   noWrap
                 >
-                  Data for {displayAddress}
+                  <div style={{display: 'flex', flexDirection: 'column'}}>
+                    <div>Data for {displayAddress}</div>
+                    <div>
+                      <Button
+                        onClick={this.handleSubscribeClick}
+                        variant="contained"
+                        className={classes.button}
+                        style={{zIndex: '10'}}
+                      >
+                        <div>
+                          <p style={{marginBottom: '1px', marginTop: '1px'}}>
+                            Subscribe to this address
+                          </p>
+                          {!this.state.isLoggedIn ? (
+                            <small style={{color: 'red', margin: '0'}}>
+                              You must be logged in to use this feature
+                            </small>
+                          ) : null}
+                          {this.state.subscribedAddress ? (
+                            <small style={{color: 'red', margin: '0'}}>
+                              {`You are now subscribed to ${this.renderAddress(
+                                this.state.subscribedAddress
+                              )}`}
+                            </small>
+                          ) : null}
+                        </div>
+                      </Button>
+                    </div>
+                  </div>
                 </Typography>
               </Toolbar>
             </AppBar>
@@ -537,4 +624,17 @@ InfoPage.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-export default withStyles(styles)(InfoPage)
+const mapStateToProps = state => ({
+  isLoggedIn: !!state.user.id,
+  user: state.user
+})
+
+const mapDispatchToProps = dispatch => {
+  return {
+    subscribe: (id, addr, lat, lon) => dispatch(subscribe(id, addr, lat, lon))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+  withStyles(styles)(InfoPage)
+)

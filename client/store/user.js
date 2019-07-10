@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import axios from 'axios'
 import history from '../history'
 
@@ -30,10 +31,23 @@ export const me = () => async dispatch => {
   }
 }
 
-export const auth = (email, password, method) => async dispatch => {
+export const auth = (
+  email,
+  password,
+  first_name,
+  last_name,
+  username,
+  method
+) => async dispatch => {
   let res
   try {
-    res = await axios.post(`/auth/${method}`, {email, password})
+    res = await axios.post(`/auth/${method}`, {
+      email,
+      password,
+      first_name,
+      last_name,
+      username
+    })
   } catch (authError) {
     return dispatch(getUser({error: authError}))
   }
@@ -50,7 +64,26 @@ export const logout = () => async dispatch => {
   try {
     await axios.post('/auth/logout')
     dispatch(removeUser())
-    history.push('/login')
+    history.push('/home')
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+export const subscribe = (
+  id,
+  subscription_address,
+  subscription_latitude,
+  subscription_longitude
+) => async dispatch => {
+  try {
+    const {data} = await axios.put('/api/subscribe', {
+      id,
+      subscription_address,
+      subscription_latitude,
+      subscription_longitude
+    })
+    dispatch(getUser(data))
   } catch (err) {
     console.error(err)
   }
