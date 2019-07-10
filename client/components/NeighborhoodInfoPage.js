@@ -18,7 +18,8 @@ function TabContainer({children, dir}) {
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    width: '100%'
+    width: '100%',
+    justifyContent: 'center'
   },
   title: {
     flexGrow: 1,
@@ -89,10 +90,22 @@ class InfoPage extends React.Component {
         <br />
         <Container>
           <div className={classes.root}>
-            <AppBar position="static">
+            <AppBar
+              position="static"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}
+            >
               <Toolbar>
                 <Typography className={classes.title} variant="h6" noWrap>
-                  Graph data for {data.name}
+                  Data for {data.name}
+                </Typography>
+              </Toolbar>
+              <Toolbar>
+                <Typography className={classes.title} variant="h6" noWrap>
+                  Total Complaints for {data.name}: {data.total}
                 </Typography>
               </Toolbar>
             </AppBar>
@@ -100,12 +113,6 @@ class InfoPage extends React.Component {
           <br />
           <div style={{display: 'flex', justifyContent: 'center'}}>
             <FullWidthTabs data={data.aggregate_data} />
-          </div>
-          <br />
-          <div>
-            <h1>
-              Total Complaints for {data.name}: {data.total}
-            </h1>
           </div>
         </Container>
         <br />
