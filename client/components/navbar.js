@@ -22,10 +22,7 @@ const Navbar = ({handleClick, isLoggedIn, user}) => {
     <Box boxShadow={2}>
       <AppBar position="static">
         <Toolbar style={{height: '80px'}}>
-          <IconButton
-            onClick={() => history.push('/home')}
-            aria-label="Open drawer"
-          >
+          <IconButton component={RouterLink} to="home" aria-label="Open drawer">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="40"
