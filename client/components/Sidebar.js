@@ -36,7 +36,7 @@ class SidebarClass extends React.Component {
           <br />
           <br />
           <br />
-          {viewport < 15.5 ? (
+          {viewport < 16.3 ? (
             <div>
               <div className="viewIcon">
                 <i className="fas fa-city" />

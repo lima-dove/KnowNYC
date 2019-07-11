@@ -22,6 +22,16 @@ const Navbar = ({handleClick, isLoggedIn, user}) => {
     <Box boxShadow={2}>
       <AppBar position="static">
         <Toolbar style={{height: '80px'}}>
+          <IconButton component={RouterLink} to="home" aria-label="Open drawer">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="40"
+              height="40"
+              viewBox="0 0 24 24"
+            >
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+            </svg>
+          </IconButton>
           <Typography
             variant="h3"
             style={{
