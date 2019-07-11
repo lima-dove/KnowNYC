@@ -25,7 +25,7 @@ class SidebarClass extends React.Component {
         <div
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          style={{overflow: 'scroll'}}
+          style={{overflow: 'scroll', height: '80vh'}}
           className="sideText"
         >
           <h3>Welcome to KnowNYC!</h3>
