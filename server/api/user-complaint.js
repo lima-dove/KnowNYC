@@ -27,7 +27,7 @@ router.get('/:location', async (req, res, next) => {
     next(error)
   }
 })
-
+//add logic to send email with new complaint
 router.post('/', async (req, res, next) => {
   try {
     const complaint = await UserComplaint.create(req.body)
