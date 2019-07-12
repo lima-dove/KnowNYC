@@ -143,7 +143,6 @@ router.get('/getAddress/:location', async (req, res, next) => {
       aggregate_data: aggrArr,
       complaints: complaints
     }
-    console.log(addressObj)
     res.send(addressObj)
   } catch (error) {
     next(error)

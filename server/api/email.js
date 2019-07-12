@@ -15,32 +15,33 @@ router.post('/', async (req, res, next) => {
     let emails = users.map(user => user.dataValues.email)
 
     const htmlEmail = `
-      <h3>New complaint for the address: ${req.body.incident_address}</h3>
+      <h3>New Complaint for the Address: ${address}</h3>
       <ul>
-      <li>Complaint type: ${req.body.complaint_type}</li>
+      <li>Complaint Type: ${req.body.complaint_type}</li>
       <li>Description: ${req.body.descriptor}</li>
       <li>Date: ${req.body.created_date}</ul>
-       </ul>`
+       </ul>
+       <i>Thank you so much for staying in the Know...NYC</i>`
 
     let transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 465,
       secure: true,
       auth: {
-        user: 'insufinguide@gmail.com',
-        pass: 'Capstone'
+        user: 'knownyc311@gmail.com',
+        pass: 'Capstone123'
       }
     })
 
     emails.forEach(email => {
       transporter.sendMail(
         {
-          from: 'insufinguide@gmail.com',
+          from: 'knownyc311@gmail.com',
           to: email,
-          subject: 'KnowNYC: new complaint at your address!',
-          text: `there is a new complaint for address:${
-            req.body.incident_address
-          }: ${req.body.descriptor}`,
+          subject: `KnowNYC: New complaint for ${address}!`,
+          text: `There is a new complaint for ${address}: ${
+            req.body.descriptor
+          }`,
           html: htmlEmail
         },
         (err, info) => {
