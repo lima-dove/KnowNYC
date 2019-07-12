@@ -19,10 +19,15 @@ class SidebarClass extends React.Component {
   }
 
   render() {
-    const {viewport} = this.props
+    const {viewport, onMouseEnter, onMouseLeave} = this.props
     return (
       <div className="sidebar">
-        <div className="sideText">
+        <div
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          style={{overflow: 'scroll', height: '80vh'}}
+          className="sideText"
+        >
           <h3>Welcome to KnowNYC!</h3>
           <p>
             With KnowNYC you can see all 311 incidents filed within the borough
