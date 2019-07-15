@@ -12,20 +12,20 @@ We also allow you to interact with your community to lodge and resolve your own 
 
 You start on Neighborhood View where each marker represents a neighborhood. When you click on a marker you can see the total complaints for the neighborhood as well as the top five complaints by frequency for that neighborhood. These are presented in two graphical formats: pie chart and bar graph.
 
-When you zoom in to a certain level, you enter Address View where you can click Search This Area. Markers that represent individual addresses will populate within your viewing area. When you click on a marker it will show you the graphical representations of up to ten of the most frequent complaints specific to that address. When you scroll down the popup you can see all of this address’ complaint details. The complaints are available in three different views: all complaints, official 311 complaints, and user-generated complaints, all sorted by most recent first.
+When you zoom in to a certain level, you enter Address View where you can click Search This Area. Upon clicking, markers that represent individual addresses will populate within your viewing area. When you click on a marker, a popup will appear showing the graphical representations of up to ten of the most frequent complaints specific to that address. When you scroll down the popup you can see all of this address’ complaint details. The complaints are available in three different views: all complaints, official 311 complaints, and user-generated complaints, all sorted by most recent first.
 
 You can also directly search for an address, and if it has registered complaints, you will be ‘flown to’ that address and shown its info page.
 
 While you can browse the map as a guest, as a logged in user you also have the option of setting a home address. This address will be associated with your user profile and you will be 'flown' directly to that address when you click on the airplane button on the sidebar.
 
-Both guests and logged in users can submit their own complaints. A user can navigate to the user complaint section of the address view popup and click the add button to make a complaint. Upon submission, this complaint is visible in the user and all complaints view. Any users subscribed to this address will then receive an email notification about the new complaint. They can also resolve complaints by adding their own resolution descriptions.
+Both guests and logged in users can submit their own complaints. To do so, a user can navigate to the user complaint section of the address view popup and click the add button. Upon submission, this complaint becomes visible in the user and all complaints view. Any users subscribed to this address will then receive an email notification about the new complaint. They can also resolve complaints by adding their own resolution descriptions.
 
 ## Technical challenges we faced: 
 
 _Aggregating neighborhood data_
 Our first challenge was to organize 1.2 million complaints, nearly 2GB worth of data, into neighborhoods and present them visually. For a comprehensive view, we decided to display each neighborhood’s aggregate data on the initial render. 
-To do that we needed to combine the ArcGIS data, which has the latitude and longitude boundaries for each neighborhood, with the complaints from NYC OpenData (which each included a latitude and longitude of its own). (within polygon search)
-By doing this we were able to make a neighborhood table in the database to associate each complaint with a neighborhood.
+To do that we needed to combine the ArcGIS data, which has the latitude and longitude boundaries for each neighborhood, with the complaints from NYC OpenData (which each included a latitude and longitude of its own)
+By doing this, we were able to make a neighborhood table in the database to associate each complaint with a neighborhood.
 
 _Render Speeds of map markers_
 Our next challenge was to optimize the render speeds of the markers. 
@@ -57,7 +57,7 @@ Redux
 
 Image uploads with complaints
 Filtered searches
-Expansion to the other four boroughs
+Expansion to the other boroughs
 
 ## Running our app
 
