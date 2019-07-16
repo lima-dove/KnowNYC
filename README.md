@@ -1,133 +1,78 @@
-# Boilermaker
+# KnowNYC:
 
-_Good things come in pairs_
+www.knownyc.co
 
-Looking to mix up a backend with express/sequelize and a frontend with react/redux? That's `boilermaker`!
+We leveraged New York City’s non-emergency public service hotline database to create a 311 data visualization map that allows  users to see all 311 incident reports within the borough of Manhattan since 2017.
 
-Follow along with the workshop to make your own! This canonical version can serve as a reference, or a starting point all on its own.
+Whether you’re a resident or prospective resident of Manhattan (or just curious) KnowNYC is arming you with the knowledge of official 311 incidents in your area.
 
-## Setup
+We also allow you to interact with your community to lodge and resolve your own incidents or complaints.
 
-To use this boilerplate, you'll need to take the following steps:
+## Navigating the site:
 
-* Don't fork or clone this repo! Instead, create a new, empty directory on your machine and `git init` (or create an empty repo on Github and clone it to your local machine)
-* Run the following commands:
+You start on Neighborhood View where each marker represents a neighborhood. When you click on a marker you can see the total complaints for the neighborhood as well as the top five complaints by frequency for that neighborhood. These are presented in two graphical formats: pie chart and bar graph.
 
-```
-git remote add boilermaker https://github.com/FullstackAcademy/boilermaker.git
-git fetch boilermaker
-git merge boilermaker/master
-```
+When you zoom in to a certain level, you enter Address View where you can click Search This Area. Upon clicking, markers that represent individual addresses will populate within your viewing area. When you click on a marker, a popup will appear showing the graphical representations of up to ten of the most frequent complaints specific to that address. When you scroll down the popup you can see all of this address’ complaint details. The complaints are available in three different views: all complaints, official 311 complaints, and user-generated complaints, all sorted by most recent first.
 
-Why did we do that? Because every once in a while, `boilermaker` may be updated with additional features or bug fixes, and you can easily get those changes from now on by entering:
+You can also directly search for an address, and if it has registered complaints, you will be ‘flown to’ that address and shown its info page.
 
-```
-git fetch boilermaker
-git merge boilermaker/master
-```
+While you can browse the map as a guest, as a logged in user you also have the option of setting a home address. This address will be associated with your user profile and you will be 'flown' directly to that address when you click on the airplane button on the sidebar.
 
-## Customize
+Both guests and logged in users can submit their own complaints. To do so, a user can navigate to the user complaint section of the address view popup and click the add button. Upon submission, this complaint becomes visible in the user and all complaints view. Any users subscribed to this address will then receive an email notification about the new complaint. They can also resolve complaints by adding their own resolution descriptions.
 
-Now that you've got the code, follow these steps to get acclimated:
+## Technical challenges we faced: 
 
-* Update project name and description in `package.json` and `.travis.yml` files
-* `npm install`, or `yarn install` - whatever you're into
-* Create two postgres databases: `boilermaker` and `boilermaker-test` (you can substitute these with the name of your own application - just be sure to go through and change the `package.json` and `.travis.yml` to refer to the new name)
-  * By default, running `npm test` will use `boilermaker-test`, while regular development uses `boilermaker`
-* Create a file called `secrets.js` in the project root
+_Aggregating neighborhood data_
+Our first challenge was to organize 1.2 million complaints, nearly 2GB worth of data, into neighborhoods and present them visually. For a comprehensive view, we decided to display each neighborhood’s aggregate data on the initial render. 
+To do that we needed to combine the ArcGIS data, which has the latitude and longitude boundaries for each neighborhood, with the complaints from NYC OpenData (which each included a latitude and longitude of its own)
+By doing this, we were able to make a neighborhood table in the database to associate each complaint with a neighborhood.
 
-  * This file is `.gitignore`'d, and will _only_ be required in your _development_ environment
-  * Its purpose is to attach the secret env variables that you'll use while developing
-  * However, it's **very** important that you **not** push it to Github! Otherwise, _prying eyes_ will find your secret API keys!
-  * It might look like this:
+_Render Speeds of map markers_
+Our next challenge was to optimize the render speeds of the markers. 
+Instead of calculating the aggregate data every time we entered the neighborhood view, which interrupted the user experience, we decided to seed our database with this information so it was readily available on page load.
 
-  ```
-    process.env.GOOGLE_CLIENT_ID = 'hush hush'
-    process.env.GOOGLE_CLIENT_SECRET = 'pretty secret'
-    process.env.GOOGLE_CALLBACK = '/auth/google/callback'
-  ```
+## Technologies:
 
-* To use OAuth with Google, complete the step above with a real client ID and client secret from Google
-  * You can get them here: https://console.developers.google.com/apis/credentials
-* Finally, complete the section below to set up your linter
+Visualization: 
+react-map-gl
+D3
+Material-UI
 
-## Linting
+Data APIs: 
+NYC OpenData
+ArcGIS
 
-Linters are fundamental to any project - they ensure that your code has a consistent style, which is critical to writing readable code.
+Storing/accessing data:
+Postgres
+Sequelize
 
-Boilermaker comes with a working linter (ESLint, with `eslint-config-fullstack`) "out of the box." However, everyone has their own style, so we recommend that you and your team work out yours and stick to it. Any linter rule that you object to can be "turned off" in `.eslintrc.json`. You may also choose an entirely different config if you don't like ours:
+Email notification:
+Nodemailer
 
-* [Standard style guide](https://standardjs.com/)
-* [Airbnb style guide](https://github.com/airbnb/javascript)
-* [Google style guide](https://google.github.io/styleguide/jsguide.html)
+Front-end:
+React
+Redux
 
-## Start
+## Future ideas:
 
-`npm run start-dev` will make great things happen!
+Image uploads with complaints
+Filtered searches
+Expansion to the other boroughs
 
-If you want to run the server and/or webpack separately, you can also `npm run start-server` and `npm run build-client`.
+## Running our app
 
-From there, just follow your bliss.
+Fork and clone the repository
 
-## Deployment
+Run npm install
 
-Ready to go world wide? Here's a guide to deployment! There are two (compatible) ways to deploy:
+Create two postgres databases: knownyc and knownyc-test
 
-* automatically, via continuous integration
-* manually, from your local machine
+Run _npm test_ to run our unit tests
 
-Either way, you'll need to set up your deployment server to start:
+Run _npm run seed_ followed by _npm run seed-center_ to seed the database
 
-### Prep
+_npm run start-dev_ runs the app in development mode. Open http://localhost:8080 to view it in the browser. Errors will be shown in your browser and code editor
 
-1.  Set up the [Heroku command line tools](https://devcenter.heroku.com/articles/heroku-cli)
-2.  `heroku login`
-3.  Add a git remote for heroku:
+You can view the deployed version of the app on: www.knownyc.co
 
-* **If you're creating a new app...**
-
-  1.  `heroku create` or `heroku create your-app-name` if you have a name in mind.
-  2.  `heroku addons:create heroku-postgresql:hobby-dev` to add ("provision") a postgres database to your heroku dyno
-
-* **If you already have a Heroku app...**
-
-  1.  `heroku git:remote your-app-name` You'll need to be a collaborator on the app.
-
-### When you're ready to deploy
-
-#### Option A: Automatic Deployment via Continuous Integration
-
-(_**NOTE**: This step assumes that you already have Travis-CI testing your code._)
-
-CI is not about testing per se – it's about _continuously integrating_ your changes into the live application, instead of periodically _releasing_ new versions. CI tools can not only test your code, but then automatically deploy your app. Boilermaker comes with a `.travis.yml` configuration almost ready for deployment; follow these steps to complete the job.
-
-1.  Run `git checkout master && git pull && git checkout -b f/travis-deploy` (or use some other new branch name).
-2.  Un-comment the bottom part of `.travis.yml` (the `before_deploy` and `deploy` sections)
-3.  Add your Heroku app name to `deploy.app`, where it says "YOUR HEROKU APP NAME HERE". For example, if your domain is `cool-salty-conifer.herokuapp.com`, your app name is `cool-salty-conifer`.
-4.  Install the Travis CLI tools by following [the instructions here](https://github.com/travis-ci/travis.rb#installation).
-5.  Run `travis encrypt $(heroku auth:token) --org` to encrypt your Heroku API key. _**Warning:** do not run the `--add` command suggested by Travis, that will rewrite part of our existing config!_
-6.  Copy-paste your encrypted API key into the `.travis.yml` file under `deploy.api_key.secure`, where it says "YOUR ENCRYPTED API KEY HERE".
-7.  `git add -A && git commit -m 'travis: activate deployment' && git push -u origin f/travis-deploy`
-8.  Make a PR for the new branch, get it approved, and merge it into master.
-
-That's it! From now on, whenever `master` is updated on GitHub, Travis will automatically push the app to Heroku for you.
-
-#### Option B: Manual Deployment from your Local Machine
-
-Some developers may prefer to control deployment rather than rely on automation. Your local copy of the application can be pushed up to Heroku at will, using Boilermaker's handy deployment script:
-
-1.  Make sure that all your work is fully committed and pushed to your master branch on Github.
-2.  If you currently have an existing branch called "deploy", delete it now (`git branch -d deploy`). We're going to use a dummy branch with the name "deploy" (see below), so if you have one lying around, the script below will error
-3.  `npm run deploy` - this will cause the following commands to happen in order:
-
-* `git checkout -b deploy`: checks out a new branch called "deploy". Note that the name "deploy" here isn't magical, but it needs to match the name of the branch we specify when we push to our heroku remote.
-* `webpack -p`: webpack will run in "production mode"
-* `git add -f public/bundle.js public/bundle.js.map`: "force" add the otherwise gitignored build files
-* `git commit --allow-empty -m 'Deploying'`: create a commit, even if nothing changed
-* `git push --force heroku deploy:master`: push your local "deploy" branch to the "master" branch on heroku
-* `git checkout master`: return to your master branch
-* `git branch -D deploy`: remove the deploy branch
-
-Now, you should be deployed!
-
-Why do all of these steps? The big reason is because we don't want our production server to be cluttered up with dev dependencies like webpack, but at the same time we don't want our development git-tracking to be cluttered with production build files like bundle.js! By doing these steps, we make sure our development and production environments both stay nice and clean!
+Please note that you will need to first configure a new application with Heroku if you would like to launch a clone of this repository.
