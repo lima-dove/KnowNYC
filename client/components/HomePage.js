@@ -56,6 +56,7 @@ class HomePage extends Component {
         bearing: 0,
         pitch: 0
       },
+      onSideBar: false,
       mouse: false,
       hoverInfo: null
     }
@@ -115,6 +116,14 @@ class HomePage extends Component {
         }
       })
     }
+  }
+
+  sideBarMouseEnter = () => {
+    this.setState({onSideBar: true})
+  }
+
+  sideBarMouseLeave = () => {
+    this.setState({onSideBar: false})
   }
 
   async handleSearchClick() {
@@ -225,7 +234,7 @@ class HomePage extends Component {
   }
 
   handleViewChange = viewport => {
-    if (viewport.zoom < 15.5) {
+    if (viewport.zoom < 16.3) {
       this.setState({viewport: viewport, boundaryAddresses: null})
     } else {
       this.setState({viewport: viewport})
@@ -341,10 +350,11 @@ class HomePage extends Component {
       neighborhoodComplaints,
       searchError,
       addressUserComplaints,
-      flyTo
+      flyTo,
+      onSideBar
     } = this.state
 
-    const scrollZoom = !selectedMarkerImage && !selectedDotImage
+    const scrollZoom = !selectedMarkerImage && !selectedDotImage && !onSideBar
 
     return (
       <div onKeyUp={this.handleEscape}>
@@ -378,6 +388,8 @@ class HomePage extends Component {
               <Sidebar
                 viewport={viewport.zoom}
                 handleSearchSubmit={this.handleSearchSubmit}
+                onMouseEnter={this.sideBarMouseEnter}
+                onMouseLeave={this.sideBarMouseLeave}
               />
             </div>
 
@@ -399,7 +411,7 @@ class HomePage extends Component {
               </Marker>
             ) : null}
 
-            {this.state.viewport.zoom > 15.5 ? (
+            {this.state.viewport.zoom > 16.3 ? (
               <div>
                 <div style={{display: 'flex'}}>
                   <Button

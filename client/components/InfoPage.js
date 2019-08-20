@@ -176,6 +176,8 @@ class InfoPage extends React.Component {
       userComplaints: [...userComplaints, data],
       addComplaints: false
     })
+
+    await axios.post('/api/email', info)
   }
 
   async handleResolveComplaint(info) {

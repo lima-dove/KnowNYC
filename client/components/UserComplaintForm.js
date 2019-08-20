@@ -70,7 +70,6 @@ class UserComplaintForm extends Component {
 
   render() {
     const {classes} = this.props
-
     return (
       <form className={classes.container} noValidate>
         <div className={classes.formTop}>
@@ -113,7 +112,11 @@ class UserComplaintForm extends Component {
             margin="normal"
             variant="outlined"
           >
-            {complaintTypes.map(type => <option value={type}>{type}</option>)}
+            {complaintTypes.map((type, i) => (
+              <option key={i} value={type}>
+                {type}
+              </option>
+            ))}
           </TextField>
         </div>
         <TextField
