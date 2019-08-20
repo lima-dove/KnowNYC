@@ -9,7 +9,7 @@ const getComplaints = async (neighborhoodObj, neighborhoodComplaints) => {
   // eslint-disable-next-line guard-for-in
   for (let neighborhood in neighborhoodObj.Manhattan) {
     neighborhoodComplaints.Manhattan[neighborhood] = []
-
+    // We used our neighborhood object, populated with the rings for each neighborhood and searched NYCOpenData using "Within Polygon" search
     let complaintPromises = await Promise.all(
       neighborhoodObj.Manhattan[neighborhood].map(ring => {
         return axios.get(
@@ -59,7 +59,7 @@ async function seed() {
       'https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/nynta/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
     )
     const neighborhoodObj = {}
-
+    // Create a neighborhood object that has borough keys, each borough key is populated with neighborhood keys from arcGIS neighborhood objects with their rings arrays
     data.features.forEach(el => {
       el.geometry.rings.forEach(ring => {
         const arrStrings = ring.map(hood => hood.join(' '))

@@ -7,6 +7,7 @@ const {
 } = require('../server/db/models')
 const axios = require('axios')
 
+// Used the largest ring (with the most polygon points) to represent the neighborhood
 const findMaxArray = nestedArray => {
   let maxArray = []
   let max = 0
@@ -146,11 +147,11 @@ async function seed() {
       'https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/nynta/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
     )
     const neighborhoodObj = {}
-
+    // Each element is a neighborhood with an associated borough name, neighborhood name, and polygon array
     data.features.forEach(el => {
       el.geometry.rings.forEach(ring => {
         const arrStrings = ring.map(hood => hood.join(' '))
-        // const polygonString = arrStrings.join(', ')
+        // Three cases: New borough key, existing borough new neighborhood key, existing borough and neighborhood keys with new ring
         if (!neighborhoodObj[el.attributes.BoroName]) {
           neighborhoodObj[el.attributes.BoroName] = {
             [el.attributes.NTAName]: [arrStrings]
