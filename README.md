@@ -2,7 +2,7 @@
 
 www.knownyc.co
 
-We leveraged New York City’s non-emergency public service hotline database to create a 311 data visualization map that allows  users to see all 311 incident reports within the borough of Manhattan since 2017.
+We leveraged New York City’s non-emergency public service hotline database to create a 311 data visualization map that allows users to see all 311 incident reports within the borough of Manhattan since 2017.
 
 Whether you’re a resident or prospective resident of Manhattan (or just curious) KnowNYC is arming you with the knowledge of official 311 incidents in your area.
 
@@ -20,25 +20,25 @@ While you can browse the map as a guest, as a logged in user you also have the o
 
 Both guests and logged in users can submit their own complaints. To do so, a user can navigate to the user complaint section of the address view popup and click the add button. Upon submission, this complaint becomes visible in the user and all complaints view. Any users subscribed to this address will then receive an email notification about the new complaint. They can also resolve complaints by adding their own resolution descriptions.
 
-## Technical challenges we faced: 
+## Technical challenges we faced:
 
 _Aggregating neighborhood data_
-Our first challenge was to organize 1.2 million complaints, nearly 2GB worth of data, into neighborhoods and present them visually. For a comprehensive view, we decided to display each neighborhood’s aggregate data on the initial render. 
+Our first challenge was to organize 1.2 million complaints, nearly 2GB worth of data, into neighborhoods and present them visually. For a comprehensive view, we decided to display each neighborhood’s aggregate data on the initial render.
 To do that we needed to combine the ArcGIS data, which has the latitude and longitude boundaries for each neighborhood, with the complaints from NYC OpenData (which each included a latitude and longitude of its own)
 By doing this, we were able to make a neighborhood table in the database to associate each complaint with a neighborhood.
 
 _Render Speeds of map markers_
-Our next challenge was to optimize the render speeds of the markers. 
+Our next challenge was to optimize the render speeds of the markers.
 Instead of calculating the aggregate data every time we entered the neighborhood view, which interrupted the user experience, we decided to seed our database with this information so it was readily available on page load.
 
 ## Technologies:
 
-Visualization: 
+Visualization:
 react-map-gl
 D3
 Material-UI
 
-Data APIs: 
+Data APIs:
 NYC OpenData
 ArcGIS
 

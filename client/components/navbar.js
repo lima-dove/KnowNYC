@@ -71,6 +71,14 @@ const Navbar = ({handleClick, isLoggedIn, user}) => {
               </Button>
               <Button
                 style={style.button}
+                to="/about"
+                size="large"
+                component={RouterLink}
+              >
+                About
+              </Button>
+              <Button
+                style={style.button}
                 to="logout"
                 size="large"
                 onClick={handleClick}
@@ -81,6 +89,14 @@ const Navbar = ({handleClick, isLoggedIn, user}) => {
             </div>
           ) : (
             <div style={{marginLeft: 'auto'}}>
+              <Button
+                style={style.button}
+                to="/about"
+                size="large"
+                component={RouterLink}
+              >
+                About
+              </Button>
               <Button
                 style={style.button}
                 to="/login"

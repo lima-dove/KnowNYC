@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Redirect, Route, Switch, withRouter} from 'react-router-dom'
-import {HomePage, Login, Signup, UserHome, Users} from './components'
+import {HomePage, Login, Signup, UserHome, Users, AboutUs} from './components'
 import InfoPage from './components/InfoPage'
 import GraphTest from './components/GraphTest'
 import {me} from './store'
@@ -25,8 +25,8 @@ class Routes extends Component {
         <Route path="/users" component={Users} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
-        <Route path="/info" component={Login} />
         <Route path="/infoPage" component={InfoPage} />
+        <Route path="/about" component={AboutUs} />
         {isLoggedIn && (
           <Switch>
             {/* Routes placed here are only available after logging in */}
