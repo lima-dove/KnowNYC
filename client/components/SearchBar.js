@@ -6,7 +6,6 @@ import SearchIcon from '@material-ui/icons/Search'
 import axios from 'axios'
 import debounce from 'lodash.debounce'
 import React, {Component} from 'react'
-import {fade} from '@material-ui/core/styles'
 
 const useStyles = {
   root: {
@@ -39,6 +38,7 @@ const addressSlice = address => {
     let hasNum = false
     for (let i = 0; i < digitArray.length; i++) {
       const digit = digitArray[i]
+      //if street name is a number, cut of the two following letters
       if (streetName.includes(digit)) hasNum = true
     }
 
@@ -63,6 +63,7 @@ export default class MapSearchBar extends Component {
     const input = event.target.value
 
     if (input.length > 3) {
+      //debounce to not overload api calls
       const autoComplete = debounce(async () => {
         const {data} = await axios.get(
           `https://api.mapbox.com/geocoding/v5/mapbox.places/${input}.json?country=us&limit=3&proximity=-73.977177,40.766132&type=address&access_token=pk.eyJ1IjoibnNjaGVmZXIiLCJhIjoiY2p2Mml0azl1MjVtejQ0bzBmajZhOHViZCJ9.iPyB8tGgsYgboP_fKLQGnw`
@@ -84,6 +85,7 @@ export default class MapSearchBar extends Component {
     })
   }
 
+  //handle someone clicking the address drop down
   handleClickSubmit = address => {
     let searchAddress
     if (address) {
@@ -92,6 +94,7 @@ export default class MapSearchBar extends Component {
     } else {
       searchAddress = addressSlice(this.state.searchInput).toUpperCase()
     }
+    //sends it back up to the map component
     this.props.handleSearchSubmit(searchAddress)
     this.setState({
       searchInput: '',
@@ -99,9 +102,11 @@ export default class MapSearchBar extends Component {
     })
   }
 
+  //handle someone entering on an input address
   handleEnterSubmit = event => {
     if (event.keyCode === 13) {
       const capitalAddress = addressSlice(this.state.searchInput).toUpperCase()
+      //sends it back up to the map component
       this.props.handleSearchSubmit(capitalAddress)
       this.setState({
         searchInput: '',

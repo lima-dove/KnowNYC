@@ -55,6 +55,7 @@ async function seed() {
   console.log('db synced!')
 
   try {
+    //fetching neighborhood coordinates
     const {data} = await axios.get(
       'https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/nynta/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
     )
@@ -62,19 +63,25 @@ async function seed() {
     // Create a neighborhood object that has borough keys, each borough key is populated with neighborhood keys from arcGIS neighborhood objects with their rings arrays
     data.features.forEach(el => {
       el.geometry.rings.forEach(ring => {
+        //change array of coordinate arrays to array of coordinate strings
         const arrStrings = ring.map(hood => hood.join(' '))
+        //change array of coordinate strings into one long ring string
         const polygonString = arrStrings.join(', ')
+
+        //if the Borough has not been added yet, add it with the first nieghborhood
         if (!neighborhoodObj[el.attributes.BoroName]) {
           neighborhoodObj[el.attributes.BoroName] = {
             [el.attributes.NTAName]: [polygonString]
           }
         } else if (
+          //if the neighborhood is already there, push the polygon string in
           neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName]
         ) {
           neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName].push(
             polygonString
           )
         } else {
+          //if neighborhood is not there, add the neighborhood and create the polygon array
           neighborhoodObj[el.attributes.BoroName][el.attributes.NTAName] = [
             polygonString
           ]
@@ -82,6 +89,7 @@ async function seed() {
       })
     })
 
+    //fill the database with borough names and neighborhood names
     const hoodLookUp = {}
     for (let borough in neighborhoodObj) {
       if (neighborhoodObj.hasOwnProperty(borough)) {
@@ -103,7 +111,9 @@ async function seed() {
     const neighborhoodComplaints = {}
     neighborhoodComplaints.Manhattan = {}
 
+    //fills neighborhood complaints object with complaints
     await getComplaints(neighborhoodObj, neighborhoodComplaints)
+    //populates database with complaints from complaints object
     await populateComplaints(neighborhoodComplaints, hoodLookUp)
   } catch (err) {
     console.error(err)
